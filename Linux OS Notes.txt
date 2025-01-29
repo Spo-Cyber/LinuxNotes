@@ -1,0 +1,71 @@
+						💻Linux OS
+						
+						
+		TERMINAL IN-DEPTH
+				
+man -k 'keyword' = find keyword in all manual pages (alternative -> apropos 'keyword')
+type 'x' = checking if a command is shell built-in or executable file
+!abc = running the last command starting with 'abc'
+!abc:p = printing the last command starting with 'abc'
+!n('n'th code from history), !-n(the 'n'th code from the END of the history) ALTERNATIVE ctrl+r -> text, !! (rerunning the last code)
+route -n (for printing the gateway ip address)
+_________________
+#HISTORY OPTIONS
+
+history -c = to delete shell's history (for current session). ---> '> .bash_history' (for cleaning the entire bash's history)
+history -d n = delete from bash_history the 'n'-th line(command) (!!not working on zsh but only on bash)
+'whitespace somecommand' = to not save command in history
+echo $HISTCONTROL (to look the HISTCONTROL variable)
+HISTCONTROL=ignoredups  (for ignoring repeating commands)
+HISTCONTROL=ignorespace (for ignoring the space at the beginning of command, because if the ignorespace is not there , the command won't be saved while starting with whitespace at the beginning of the command)
+HISTTIMEFORMAT="%d/%m/%y %T" (to show the time format in bash history 'day/month/year hour/minute/seconds')
+If we want to make permanent changes for bash, then we need to type e.g. 'echo HISTTIMEFORMAT="%T" >> .bashrc' (to add the line to bashrc which will start the shell with it's configurations)
+________________
+#ROOT ACCESS
+
+sudo su = switch to root user
+id = to show the logged in user
+sudo -v (to cache root credentials, to not require root password in each root required commands)
+sudo -k (to invalidate root credentials, to ask the next time for root required commands)
+sudo passwd 'username' (to create or change the password of username)
+exit (to exit from root mode or ctrl+d)
+lshw (to list all the hardware on device)
+---------------------------
+#FILE SYSTEM
+
+!!! Everything in Linux is a file
+- - - -
+The Filesystem Hierarchy Standard
+
+/bin (contains binaries or user executable files which are available to all users)
+/sbin (contains applications that only the superuser(hence the initial s) will need)
+/boot (contains files required for starting your system)
+/home (is where you will find your users' home directories. Under this directory there is another directory for each user, if that particular user has a home directory.root has its home directory separated from the rest of the users' home directories and is /root)
+/dev (contains device files)
+/etc (contains most, if not all system-wide configuration files)
+/lib (contains shared library files used by different applications)
+/media (is used for external storage will be automatically mounted)
+/mnt (is like /media but it's not very often used these days)
+/tmp (contains temporary files, usually saved there by applications that are running.Non privileged user can temporarily save files there)
+/proc (contains information about computer hardware e.g. CPU, RAM memory.The files and directories are generated , when computer starts or running and things
+changes).E.g. to see info about cpu -> cat /proc/cpuinfo, or for memory -> cat /proc/meminfo
+/sys (contains information about devices, drivers and some Kernel features)
+/srv (contains data for servers)
+/run (is new,different distribution use this directory in different ways.It's a temporary filesystem which runs in RAM so its contents will vanish when the system reboots.This directory is used only by processes)
+/usr (contains many essential files and directores needed for the system to function properly in a multi-user environment)
+/var (typically contains variable-length files such as logs which are files that register events that happen on the system)
+- - - -
+df (for file system space usage), df -h (for easier displaying like not in kilobytes but in Gb)
+tree (for displaying directory tree), tree -f (also showing absolute paths of each directory and file), tree -d (list directories only)
+sudo du -sh /path (to display the size of the path in human readable format)
+_______
+#ls command
+ls (list directory contents) , ls /some/path (to list /some/path's list) and if just only ls then the list of the current directory
+ls /path1 /path2/path3 ... ~/path4 (to display n different paths at once),ls -R (to display the contents of all the directories in it 'RECURSIVELY')
+ls /x -d (only the /x directory and not it's content), ls -l (displays the content in long list format)
+ls -S (sorts the files by size), ls --hide=[OPTION] e.g. ls --hide=*.conf (to display all content besides all .conf file)
+ls -a (displays all files and directores includeing hidden ones), ls -1 (listing on a single column)
+_______
+
+
+

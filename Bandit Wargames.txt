@@ -1,0 +1,17 @@
+				Bandit Wargames
+		ssh banditN@bandit.labs.overthewire.org -p 2220
+		
+level0 -> level1 (login:bandit0, password: bandit0)
+level1 -> level2 (login: bandit1, password: ZjLjTmM6FvvyRnrb2rfNWOZOTa6ip5If)
+level2 -> level3 (login: bandit2, password: 263JGJPfgU6LtdEvgfWU1XP5yac29mFx)
+level3 -> level4 (login: bandit3, password: MNk8KNH3Usiio41PRUEoDFPqfxLPlSmx)
+level4 -> level5 (login: bandit4, password: 2WmrDFRmJIq3IPxneAaMGhap0pFhF3NJ)
+level5 -> level6 (login: bandit5, password: 4oQYVPkxZOOEOO5pTW81FB8j8lxXGUQw)
+level6 -> level7 (login: bandit6, password: HWasnPhtq9AVKe0dmk45nxy20cvUa6EG)
+level7 -> level8 (login: bandit7, password: morbNTDkSW6jIlUc0ymOdMaLnOlFVAaj)
+level8 -> level9 (login: bandit8, password: dfwvzFQi4mU0wfNbFOe9RoWskMLg7eEc)
+level9 -> level10 (login: bandit9, password: 4CKMh1JI91bUIZZPXDqGanal4xvAg0JM)
+level10 -> level11 (login: bandit10, password: FGUW5ilLVJrxX9kMYMmlN4MgbpfMiqey)
+level11 -> level12 (login: bandit11, password: dtR173fZKb0RRsDFSGsg2RWnpNVj3qRr)
+level12 -> level13 (login: bandit12, password: 7x16WNeHIi5YkIhWsfFIqoognUTyj9Q4)
+level13 -> level14 (login: bandit13, password: FO5dwFsc0cbaIiH0h8J2eUks2vdTDwAn)
