@@ -1,5 +1,6 @@
 						💻Linux OS
-						
+
+#For Scaling the first or second monitors ->  nano ~/.config/monitors.xml , and changing the options we want (very important'for me)')
 						
 		TERMINAL IN-DEPTH
 				
@@ -65,9 +66,17 @@ ls /path1 /path2 /path3 ... ~/path4 (to display n different paths at once),ls -R
 ls /path -dl (only the /path directory and not it's content), ls -l (displays the content in long list format)
 ls -S (sorts the files by size), ls --hide=[OPTION] e.g. ls --hide=*.conf (to display all content besides all .conf file)
 ls -a (displays all files and directores includeing hidden ones), ls -1 (listing on a single column)
+ls -r (displays in reversed order, or --reverse)
 _______
 #File Timestamps
+
 date - for displaying system's current time
+date --set="2 OCT 2020 18:00:00" (to set system's date)
+
+cal (displays this month's calendar)
+cal 2021 (displays calendar of a specific year)
+cal 2 2021 (displays a specific calendar of a specific year)
+cal -3 (displays previous, current and next month's calendars)
 
 stat /path (displays the 'accessed(last time read), modified(last time got text change in it), changed(last time accessed,renamed,owner or group permission changed, timestamp changed - "so metadata changed")' timing parameters of files)
 ls -lu (to see the access time)
@@ -81,4 +90,38 @@ touch -m filename (only to update mtime and ctime)
 touch -a/-m -t 202501021010.13 (to set manually time depending on atime or mtime what have we set, to set the time 2025year, 01month, 02day, 10:10, 13seconds) applying -- NUMBER TIME FORMAT
 touch -a/-m -d "2025-01-02 10:10:13" applying -- DATE TIME FORMAT
 touch filename1 -r filename2 (for updating timestamp of filename1 by the timestamp of filename2)
+_______
+#File Types
 
+file /filepath (displays the file's parameters)
+ls -lF (to identify what type of file)
+file /path/* (displays all file types in the path by the sign *)
+
+_______
+#Viewing Files
+
+cat (concatenating file(s) into one another. e.g cat file1 file2 > file3 'to concatenate file1,file2 to file3')
+cat -n (to also display line numbers starting each line)
+less (more flexible that 'cat' and 'more', can view page-by-page via ctrl+f and ctrl+b or scrolling, ?something or /something finds something in less page)
+
+tail (view last 10 lines), tail -n 23 (view last 23 lines), tail -n +54 (view lines beggining from line 54)
+tail -f (to view the file in real-time.like when "tail -f /var/log/auth.log", and when I will log or try to log as root via sudo su, it will display my attempts)
+head (displays first 10 lines), head -n 3 or head -3 (view first 3 lines)
+
+watch 'any command' (every 2 seconds watches what is being changed) FOR EXAMPLE - watch ls ~/Desktop (watches the list of desktop, and if anything will be added or deleted, it will display).
+watch -d ls (highlights differences in changes)
+watch -n 3 (to set 3 seconds of interval)
+________
+#Files and Creating Directories
+
+touch 'filename' (for creating an empty file)
+mkdir 'directory name' (for creating directory), mkdir -v 'dirname' (with verbose)
+mkdir -p dir10/dir4 (if doesn't exist dir10 it forces to create and dir4 in it also)
+_________
+#Copying Files and Directories
+
+cp /filepath /destinationfilepathname (copying the file and pastes to destination path by its given filename), if exists the /destinationfilepathname it will overwrite. cp -v (by verbose prompting)
+cp -i /path1 /path2 (to not overwrite automatically the file but at first to prompt if I wanna)
+cp /file1 /file2 /file3 /path (to copy that 3 files to the path) 
+cp -r /srcdirectory /dstdirectory (to copy directory to destination recursively)
+cp -p /dir1 /di2 (to save the owner and group permissions while copying, because by default it copys and assigns the details of another user permissions)
