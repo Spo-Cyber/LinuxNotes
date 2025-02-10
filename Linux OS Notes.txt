@@ -84,6 +84,7 @@ ls -lu (to see the access time)
 ls -lt (to see the modification time)
 ls -lc (to see the changed time)
 ls -l --full-time (to display the full time including time zone,seconds and milliseconds)
+ls -F (to see each file or directory by its indicators)
 
 touch filename -> if the file doesn't exist it will create a file by that filename , but if exists it will update all three timestamp options(atime, mtime, ctime)
 touch -a filename (only to update atime and ctime)
@@ -174,8 +175,38 @@ find /path -name fname -ls (do the ls command after finding)
 find /path -name fname -type d(directory)/f(file) (to specify what type of data)
 find /path -name fname -maxdepth 4 (to dive till 4 subdirectories and no more)
 find /path -name fname -perm 755 (find by permissions.here is owner-7(rwx), group-5(rx), others-5(rx))
-find /path -name fname -type f -size 100k/M/G (search by size 100k, examples +100M(more than 100M), -2G(less than 2Gigabyte))
+find /path -name fname -type f -size 100k/M/G/c (search by size 100k, examples +100M(more than 100M), -2G(less than 2Gigabyte))
 find /path -name fname -atime/mtime/ctime 0(means 1day ago), 1(2days ago)... (to find by timestamp)
 find /path -name fname -type f -amin/-mmin/-cmin +10/-5 (by minutes accessed or modified or changed last time.in this example was accessed more than 10minutes ago or was access less than 5 minutes ago)
 find /path -name fname -user username (by the owner of the file or directory)
 find /path -type f -not -group root (find files , that are NOT in group ROOT)
+
+!!Important Find cmd Feature EXEC
+find /path -exec cmd {} \; ({} is the path of each file, \; is the end of exec cmd.)
+Examples`
+-
+find /path -atime -13 -exec cp {} ./anydestination -> (This means that will copy every file from /path which was accessed less than 13 days ago and will copy each file to the anydestination)
+OR
+find /path -atime -13 -ok cp {} /anypath \; (This means that it will do the same as above, but will prompt for every found file or directory on which will operate)
+-
+___
+dmesg (kernel ring buffer log file which is in RAM)
+______________________
+#Grep (Searching for String Patterns in Text Files)
+
+grep 'pattern text' /path (to find the text from /path if exists)
+grep -i (to ignore case)
+grep -n (to print out the line number as well)
+grep -v (to select non-matching lines)
+grep -a (to find text from BINARY FILE and not regular text file)
+grep -R /directory(to find the pattern recursively in files of directory)
+grep -s (no to show errors about non-existing or unreadable files)
+grep -c (count of patterns in file, and when doing in directory via -R it shows count of patterns for each file)
+grep -A 2 -B 4 (prints 2lines before match, and 4 lines after match)
+grep -C 3 (prints 3lines before and 3lines after the match)
+grep -w (search for whole words)
+
+sort (to sort by name 'alphabetical order')
+sort -r (to reverse by alphabetical order)
+
+strings /binaryfile (print ASCII chars from binary file)
