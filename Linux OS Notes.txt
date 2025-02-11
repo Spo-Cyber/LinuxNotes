@@ -208,5 +208,55 @@ grep -w (search for whole words)
 
 sort (to sort by name 'alphabetical order')
 sort -r (to reverse by alphabetical order)
+_____________
+#Searching for strings in binary files
 
 strings /binaryfile (print ASCII chars from binary file)
+_____________
+#Comparing Files
+
+
+cmp file1 file2 (comparing by bytes, and lines)
+sha256sum file1 file2 (comparing files by cryptographic identification, when even 1bit will be different the results will be different)
+
+diff file1 file2 (comparing and showing the differences in text files)
+diff -B (ignore blank lines)
+diff -w (ignore white spaces)
+diff -i (ignore case)
+diff -c (for more detailed comparison, by showing both files'link in github')
+diff -y (display both file content in two columns 'side-by-side')
+______________
+#VIM text editor
+
+vimtutor (open vim tutorial file)
+
+VIM modes:
+		-command
+		-insert
+		-last line
+
+ARROW KEYS - H(Left), J(Down), K(Up), L(Right)
+
+- - Command Mode - -
+when opening VIM, it is by in command mode
+esc - to switch to cmd mode
+
+x (deleting after cursor one char'like delete button')
+r (press r and any xchar , and it will replace the char on which the cursor is , by the xchar)
+
+i (switch to insert mode, before cursor)
+a (switch to insert mode, after cursor)
+O (switch to insert mode, from new line, above the current line)
+o (switch to insert mode, from new line, below the current line)
+I (switch to insert mode, from the beggining of the line)
+A (switch to insert mode, from the end of the line)
+ZZ (save and quit)
+
+- - Last Line Mode - -
+: -> (to switch to last line mode, where can do all actions about quitting, saving, forcing to quit...)
+
+:q (to quit)
+:q! (force to quit "without saving")
+:w! (save without quitting)
+:wq (save and quit) , the ALTERNATIVE is ZZ cmd in Command Mode
+- - - - - 
