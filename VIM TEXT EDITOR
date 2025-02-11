@@ -1,0 +1,73 @@
+											VIM TEXT EDITOR
+
+vimtutor (open vim tutorial file)
+
+VIM modes:
+		-command
+		-insert
+		-last line
+
+ARROW KEYS - H(Left), J(Down), K(Up), L(Right)
+
+vim -o file1 file2 (to open vim , by split screen, on each side one file of multiple's), and Ctrl+W (to switch to next file)
+vim -d file1 file2 (to open vim, by split screen, comparing files by showing differences on each window), and Ctrl+W (to switch to next file)
+vimdiff file1 file2 (alternative of vim -d)
+
+If the vim was accidently closed or by ctrl+Z which stops the program, after that it automatically saves a new file called '.filename.swp', and when opening the file again it tells about problem which occured by the accident , and recommends to recover or edit file anyway.and after those actions, we can just remove that '.filename.swp' swap file from that directory.
+
+- - - - - - - - - - Command Mode - - - - - - - - - - -
+When opening VIM, it is by in command mode
+esc - to switch to cmd mode
+
+x (deleting after cursor one char'like delete button')
+r (press r and any xchar , and it will replace the char on which the cursor is , by the xchar)
+gg - go to the beginning of the page
+G - go to the end of the page
+$ (go to the end of the file)
+
+* - while cursor is on the word , which we want to find next
+
+i (switch to insert mode, before cursor)
+a (switch to insert mode, after cursor)
+O (switch to insert mode, from new line, above the current line)
+o (switch to insert mode, from new line, below the current line)
+I (switch to insert mode, from the beggining of the line)
+A (switch to insert mode, from the end of the line)
+u (undo previous actions)
+ctrl + r (to redo to newer actions)
+
+hold v + arrow keys (to select text)
+hold V + arrow keys (to select the entire line)
+y (to copy selected text)
+dd (to cut whole line), 23dd (to delete from current to next 23 lines)
+p (to paste in the new line, after the cursor)
+P (to paste in the new line, before the cursor)
+
+ZZ (save and quit)
+
+- - - - - - - - - - Last Line Mode - - - - - - - - - - -
+
+: -> (to switch to last line mode, where can do all actions about quitting, saving, forcing to quit...)
+
+:q (to quit)
+:q! (force to quit "without saving")
+:w! (save without quitting)
+:wq (save and quit) , the ALTERNATIVE is ZZ cmd in Command Mode
+
+:%s/pattern/replacingtext/g (to replace all the pattern text to replacingtext)
+:/string (to search for string in text), n(next match) and N(previous match)
+:e! (undo to the point, where the file was saved last time)
+
+
+:set nu (display line numbers at the beginning of each line)
+:set nonu (hide line numbers)
+:syntax on (to turn on highlights from syntax of code/text)
+:syntax off (to turn off highlights of syntax, by leaving one color text)
+The set nu/nonu, and syntax on/off options are temporary for just that session.But if we want to make those permanent -> vim ~/.vimrc -> set nu (break line) syntax on.So every time when we will use VIM , at first it will execute the codes of .vimrc
+
+:23 (go to the line 23)
+
+We can open multiple text files simultaneously by "vim file1 file2 file3", but at we will see only the first at the beginning.And when we want to switch to next file -> :n or :next , and to previous file -> :N or :prev 
+
+--------------------------------------------------------------------------
+______________ ______________ ______________ ______________ ______________
