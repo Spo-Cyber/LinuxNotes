@@ -215,7 +215,6 @@ strings /binaryfile (print ASCII chars from binary file)
 _____________
 #Comparing Files
 
-
 cmp file1 file2 (comparing by bytes, and lines)
 sha256sum file1 file2 (comparing files by cryptographic identification, when even 1bit will be different the results will be different)
 
@@ -225,6 +224,6 @@ diff -w (ignore white spaces)
 diff -i (ignore case)
 diff -c (for more detailed comparison, by showing both files'link in github')
 diff -y (display both file content in two columns 'side-by-side')
-
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
+
