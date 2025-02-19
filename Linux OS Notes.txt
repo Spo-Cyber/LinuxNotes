@@ -248,8 +248,27 @@ tar -j ("instead of z, for bzip2 compressing, which compresses faster than gzip"
 tar -t (only displays the contents of the archive file)
 tar --exclude="pattern" (exclude is for excepting some patterns while creating or displaying archive file. e.g. --exclude="*.tar" --exclude="*.txt")
 tar -xzf /archivefile (to extract file content), tar -xf /archivefile -C /destinationdir (to extract in other destination directory)
-tar -czvf archivename-$(date +%F) /dirorfilename (to append date too. e.g. archive-2025-02-15)
+tar -czvf archivename-$(date +%F) /dirORfilename (to append date too. e.g. archive-2025-02-15)
 
 There are also gzip/gunzip , bzip2/bunzip2 for compressing files, BUT they are only for compressing a SINGLE FILE , but tar is also for directories.
+______________ ______________ ______________ ______________ ______________
+--------------------------------------------------------------------------
+#Hard Links, SymLinks and The Inode Structure
+
+Hard Link - An association between a file structure and a file name.It is displayed while doing ls -l (the second section which is after permissions column is the hard links section which points the count of hard links that are associated with that file structure). And stat /filename (where the Links: section shows count of hard links).
+It allows multiple filenames to point to the same data on the disk, meaning that modifying the file through any of its hard links will reflect in all others.
+They share the same Inode number as the original file.Only for files and not directories.
+
+ln original_file hard_link_name (To create a Hard Link).
+- - - - - -
+
+An inode(index node) is a data structure used by the Linux filesystem to store metadata about a file or directory.Every file in a Linux filesystem is assigned a unique inode number, which acts like an identifier for that file.It stores the important metadata such as: File Type, File size , Owner & Group, Permissions, Number of Hard Links, Timestamps , Location of File Data Blocks "Excluded File Name, File Contents".
+
+find /path -inum 123 (to find files or directories by 123 inum "inode number").
+
+- - - - - -
+Symlink/Symbolic Link/Soft Link - A special filetype that points to or contains a reference to another file or directory.
+
+ln -s original_file hard_link_name (To create a Symlink).
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
