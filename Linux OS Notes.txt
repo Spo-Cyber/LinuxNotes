@@ -272,3 +272,65 @@ Symlink/Symbolic Link/Soft Link - A special filetype that points to or contains 
 ln -s original_file hard_link_name (To create a Symlink).
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
+                      #User Account Management
+
+
+- - - - - - - #/etc/passwd and /etc/shadow files - - - - - - -
+- - 
+/etc/passwd
+Each line , is about a system or normal user
+
+mrhacker:x:1000:1000:MrHacker,,,:/home/mrhacker:/usr/bin/bash
+*In 1st octet - (mrhacker) is the user's login name
+*In 2nd octet - (x) means that password of the user is encrypted and saved in /etc/shadow file.if there is just a blank that means that user can login without password.
+*In 3nd octet - (1000) is the user's ID "a positive integer number assigned to the user"
+*In 4th octet - (1000) is the user's group ID "as third octet positive int"
+*In 5th octet - (MrHacker,,,) is a comment.sometimes it is left blank
+*In 6th octet - (/home/mrhacker) is the user's home directory
+*In 7th octet - (/usr/bin/bash) is the default shell, usually set to bash.If instead of the shell, there is written false or nologin, that means that this user is not allowed to log into the system.
+- - - -
+
+/etc/shadow
+It stores the actual passwords of users in encrypted format
+
+mrhacker:$y$j9T$5mwPtICgSiQS8m11UBqjY/$Ua53.mbL6hvOwH1QbbcwgfLGcQIwcNHpR0MadnIcMYC:20114:0:99999:7:::
+*In 1st octet - (mrhacker) is the user name
+*In 2nd octet - ($y$j9T$5mwPtICgSiQS8m11UBqjY/$Ua53.mbL6hvOwH1QbbcwgfLGcQIwcNHpR0MadnIcMYC) is the password.If the password octet contains *(asterisk) or an !(exclamation point), the user won't be able to login to the system using the password authentication.Usually the password format is set to $type$salt$hash.The $y in this case is the cryptographic hash algorithm used and can have the following values: 
+1 -> MD5
+2a -> Blowfish
+3y -> Eksblowfish
+5 -> SHA-256
+6 -> SHA-512
+y -> yescript
+
+*In 3rd-9th octets - it contains last password changed time, password expiration time ...
+
+- - - - - - - - #Linux Groups - - - - - - - -
+
+The main purpose of the groups is to define a set of privileges or permissions like (read,write,execute) for a given file that can be shared among the users within the group.
+There are 2 types of groups
+1.The Primary Group - the group that is assigned to the files that are created by the user.
+The group ID of the primary group is stored in /etc/passwd and the group name in /etc/group.
+2.Secondary Groups - stored in /etc/group
+
+"groups" command displays a list of all groups of the current user.The first group name is primary group , and rest of groups are secondaries.
+groups username - to display a list of all groups of the username user
+id - displays information about user and group etc. 
+
+- - - - - - - - #Creating and Management of Accounts - - - - - - - - 
+all by sudo
+
+useradd - to create a new user
+useradd -m  - to create user's home directory as well, because it doesn't create a one for it.
+useradd -m -d /path - to create user's home directory in specific location.
+useradd -c "comment" - to set a comment/description which will be shown in /etc/passwd  
+useradd -s /shellpath - to set default shell such as /bin/bash
+useradd -g - to assign to a primary group (not common!)
+useradd -G groupname,orgroupnames - to assign to a secondary group (is common)
+useradd -alloptions username - to create user by username
+useradd -e 2002-04-23 username - to set expiring time for that user which will be temporary
+
+passwd username - to set or change the user password
+chage username - to set account expiration date, specifying password changing information ...
+
+adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.
