@@ -274,9 +274,8 @@ ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
                       #User Account Management
 
-
 - - - - - - - #/etc/passwd and /etc/shadow files - - - - - - -
-- - 
+
 /etc/passwd
 Each line , is about a system or normal user
 
@@ -289,7 +288,6 @@ mrhacker:x:1000:1000:MrHacker,,,:/home/mrhacker:/usr/bin/bash
 *In 6th octet - (/home/mrhacker) is the user's home directory
 *In 7th octet - (/usr/bin/bash) is the default shell, usually set to bash.If instead of the shell, there is written false or nologin, that means that this user is not allowed to log into the system.
 - - - -
-
 /etc/shadow
 It stores the actual passwords of users in encrypted format
 
@@ -318,7 +316,10 @@ groups username - to display a list of all groups of the username user
 id - displays information about user and group etc. 
 
 - - - - - - - - #Creating and Management of Accounts - - - - - - - - 
-all by sudo
+
+Everything by sudo command
+- - - - - - - -
+#Creating New User Account
 
 useradd - to create a new user
 useradd -m  - to create user's home directory as well, because it doesn't create a one for it.
@@ -329,8 +330,57 @@ useradd -g - to assign to a primary group (not common!)
 useradd -G groupname,orgroupnames - to assign to a secondary group (is common)
 useradd -alloptions username - to create user by username
 useradd -e 2002-04-23 username - to set expiring time for that user which will be temporary
+(adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.)
+
+- - - - - - - -
+#Password of user
 
 passwd username - to set or change the user password
 chage username - to set account expiration date, specifying password changing information ...
 
-adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.
+- - - - - - - -
+#Modifying User Accounts
+
+Modifying its options we can by the same options of useradd
+sudo usermod -c "change/set a comment" username
+sudo usermod -g newprimarygroupname username
+sudo usermod -G newsecondarygroup,orgroups
+sudo usermod -aG addtopreviousgroups
+sudo usermod etc...
+
+- - - - - - - -
+#Deleting User Accounts
+
+sudo userdel username "to delete the user account without it's related files"
+sudo userdel -r username "to delete it's related files also"
+(deluser - userdel works at the backend and it is more user-friendly like adduser and useradd)
+
+- - - - - - - -
+#To give administrative rights to user
+
+By default a new user has not administrative rights, as it is not in sudo group, so like command by sudo won't work (sudo cat /etc/shadow won't work).
+To add the user into the group - sudo usermod -aG sudo username(from the account which has administrative rights)
+- - - - - - - -
+#Group Management
+
+groupadd groupname - to create a new group
+groupmod -n newgroupname - to rename the group name
+groupdel groupname - to delete the group
+- - - - - - - -
+#User Account Monitoring
+
+RUID(Real User ID) - is the id of the user who initially logs in and never changes.
+EUID(Effective User ID) - is the id of the user who executes a command in the shell.
+
+whoami - prints out the user name of the EUID.
+who - prints who is logged in ("who -a" for whole information)
+w - prints who is logged in, and what they are doing
+id - print real and effective user and group IDs
+id -un (same as whoami , 'username')
+last - display login, logout and reboot information.(last username - for specific user info)
+uptime - tell how long the system is running. the same is displayed in 'w' command
+
+*/var/run/utmp file stores information about currently logged in users*
+*/var/log/wtmp file stores information about users logged in and logged out in the past*
+______________ ______________ ______________ ______________ ______________
+--------------------------------------------------------------------------
