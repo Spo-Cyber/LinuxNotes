@@ -282,7 +282,7 @@ Each line , is about a system or normal user
 mrhacker:x:1000:1000:MrHacker,,,:/home/mrhacker:/usr/bin/bash
 *In 1st octet - (mrhacker) is the user's login name
 *In 2nd octet - (x) means that password of the user is encrypted and saved in /etc/shadow file.if there is just a blank that means that user can login without password.
-*In 3nd octet - (1000) is the user's ID "a positive integer number assigned to the user"
+*In 3rd octet - (1000) is the user's ID "a positive integer number assigned to the user"
 *In 4th octet - (1000) is the user's group ID "as third octet positive int"
 *In 5th octet - (MrHacker,,,) is a comment.sometimes it is left blank
 *In 6th octet - (/home/mrhacker) is the user's home directory
@@ -328,8 +328,9 @@ useradd -c "comment" - to set a comment/description which will be shown in /etc/
 useradd -s /shellpath - to set default shell such as /bin/bash
 useradd -g - to assign to a primary group (not common!)
 useradd -G groupname,orgroupnames - to assign to a secondary group (is common)
-useradd -alloptions username - to create user by username
 useradd -e 2002-04-23 username - to set expiring time for that user which will be temporary
+useradd -alloptions username - to create user by username
+
 (adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.)
 
 - - - - - - - -
