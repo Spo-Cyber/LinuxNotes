@@ -42,7 +42,7 @@ ______________ ______________ ______________ ______________ ______________
 The Filesystem Hierarchy Standard
 
 /bin (contains binaries or user executable files which are available to all users)
-/sbin (contains applications that only the superuser(hence the initial s) will need)
+/sbin (contains applications that only the superuser will need)
 /boot (contains files required for starting your system)
 /home (is where you will find your users' home directories. Under this directory there is another directory for each user, if that particular user has a home directory.root has its home directory separated from the rest of the users' home directories and is /root)
 /dev (contains device files)
@@ -71,6 +71,7 @@ ls /path -dl (only the /path directory and not it's content), ls -l (displays th
 ls -S (sorts the files by size)
 ls --hide=[OPTION] e.g. ls --hide=*.conf (to display all content besides all .conf file)
 ls -a (displays all files and directores includeing hidden ones), ls -1 (listing on a single column)
+ls -R (displays recursively contents in each directory)
 ls -r (displays in reversed order, or --reverse)
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
@@ -134,7 +135,7 @@ cp /filepath /destinationfilepathname (copying the file and pastes to destinatio
 cp -i /path1 /path2 (to not overwrite automatically the file but at first to prompt if I wanna)
 cp /file1 /file2 /file3 /path (to copy that 3 files to the path) 
 cp -r /srcdirectory /dstdirectory (to copy directory to destination recursively)
-cp -p /dir1 /di2 (to save the owner and group permissions while copying, because by default it copys and assigns the details of another user permissions)
+cp -p /dir1 /dir2 (to save the owner and group permissions while copying, because by default it copies and assigns the details of another user permissions)
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
 #Moving and renaming files and directories
@@ -185,7 +186,7 @@ find /path -name/-iname(ignoring case) fname (searches in subdirectories too)
 find /path -name fname -delete (to find and delete the file)
 find /path -name fname -ls (do the ls command after finding)
 find /path -name fname -type d(directory)/f(file) (to specify what type of data)
-find /path -name fname -maxdepth 4 (to dive till 4 subdirectories and no more)
+find /path -name fname -maxdepth/-mindepth 4 (to dive till 4 subdirectories and no more / mindepth...)
 find /path -name fname -perm 755 (find by permissions.here is owner-7(rwx), group-5(rx), others-5(rx))
 find /path -name fname -type f -size 100k/M/G/c (search by size 100k, examples +100M(more than 100M), -2G(less than 2Gigabyte))
 find /path -name fname -atime/mtime/ctime 0(means 1day ago), 1(2days ago)... (to find by timestamp)
@@ -215,9 +216,10 @@ grep -a (to find text from BINARY FILE and not regular text file)
 grep -R /directory(to find the pattern recursively in files of directory)
 grep -s (no to show errors about non-existing or unreadable files)
 grep -c (count of patterns in file, and when doing in directory via -R it shows count of patterns for each file)
-grep -A 2 -B 4 (prints 2lines before match, and 4 lines after match)
+grep -A 2 -B 4 (prints 2lines after match, and 4 lines before match)
 grep -C 3 (prints 3lines before and 3lines after the match)
 grep -w (search for whole words)
+grep -E (extended regular expression)
 
 sort (to sort by name 'alphabetical order')
 sort -r (to reverse by alphabetical order)
@@ -283,7 +285,7 @@ mrhacker:x:1000:1000:MrHacker,,,:/home/mrhacker:/usr/bin/bash
 *In 1st octet - (mrhacker) is the user's login name
 *In 2nd octet - (x) means that password of the user is encrypted and saved in /etc/shadow file.if there is just a blank that means that user can login without password.
 *In 3rd octet - (1000) is the user's ID "a positive integer number assigned to the user"
-*In 4th octet - (1000) is the user's group ID "as third octet positive int"
+*In 4th octet - (1000) is the user's primary group ID "as third octet positive int"
 *In 5th octet - (MrHacker,,,) is a comment.sometimes it is left blank
 *In 6th octet - (/home/mrhacker) is the user's home directory
 *In 7th octet - (/usr/bin/bash) is the default shell, usually set to bash.If instead of the shell, there is written false or nologin, that means that this user is not allowed to log into the system.
@@ -327,7 +329,7 @@ useradd -m -d /path - to create user's home directory in specific location.
 useradd -c "comment" - to set a comment/description which will be shown in /etc/passwd  
 useradd -s /shellpath - to set default shell such as /bin/bash
 useradd -g - to assign to a primary group (not common!)
-useradd -G groupname,orgroupnames - to assign to a secondary group (is common)
+useradd -G groupname,groupnamesoptional... - to assign to a secondary group (is common)
 useradd -e 2002-04-23 username - to set expiring time for that user which will be temporary
 useradd -alloptions username - to create user by username
 
@@ -385,3 +387,43 @@ uptime - tell how long the system is running. the same is displayed in 'w' comma
 */var/log/wtmp file stores information about users logged in and logged out in the past*
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
+#File Permissions
+
+r-read(4)
+w-write(2)
+x-execute(1)
+'-' -no permissions(0)
+
+File permissions display when doing ls -l command, at the beginning of the line it is shown Example` drw-r-xrw- (or in stat command). The first letter d/- (directory or file), The 234th chars are permissions for owner(r,w,- so here read write but not execute), The 567th chars are permissions for group (r,-,x so here read , execute but now write), And the 8,9,10th chars are for other users like public.
+- - -
+Only root or file's owner can change the file's permissions
+
+chmod [WHO][OPERATION][PERMISSIONS] filename - change file permissions
+chmod -v ... (for verbose text after executing the command)
+chmod --reference="TheFileFromWhichShouldInherit" /InheritingFile (to inherit permissions from file in reference statement to InheritingFile)
+
+WHO -> u(user)/g(group)/o(others)/a(all users)
+OPERATION -> -(remove specified permissions)/+(add specified permissions)/=(change the current permissions to specified permissions)
+PERMISSIONS - r/w/x
+
+Examples:
+chmod u+x test.txt (add execute permission for the owner of the file)
+chmod og+rw test.txt (add read and write permissions for the owner and group of the file)
+chmod u-x,g+w,o-rwx test.txt (all permission sets in one statement)
+chmod a+rw,a-x test.txt (add read and write permissions and remove the execute permission for all users on this file)
+chmod ug=rw,o= test.txt (owner and group have read and write permissions but other users have nothing)
+- - -
+#Absolute Changing Mode
+
+Octal(Numeric) Notation of file permissions
+Examples:
+rw-rw-r-- = (4+2+0)(4+2+0)(4+0+0) = 664
+r-xrw---x = (4+0+1)(4+2+0)(0+0+1) = 561
+--x-w-r-- = (0+0+1)(0+2+0)(4+0+0) = 124
+
+chmod 446 test.txt => r--r--rw-
+chmod 777 test.txt => rwxrwxrwx
+chmod 400 test.txt => 4--------
+- - - - - - - - - - - - - - - - - - - -
+#Directory Permissions
+
