@@ -427,3 +427,28 @@ chmod 400 test.txt => 4--------
 - - - - - - - - - - - - - - - - - - - -
 #Directory Permissions
 
+--Read--
+Only the read permission on a directory, means that the directory's contents can be shown by running "ls" and it doesn't give an access to the contents of the directory.And because of that , we can't remove any file within that directory.While running the "ls" command beside of showing contents of directory, it also shows "cannot access" error, because the "ls" command tries to access the contents to see the type, permissions, owner... .
+Run \ls , to read only the contents of directory and not its metadata, so won't be any error related with accessing any file in directory
+
+--Write--
+IF EXECUTE PERMISSION is not set , the write permission DOES NOTHING.But if there is set the execute permission, the write permission does 'creating new files/subdirectories, rename or delete existing files/subdirectories'
+
+--Execute--
+Execute permission means access to that directory's contacts.We can move into the directory('cd' command), and freely execute commands which are in write permissions functioning.
+
+The directory's permissions are more important that it's files'. 
+- - - - - - - - - - - - - - - - - - - -
+#Changing File Ownership(chown, chgrp)
+
+!Only root can change the file's owner.
+
+chown [ownername/UID] [file/directory] [filesoptional...]
+chown +1257(UID) filename - the "+" sign is better, because if there was a user by 1257 username, the file's owner would be set my that user whose name is 1257.but the "+" sign sets by UID only.
+
+chown username:groupname (or UID/GROUPID) filename - set owner and group at the same time
+
+chgrp [groupname/GID] filename - to set group to file
+chown :groupname filename - to set only group as well
+
+chown -R - to set owner group permissions recursively within directory
