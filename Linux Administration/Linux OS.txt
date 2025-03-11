@@ -452,3 +452,78 @@ chgrp [groupname/GID] filename - to set group to file
 chown :groupname filename - to set only group as well
 
 chown -R - to set owner group permissions recursively within directory
+- - - - - - - - - - - - - - - - - - - - -
+#Special Permissions
+
+Besides r,w and x for the owner, group and others there are 3 extra special permissions for each file or directory: SUID(Set User ID), SGID(Set Group ID) and Sticky Bit.
+These special permissions are for a file or directory overall, not just for a user category.
+
+----SUID(Set User ID)--
+
+When an executable file with SUID is executed then the resulting process will have the permissions of the owner of the command, not the permissions of the user who executes the command.
+
+Example.
+	-rwxr-xr-x. 1 root root 48144 Oct 23 19:36 /usr/bin/cat (here as there is not SUID "like -rwx and not -rws") the "cat" command who will use the process will be executed by permissions of executor.
+	BUT HERE
+	-rwsr-xr-x. 1 root root 114072 Feb 25 02:09 /usr/bin/passwd (because of there is set SUID("-rws"), this means that the "passwd" command whoever will execute, it will have permissions of it's owner(root) no matter who executes it).
+
+chmod 4755 filename (4 means SUID).Here it will display -rwsr-xr-x.But if we set 4655(so x permission will be removed), it will be displayed with capital S (-rwSr-xr-x).
+
+Setting SGID:
+	Absolute Mode: chmod 4XXX file
+	Relative Mode: chmod u+s file
+
+To find files with SUID special permission
+find /path -perm -4000 -ls (find files/directories with at least this permissions)
+
+----SGID(Set Group ID)--
+
+SGID is set mainly to directories.
+If SGID is set on directories, all files or directories created inside that directory will be owned by the same group owner of the directory where SGID was configured.
+It ensures that ll new files and subdirectories created inside , inherit the group ownership of the parent directory. 
+This is useful in creating shared directories, which are directories that are writable at the group level.
+
+Setting SGID:
+	Absolute Mode: chmod 2XXX directory.
+	Relative Mode: chmod g+s directory.
+
+Example.
+	drwxrws--- 2 mrhacker programmers 4096 Jul 14 10:38 /programming/
+	where "s" in group permissions means special group permission, where the directory will be opened or modified only by "programmers" group.
+
+----Sticky Bit--
+
+The Sticky Bit is mainly applied to directories.
+The sticky bit allows to create a directory that everyone can use as a shared file storage.The files are protected because, no one can delete anyone else's files, because will receive "Operation not permitted error"
+
+Setting Sticky Bit:
+	Absolute Mode: chmod 1XXX directory.
+	Relative Mode: chmod o+t directory.
+
+Example.
+drwxrws--t 2 mrhacker programmers 4096 Jul 14 10:38 /programming/
+"t" means sticky bit which is only for "others" permissions
+"T" when execute permission for "others" is absent
+- - - - - - - - - - - - - - - - - - - - -
+#Umask
+
+When creating a new file or directory, the system  sets on them the default permissions <<0666 for files, 0777 for directories>>.But their default permissions are set by umask which subtracts from that values the mask and sets as default permissions of file or directory.For Example while running "umask" command it displays 0002, so "for files it will be 0666-0002=0664" and "for directories it will be 0777-0002=0775" as default permission values.
+
+So to change the default values of permissions we need to change umask => for example to set 0442 for files by default when creating them we need to calculate as "0666 - umask = 0442 => umask=224" => SO THE COMMAND IS "umask 224" for setting that value
+
+But this is temporary , only for current terminal session.To set it permanent we need to write umask command in e.g. .bashrc file if using bash terminal.
+- - - - - - - - - - - - - - - - - - - - -
+#File Attributes
+
+The attributes define the properties of the files.
+Attributes are "set" or "cleared".
+
+lsattr /path - to list attributes within directory.- means cleared and a character means set any format.
+For example --------------e------- ./Test (only e is set , which means extent format , and it indicates that the file is using extents for mapping the blocks on disk.Extents are a way the filesystem manages disk space more efficiently than traditional blcok-based block-based allocation)
+lsattr -R /path - recursively show attributes within directory
+
+sudo chattr +/-char - to set or remove attributes MOSTLY by sudo
+sudo chattr +a - to only append or add to the file, and can't remove something from it.
+sudo chattr +A - to not change the access time of file when it accesses, to avoid lot of input/output in system.
+sudo chattr +i - to freeze the file, as file can't be modified even by sudo (deleted, renamed, no link created to it, most of metadata can't be modified).so to delete the file, we need to "chattr -i" and then can delete it.
+sudo chattr -R +attr - recursively to set attributes into directory
