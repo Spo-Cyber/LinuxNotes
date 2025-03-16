@@ -1,0 +1,107 @@
+			Process Management
+			
+- - - - - - - - - - -
+#Processes and The Linux Security Model
+
+A running instance of a program is called a "Process" and it runs in its own memory space.Each time you execute a command, a new process starts.
+
+A process is an *active entity as opposed to a program, which considered to be a **passive entity.
+*Active means that the binary code is running in the RAM at the moment.
+**Passive means that a program is just a file on the disk.
+A single program or command can create many processes when run multiple times.But not all commands create a process.
+
+Commands are in 2 types.
+1.Executable files on the disk
+2.Shell built-in
+
+To check type of command , use "type cmd".Example: "type cd -> cd is a shell builtin", "type cp -> cp is /usr/bin/cp".
+!A process is created ONLY by running executable file command and not shell builtin command.
+
+Process properties:
+	-PID(Process ID) - a unique positive integer number
+	-User
+	-Group
+	-Priority/Nice
+If an executable file that represents the command does not have the SUID bit set, then the process has the permission of the user who executes it.
+
+- - - 
+Type of Processes:
+	-1.Parent
+	-2.Child
+	-3.Daemon
+	-4.Zombie(defunct)
+	-5.Orphan
+
+1,2)In Linux, all the processes in the operating system are created when another process executes the fork() system call.There is an exception, which is the first process, that starts when the system is booting and that's init or systemd and has the PID-1.The process that used the fork() system call is the parent process, and the created process is it's child.A child process has only one parent process, and a parent process can have multiple child processes.When you call a command such as (ls,cp...) there is being created a child process, and it's parent process is bash.
+
+3)Daemons are the processes which run in the background and are not interactive.they have no controlling terminal.In Linux the names of daemons end with "d".Commonly, when someone says the word daemon , you think of a server application that provides a service.Some well-known daemons are sshd(OpenSSH server daemon), httpd(Apache web server daemon), named (DNS server daemon) or mysqld (database server daemon).
+
+4)The operating system maintains a table that associates every process to the data necessary for its functioning.When a process terminates its execution, the operating system releases most of the resources and information related to that process.
+A terminated process whose data has not been collected is called "Zombie or Defunct Process".Normally, zombie processes are removed quickly from the memory and don't use any of the system resources.In other words "A zombie process is a process that has completed execution but still exists in the process table because its parent has not read its exit status.1)A child process finishes execution and exits(exit()),2)The parent process must read the child's exit status using wait() or waitpid(),3)If the parent fails to collect the exit status, the child remains in the zombie state.The process table keeps entries for terminated child processes until the parent acknowledges them.If too many zombie processes exist, they waste system resources."
+
+5)Orphan Processes are the opposite situation to zombie processes.Orphan Process is a process whose parent has terminated before the child process finishes execution.Example: When we run a command which will process in long time of period (ls / -R) , and immediately we close the terminal, the "ls" process will continue execution.
+
+- - -
+#Thread
+
+Multiple threads can exist within the same process and they share resources such as memory, while different processes do not share these resources.Examples of threads in the processes are: automatic spell check, automatic saving of the file while writing and maybe auto-completion.Threads are basically subprocesses that run in the same memory context of a single process and make the application responsive.Threads may share the same data while executing.
+- - -
+#Task
+
+The term Task is more used on Windows.On Linux, there are commands like top, which sometimes call processes as tasks.So tasks and processes are synonyms.
+- - - - - - - - -
+#Listing Processes
+
+There are few commands that with them we can get information about processes.
+"ps,pgrep,pstree and top" being the most commonly used ones.
+
+- - - - -
+ps(process status) - It displays 4 columns called ("PID, TTY, TIME, CMD").
+PID - is Process ID
+TTY - represents the name of the controlling terminal for the process.
+TIME - represents the cumulative CPU time(the time the process has spent executing on the CPU) shown in minutes and seconds,but not the time spent waiting.
+CMD - is the name of the command that was used to start the process.
+
+
+ps -e (to list all processes)
+ps -f (to do a full-listing format and display detailed information about the processes that are running.)
+ps -ef (very common command , to display all processes with detailed information).There are 8 columns:
+1.UID - User ID who runs the process.
+2.PID - Process ID
+3.PPPID - Parent Process ID
+4.C - 
+5.STIME - Starting time, which is the time when the process was started.
+6.TTY - if "?" sign is set, it means that the process has not terminal on which to be attached(it is probably a system service or a daemon).
+
+
+"ps aux"/"ps -aux" -  displays with 11 columns:
+1. USER
+2. PID 
+3. %CPU - CPU utilization of the process expressed as a percentage
+4. %MEM - How much memory the process is using in percentage
+5. VSZ - Virtual Memory Size in Kilobytes.It includes the memory that the process can access, including the memory that is swapped out,the memory that is allocated but not used and the memory that is from shared libraries.
+6. RSS - Size of the physical memory that the process is using
+7. TTY 
+8. STAT - Indicates the process state using a code.Possible values displayed are S(for sleeping), R(for running), Z(for zombie), T(for stopped), I(for idle kernel thread).<(means high priority) and N(means low priority)
+9. START
+10. TIME
+11. COMMAND
+
+ps aux --sort=%mem - to sort by memory in ascending order.
+ps aux --sort=-%cpu - to sort by CPU  in descending order.
+ps -u username - to see processes of a specific user
+
+When executing commands using the pipe"|" , 2 processes being created: ps and grep.
+Example` ps -ef | grep abc123 -> (mrhacker   11357  0.0  0.0   7052  1996 pts/0    S+   23:36   0:00 grep abc123)
+So grep was selected from process list.So when you search for a process this way, if the process is running, you'll get, in fact, at least two lines: One of them being the grep command which selects itself.
+
+- - -
+Alternative to process listing with grep is "pgrep" command.
+
+pgrep "greppingtext" - pgrep idle (displays the PID of each process which contains the "idle" text in it's process name)
+pgrep -l greppingtext - displays the process name as well.
+pgrep -u username - to search for the process owned by a specific user.
+pgrep -u root sshd - to search for PID which was executed by root user.
+- - - - -
+pstree - displays hierarchical tree of all running processes
+pstree -c - prevents identical processes from being grouped together.Instead it displays each process separately in the tree view.

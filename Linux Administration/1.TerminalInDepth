@@ -1,0 +1,33 @@
+THE LINUX TERMINAL IN DEPTH
+				
+man -k 'keyword' = find keyword in all manual pages (alternative -> apropos 'keyword')
+type 'x' = checking if a command is shell built-in or executable file
+!abc = running the last command starting with 'abc'
+!abc:p = printing the last command starting with 'abc'
+!n('n'th code from history), !-n(the 'n'th code from the END of the history) ALTERNATIVE ctrl+r -> text, !! (rerunning the last code)
+route -n (for printing the gateway ip address)
+______________ ______________ ______________ ______________ ______________
+--------------------------------------------------------------------------
+#HISTORY OPTIONS
+
+history -c = to delete shell's history (for current session). ---> '> .bash_history' (for cleaning the entire bash's history)
+history -d n = delete from bash_history the 'n'-th line(command) (!!not working on zsh but only on bash)
+'whitespace somecommand' = to not save command in history
+echo $HISTCONTROL (to look the HISTCONTROL variable)
+HISTCONTROL=ignoredups  (for ignoring repeating commands)
+HISTCONTROL=ignorespace (for ignoring the space at the beginning of command, because if the ignorespace is not there , the command won't be saved while starting with whitespace at the beginning of the command)
+HISTTIMEFORMAT="%d/%m/%y %T" (to show the time format in bash history 'day/month/year hour/minute/seconds')
+If we want to make permanent changes for bash, then we need to type e.g. 'echo HISTTIMEFORMAT="%T" >> .bashrc' (to add the line to bashrc which will start the shell with it's configurations)
+______________ ______________ ______________ ______________ ______________
+--------------------------------------------------------------------------
+#ROOT ACCESS
+
+sudo su = switch to root user
+id = to show the logged in user
+sudo -v (to cache root credentials, to not require root password in each root required commands)
+sudo -k (to invalidate root credentials, to ask the next time for root required commands)
+sudo passwd 'username' (to create or change the password of username)
+exit (to exit from root mode or ctrl+d)
+lshw (to list all the hardware on device)
+______________ ______________ ______________ ______________ ______________
+--------------------------------------------------------------------------
