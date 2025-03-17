@@ -36,8 +36,7 @@ Type of Processes:
 
 3)Daemons are the processes which run in the background and are not interactive.they have no controlling terminal.In Linux the names of daemons end with "d".Commonly, when someone says the word daemon , you think of a server application that provides a service.Some well-known daemons are sshd(OpenSSH server daemon), httpd(Apache web server daemon), named (DNS server daemon) or mysqld (database server daemon).
 
-4)The operating system maintains a table that associates every process to the data necessary for its functioning.When a process terminates its execution, the operating system releases most of the resources and information related to that process.
-A terminated process whose data has not been collected is called "Zombie or Defunct Process".Normally, zombie processes are removed quickly from the memory and don't use any of the system resources.In other words "A zombie process is a process that has completed execution but still exists in the process table because its parent has not read its exit status.1)A child process finishes execution and exits(exit()),2)The parent process must read the child's exit status using wait() or waitpid(),3)If the parent fails to collect the exit status, the child remains in the zombie state.The process table keeps entries for terminated child processes until the parent acknowledges them.If too many zombie processes exist, they waste system resources."
+4)A zombie process is a process that has completed execution but still exists in the process table because its parent has not read its exit() status.1)A child process finishes execution and exits(exit()),2)The parent process must read the child's exit status using wait() or waitpid(),3)If the parent fails to collect the exit status, the child remains in the zombie state.The process table keeps entries for terminated child processes until the parent acknowledges them.If too many zombie processes exist, they waste system resources.
 
 5)Orphan Processes are the opposite situation to zombie processes.Orphan Process is a process whose parent has terminated before the child process finishes execution.Example: When we run a command which will process in long time of period (ls / -R) , and immediately we close the terminal, the "ls" process will continue execution.
 
@@ -52,7 +51,7 @@ The term Task is more used on Windows.On Linux, there are commands like top, whi
 - - - - - - - - -
 #Listing Processes
 
-There are few commands that with them we can get information about processes.
+There are few commands, that using,them we can get information about processes.
 "ps,pgrep,pstree and top" being the most commonly used ones.
 
 - - - - -
@@ -62,26 +61,25 @@ TTY - represents the name of the controlling terminal for the process.
 TIME - represents the cumulative CPU time(the time the process has spent executing on the CPU) shown in minutes and seconds,but not the time spent waiting.
 CMD - is the name of the command that was used to start the process.
 
-
+= = = =
 ps -e (to list all processes)
 ps -f (to do a full-listing format and display detailed information about the processes that are running.)
 ps -ef (very common command , to display all processes with detailed information).There are 8 columns:
 1.UID - User ID who runs the process.
 2.PID - Process ID
 3.PPPID - Parent Process ID
-4.C - 
-5.STIME - Starting time, which is the time when the process was started.
-6.TTY - if "?" sign is set, it means that the process has not terminal on which to be attached(it is probably a system service or a daemon).
-
-
+4.C - time the CPU was used by process.it is not second... it is just for comparing with other processes.
+5.STIME - Starting TIME, which is the time when the process was started.
+6.TTY - Refers to terminal session.if "?" sign is set, it means that the process has not terminal on which to be attached(it is probably a system service or a daemon).
+= = = =
 "ps aux"/"ps -aux" -  displays with 11 columns:
 1. USER
 2. PID 
 3. %CPU - CPU utilization of the process expressed as a percentage
 4. %MEM - How much memory the process is using in percentage
-5. VSZ - Virtual Memory Size in Kilobytes.It includes the memory that the process can access, including the memory that is swapped out,the memory that is allocated but not used and the memory that is from shared libraries.
-6. RSS - Size of the physical memory that the process is using
-7. TTY 
+5. VSZ(Virtual Set Size) - Virtual Memory Size in Kilobytes.It includes the memory that the process can access, including the memory that is swapped out,the memory that is allocated but not used and the memory that is from shared libraries.
+6. RSS(Resident Set Size) - Size of the physical memory that the process is using
+7. TTY(TeleTypeWriter)
 8. STAT - Indicates the process state using a code.Possible values displayed are S(for sleeping), R(for running), Z(for zombie), T(for stopped), I(for idle kernel thread).<(means high priority) and N(means low priority)
 9. START
 10. TIME
@@ -90,8 +88,9 @@ ps -ef (very common command , to display all processes with detailed information
 ps aux --sort=%mem - to sort by memory in ascending order.
 ps aux --sort=-%cpu - to sort by CPU  in descending order.
 ps -u username - to see processes of a specific user
+= = = =
 
-When executing commands using the pipe"|" , 2 processes being created: ps and grep.
+When executing commands using the pipe(|) , 2 processes being created: ps and grep.
 Example` ps -ef | grep abc123 -> (mrhacker   11357  0.0  0.0   7052  1996 pts/0    S+   23:36   0:00 grep abc123)
 So grep was selected from process list.So when you search for a process this way, if the process is running, you'll get, in fact, at least two lines: One of them being the grep command which selects itself.
 
@@ -102,6 +101,44 @@ pgrep "greppingtext" - pgrep idle (displays the PID of each process which contai
 pgrep -l greppingtext - displays the process name as well.
 pgrep -u username - to search for the process owned by a specific user.
 pgrep -u root sshd - to search for PID which was executed by root user.
-- - - - -
+
+- - -
+
 pstree - displays hierarchical tree of all running processes
 pstree -c - prevents identical processes from being grouped together.Instead it displays each process separately in the tree view.
+
+===================INFO=================
+*If you have a CPU with 4 cores then no more than 4 processes can run simultaneously.so the R state in "ps aux STAT section" can be 4 only at one moment if the CPU has 4 cores.
+In reality,it is running only one process per core at a time, but quickly switching between all of its ongoing tasks or processes.
+The Linux Kernel will execute some instructions from Process A and then will set the process A aside and executes instructions from Process B.
+The concept of switching between queued processes is called process scheduling.
+=======================================
+
+- - - - - - - - - - -
+#Getting a dynamic real-time view of the running system(top,htop)
+
+top - the default display contains two areas of information.The summary area at the top and the task/process area at the bottom.It updates the information in every 3 seconds.
+
+In "top" press and can switch keys:
+1 - to display information about all CPU cores
+t - to display CPU in graphic format
+d - to enter a new delay value for auto updating information
+space - to update information manually
+e - to change size units (kb,mb,g,t,p)
+b - to make bold highlighting
+x - to highlight a column, "< or > signs to go to the left or right column.
+y - to highlight the Running Process row
+R - to sort by ascending and descending order
+P - to sort by CPU
+M - to sort by memory
+u - to select specific user by name/ID by being prompted
+f - to modify which columns need to be shown or not.move with up/down arrow keys and select/deselect by space key.to change column order press right arrow key and by up/down arrow keys drag.
+W - to save the configuration
+
+- - -
+top execution in terminal
+-d 2 - to set delay to 2 seconds to update information
+-n 5 - to set count of updates to 5
+-b > /filename - to write output into /filename
+- - -
+*htop - another nicer process monitoring cmd
