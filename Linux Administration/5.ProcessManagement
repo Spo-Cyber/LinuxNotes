@@ -1,6 +1,7 @@
 			Process Management
 			
-- - - - - - - - - - -
+_____________________________________________________________________________
+-----------------------------------------------------------------------------
 #Processes and The Linux Security Model
 
 A running instance of a program is called a "Process" and it runs in its own memory space.Each time you execute a command, a new process starts.
@@ -48,7 +49,8 @@ Multiple threads can exist within the same process and they share resources such
 #Task
 
 The term Task is more used on Windows.On Linux, there are commands like top, which sometimes call processes as tasks.So tasks and processes are synonyms.
-- - - - - - - - -
+_____________________________________________________________________________
+-----------------------------------------------------------------------------
 #Listing Processes
 
 There are few commands, that using,them we can get information about processes.
@@ -67,7 +69,7 @@ ps -f (to do a full-listing format and display detailed information about the pr
 ps -ef (very common command , to display all processes with detailed information).There are 8 columns:
 1.UID - User ID who runs the process.
 2.PID - Process ID
-3.PPPID - Parent Process ID
+3.PPID - Parent Process ID
 4.C - time the CPU was used by process.it is not second... it is just for comparing with other processes.
 5.STIME - Starting TIME, which is the time when the process was started.
 6.TTY - Refers to terminal session.if "?" sign is set, it means that the process has not terminal on which to be attached(it is probably a system service or a daemon).
@@ -113,16 +115,18 @@ In reality,it is running only one process per core at a time, but quickly switch
 The Linux Kernel will execute some instructions from Process A and then will set the process A aside and executes instructions from Process B.
 The concept of switching between queued processes is called process scheduling.
 =======================================
-
-- - - - - - - - - - -
+_____________________________________________________________________________
+-----------------------------------------------------------------------------
 #Getting a dynamic real-time view of the running system(top,htop)
 
-top - the default display contains two areas of information.The summary area at the top and the task/process area at the bottom.It updates the information in every 3 seconds.
+top - the default display contains two areas of information.The summary area at the top and the task/process area at the bottom.By default it updates the information in every 3 seconds.
 
 In "top" press and can switch keys:
 1 - to display information about all CPU cores
 t - to display CPU in graphic format
+m - to display memory in graphic format
 d - to enter a new delay value for auto updating information
+c - to switch view of command column to full path of command or name
 space - to update information manually
 e - to change size units (kb,mb,g,t,p)
 b - to make bold highlighting
@@ -132,7 +136,7 @@ R - to sort by ascending and descending order
 P - to sort by CPU
 M - to sort by memory
 u - to select specific user by name/ID by being prompted
-f - to modify which columns need to be shown or not.move with up/down arrow keys and select/deselect by space key.to change column order press right arrow key and by up/down arrow keys drag.
+f - to modify which columns need to be shown or hidden.move with up/down arrow keys and select/deselect by space key.to change column order press right arrow key and by up/down arrow keys drag.
 W - to save the configuration
 
 - - -
@@ -142,3 +146,73 @@ top execution in terminal
 -b > /filename - to write output into /filename
 - - -
 *htop - another nicer process monitoring cmd
+_____________________________________________________________________________
+-----------------------------------------------------------------------------
+#Signals and Killing Processes(kill,pkill,killall,pidof)
+
+*A signal is an asynchronous notification sent to a process that determines, how the process should behave when the signal is delivered.
+
+kill - sends a signal to a process or a group of processes, causing them to act according to the signal.When the signal is not specified, it's default value is 15)SIGTERM
+kill -l - to get a list of all available signals.Each signal is identified by number and a name.
+
+Example:
+	If a process gets the SIGTERM signal, then that's an invitation for the process to enter into the terminated state."Invitation" means that the process can decide to ignore some of the signals.
+1)SIGHUP/HUP - reloads the process.
+2)SIGINT/INT - means INTerrupt the process.
+9)SIGKILL - forces to kill the process.HARD KILL.
+15)SIGTERM - terminates the process.SOFT KILL.
+
+1.The first way to deliver the signal to a process is to use the number that identifies the signal and Process Name,e.g. 2 (for 2)SIGINT signal).So "kill -2 PID".
+
+=========================
+pidof ProcessName - To quickly find the PID of a process.For example "pid firefox-esr",and it displays all the PIDs related with "firefox-esr".
+=========================
+
+2.The second way to deliver the signal to a process is to use the "number of signal"/"name of signal in CAPS" and the PID(s).Example "kill -INT 1723 2821 2892".
+
+3.The third/last way to deliver the signal to a process is to use SIG prefix and the signal name in bash scripting component "$()".Example "kill -SIGINT $(pidof gnome-text-editor)"
+
+===========
+Non-privileged users can send signals only to their own process, while the root user can send signals to other user's processes.
+===========
+
+Example:
+SIGHUP: to reload the ssh server` sudo systemctl status ssh , if it's running, we can know the PID of SSH server by "cat /var/run/sshd.pid" and to monitor the changes of the server run "tail -f /var/log/auth.log" and run "sudo kill -SIGHUP $(pidof sshd) OR kill -1 PID of ssh OR kill -1 $(cat /var/run/sshd.pid)" and we can notice that the server closes and opens again.
+
+15)SIGTERM: When sending the TERM signal to a process, a few different things can happen.1)The process may stop immediately.2)The process may stop after a short delay, after cleaning up resources.3)The process may keep running indefinitely(so simply ignores the signal).
+The process can determine what it wants to do once the TERM signal is received.While most applications will clean up their resources and stop, some may not.That's why the TERM signal is also called a "soft kill".
+
+9)SIGKILL: For some processes that ignore the TERM signal, it may be necessary to then the kill signal, which is number 9 instead (SIGKILL) this is also known a "hard kill".If you want to stop an application that simply ignores the TERM signal, then you could try to send the KILL signal to it.
+
+*killall - to kill all the processes with a particular name.Maybe an application is running several times and you want to kill all instances of that application.For Example: if we run "sleep 123&" and "sleep 311&" it is running a sleep command in the background.when we run "pgrep -l sleep" we find that there are 2 processes.To simply kill those 2 at the same time (not manually, each with "kill command") , we run "killall -15 sleep" OR "killall -TERM sleep" and the processes were terminated.It is not allowing partial names.For partial names use "pkill".
+
+*pkill - Works by the same way of "killall", but allows partial names.Example. "pkill slee" , it will find and terminate "sleep" processes.
+_____________________________________________________________________________
+-----------------------------------------------------------------------------
+#Foreground and Background Processes
+
+Foreground processes are started by the user and not by the system services, and while they are running the user cannot start another process from the same terminal.By default every process that you start runs in the foreground.It gets its input from the keyboard and sends its output to the screen(to the terminal).For example run "sleep 10" the terminal waits 10 seconds in the foreground and you can't execute another process at that time in that terminal.After 10 seconds the process will be finished and you can try another process.
+
+Background processes are non-interactive and are started or executed by system services or by the users.While they are running you can start other processes within the same terminal.To start the background process you add an "&"(ampersand) at the end of the command.For example run "sleep 10 &", and now it will run in the background and we can do anything in terminal by not interacting with it, while it is running.
+It is common to redirect the output and error of a command running it in background "ifconfig > output.txt 2>errors.txt &".
+If you don't want to receive the output or errors of command you can redirect them to >/dev/null.
+- - - -
+#Job Control(jobs,fg,bg)
+
+When starting a process in the background, you will see two numbers printed in the terminal.Each background process is identified by a JobID besides it's PID."[1] 15712" -> in this case, 1 is the Job ID and 15712 is the PID.If you hit enter key and the process has already finished successfully, you will get the same Job ID and the word "Done".The Job ID is local to the current shell.But the PID is maintained by the system kernel and has a global scope.
+
+jobs - to list Job ID and state of background processes.
+jobs -l - to display PID as well.
+
+fg %JobID - to bring a background process to the foreground.
+
+ctrl + z - To suspend/stop a foreground running process.And to resume it in the background/foreground use "bg %JobID"/"fg %JobID".
+
+If to run a process in the foreground and close the terminal, the process will be finished immediately.
+
+But when we will close the terminal, while running a background process, the process may/may not still it will be running depending on command.When you close a terminal , logout or disconnect, the HUP(hang up) signal is sent to the process, and the process will get killed.
+This becomes problematic because if you run a command over ssh and your connection drops or you log out, the session is terminated and all the processes executed from the terminal will receive the hangup signal and stop.
+
+nohup command & - (NO Hangup)to prevent a process from being terminated when the terminal is closed.It also redirects the command output to a file called "nohup.out".Other alternative variants like nohup are "tmux" and "screen".
+
+________________________________________________________________________________________
