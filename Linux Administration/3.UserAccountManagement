@@ -96,9 +96,6 @@ groupdel groupname - to delete the group
 - - - - - - - -
 #User Account Monitoring
 
-RUID(Real User ID) - is the id of the user who initially logs in and never changes.
-EUID(Effective User ID) - is the id of the user who executes a command in the shell.
-
 whoami - prints out the user name of the EUID.
 who - prints who is logged in ("who -a" for whole information)
 w - prints who is logged in, and what they are doing

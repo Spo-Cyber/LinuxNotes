@@ -4,7 +4,9 @@ man -k 'keyword' = find keyword in all manual pages (alternative -> apropos 'key
 type 'x' = checking if a command is shell built-in or executable file
 !abc = running the last command starting with 'abc'
 !abc:p = printing the last command starting with 'abc'
-!n('n'th code from history), !-n(the 'n'th code from the END of the history) ALTERNATIVE ctrl+r -> text, !! (rerunning the last code)
+!n('n'th code from history), !-n(the 'n'th code of the history)
+ctrl+r + text = dynamically search from shell history
+!! (rerun the last code)
 route -n (for printing the gateway ip address)
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------

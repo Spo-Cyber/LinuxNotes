@@ -35,7 +35,7 @@ Type of Processes:
 
 1,2)In Linux, all the processes in the operating system are created when another process executes the fork() system call.There is an exception, which is the first process, that starts when the system is booting and that's init or systemd and has the PID-1.The process that used the fork() system call is the parent process, and the created process is it's child.A child process has only one parent process, and a parent process can have multiple child processes.When you call a command such as (ls,cp...) there is being created a child process, and it's parent process is bash.
 
-3)Daemons are the processes which run in the background and are not interactive.they have no controlling terminal.In Linux the names of daemons end with "d".Commonly, when someone says the word daemon , you think of a server application that provides a service.Some well-known daemons are sshd(OpenSSH server daemon), httpd(Apache web server daemon), named (DNS server daemon) or mysqld (database server daemon).
+3)Daemons are the processes which run in the background and are not interactive.They have no controlling terminal.In Linux the names of daemons end with "d".Commonly, when someone says the word daemon , you think of a server application that provides a service.Some well-known daemons are sshd(OpenSSH server daemon), httpd(Apache web server daemon), named (DNS server daemon) or mysqld (database server daemon).
 
 4)A zombie process is a process that has completed execution but still exists in the process table because its parent has not read its exit() status.1)A child process finishes execution and exits(exit()),2)The parent process must read the child's exit status using wait() or waitpid(),3)If the parent fails to collect the exit status, the child remains in the zombie state.The process table keeps entries for terminated child processes until the parent acknowledges them.If too many zombie processes exist, they waste system resources.
 
@@ -53,17 +53,16 @@ _____________________________________________________________________________
 -----------------------------------------------------------------------------
 #Listing Processes
 
-There are few commands, that using,them we can get information about processes.
+There are a few commands, that by usingthem, we can get information about processes.
 "ps,pgrep,pstree and top" being the most commonly used ones.
 
-- - - - -
+= = = =
 ps(process status) - It displays 4 columns called ("PID, TTY, TIME, CMD").
 PID - is Process ID
 TTY - represents the name of the controlling terminal for the process.
 TIME - represents the cumulative CPU time(the time the process has spent executing on the CPU) shown in minutes and seconds,but not the time spent waiting.
 CMD - is the name of the command that was used to start the process.
 
-= = = =
 ps -e (to list all processes)
 ps -f (to do a full-listing format and display detailed information about the processes that are running.)
 ps -ef (very common command , to display all processes with detailed information).There are 8 columns:
@@ -101,16 +100,14 @@ Alternative to process listing with grep is "pgrep" command.
 
 pgrep "greppingtext" - pgrep idle (displays the PID of each process which contains the "idle" text in it's process name)
 pgrep -l greppingtext - displays the process name as well.
-pgrep -u username - to search for the process owned by a specific user.
-pgrep -u root sshd - to search for PID which was executed by root user.
+pgrep -u username "greppingtext" - to search for the PID owned by a specific user.
 
 - - -
-
 pstree - displays hierarchical tree of all running processes
 pstree -c - prevents identical processes from being grouped together.Instead it displays each process separately in the tree view.
 
 ===================INFO=================
-*If you have a CPU with 4 cores then no more than 4 processes can run simultaneously.so the R state in "ps aux STAT section" can be 4 only at one moment if the CPU has 4 cores.
+*If you have a CPU with 4 cores then no more than 4 processes can run simultaneously.so the count of R state in "ps aux STAT section" can be 4 only at one moment if the CPU has 4 cores.
 In reality,it is running only one process per core at a time, but quickly switching between all of its ongoing tasks or processes.
 The Linux Kernel will execute some instructions from Process A and then will set the process A aside and executes instructions from Process B.
 The concept of switching between queued processes is called process scheduling.
@@ -157,7 +154,7 @@ kill -l - to get a list of all available signals.Each signal is identified by nu
 
 Example:
 	If a process gets the SIGTERM signal, then that's an invitation for the process to enter into the terminated state."Invitation" means that the process can decide to ignore some of the signals.
-1)SIGHUP/HUP - reloads the process.
+1)SIGHUP/HUP - reloads the system configuration process (e.g. ssh).
 2)SIGINT/INT - means INTerrupt the process.
 9)SIGKILL - forces to kill the process.HARD KILL.
 15)SIGTERM - terminates the process.SOFT KILL.
@@ -177,7 +174,7 @@ Non-privileged users can send signals only to their own process, while the root 
 ===========
 
 Example:
-SIGHUP: to reload the ssh server` sudo systemctl status ssh , if it's running, we can know the PID of SSH server by "cat /var/run/sshd.pid" and to monitor the changes of the server run "tail -f /var/log/auth.log" and run "sudo kill -SIGHUP $(pidof sshd) OR kill -1 PID of ssh OR kill -1 $(cat /var/run/sshd.pid)" and we can notice that the server closes and opens again.
+1)SIGHUP: to reload the ssh server` sudo systemctl status ssh , if it's running, we can know the PID of SSH server by "cat /var/run/sshd.pid" and to monitor the changes of the server run "tail -f /var/log/auth.log" and run "sudo kill -SIGHUP $(pidof sshd) OR kill -1 PID of ssh OR kill -1 $(cat /var/run/sshd.pid)" and we can notice that the server closes and opens again.
 
 15)SIGTERM: When sending the TERM signal to a process, a few different things can happen.1)The process may stop immediately.2)The process may stop after a short delay, after cleaning up resources.3)The process may keep running indefinitely(so simply ignores the signal).
 The process can determine what it wants to do once the TERM signal is received.While most applications will clean up their resources and stop, some may not.That's why the TERM signal is also called a "soft kill".
@@ -193,13 +190,13 @@ _____________________________________________________________________________
 
 Foreground processes are started by the user and not by the system services, and while they are running the user cannot start another process from the same terminal.By default every process that you start runs in the foreground.It gets its input from the keyboard and sends its output to the screen(to the terminal).For example run "sleep 10" the terminal waits 10 seconds in the foreground and you can't execute another process at that time in that terminal.After 10 seconds the process will be finished and you can try another process.
 
-Background processes are non-interactive and are started or executed by system services or by the users.While they are running you can start other processes within the same terminal.To start the background process you add an "&"(ampersand) at the end of the command.For example run "sleep 10 &", and now it will run in the background and we can do anything in terminal by not interacting with it, while it is running.
-It is common to redirect the output and error of a command running it in background "ifconfig > output.txt 2>errors.txt &".
+Background processes are non-interactive and are started or executed by system services or by the users.While they are running you can start another processes within the same terminal.To start the background process you add an "&"(ampersand) at the end of the command.For example run "sleep 10 &", and now it will run in the background and we can do anything in terminal by not interacting with it, while it is running.
+It is common to redirect the output and error of a command running it in the background "ifconfig > output.txt 2>errors.txt &".
 If you don't want to receive the output or errors of command you can redirect them to >/dev/null.
 - - - -
 #Job Control(jobs,fg,bg)
 
-When starting a process in the background, you will see two numbers printed in the terminal.Each background process is identified by a JobID besides it's PID."[1] 15712" -> in this case, 1 is the Job ID and 15712 is the PID.If you hit enter key and the process has already finished successfully, you will get the same Job ID and the word "Done".The Job ID is local to the current shell.But the PID is maintained by the system kernel and has a global scope.
+When starting a process in the background, you will see two numbers printed in the terminal.Each background process is identified by a JobID besides it's PID."[1] 15712" -> in this case, 1 is the Job ID and 15712 is the PID.If you hit "enter key" and the process has already finished successfully, you will get the same Job ID and the word "Done".The Job ID is local to the current shell.But the PID is maintained by the system kernel and has a global scope.
 
 jobs - to list Job ID and state of background processes.
 jobs -l - to display PID as well.
@@ -208,11 +205,11 @@ fg %JobID - to bring a background process to the foreground.
 
 ctrl + z - To suspend/stop a foreground running process.And to resume it in the background/foreground use "bg %JobID"/"fg %JobID".
 
-If to run a process in the foreground and close the terminal, the process will be finished immediately.
+If you run a process in the foreground and close the terminal, the process will be finished immediately.
 
-But when we will close the terminal, while running a background process, the process may/may not still it will be running depending on command.When you close a terminal , logout or disconnect, the HUP(hang up) signal is sent to the process, and the process will get killed.
+But when we will close the terminal, while running a background process, the process may/may not still will be running depending on command.When you close the terminal , logout or disconnect, the HUP(hang up) signal is sent to the process, and the process will get killed.
 This becomes problematic because if you run a command over ssh and your connection drops or you log out, the session is terminated and all the processes executed from the terminal will receive the hangup signal and stop.
 
-nohup command & - (NO Hangup)to prevent a process from being terminated when the terminal is closed.It also redirects the command output to a file called "nohup.out".Other alternative variants like nohup are "tmux" and "screen".
+nohup command (& 'optional') - (NO Hangup)to prevent a process from being terminated when the terminal is closed.if '&' is set then it will do background process with nohup , and if '&' is not set , then it will run in the foreground and after closing terminal will continue running.It also redirects the command output to a file called "nohup.out".Other alternative variants like nohup are "tmux" and "screen".
 
 ________________________________________________________________________________________
