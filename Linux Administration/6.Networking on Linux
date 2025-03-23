@@ -1,0 +1,58 @@
+		Networking on Linux
+_________________________________________________________________
+-----------------------------------------------------------------
+#Getting Information about the Network Interfaces(ip, ipconfig)
+
+!If there are not net tools , run "sudo apt install net-tools".
+
+- - -
+ifconfig: Part of net tools package has been there for a long time and is still used to configure display and control network interfaces by many Linux administrators.
+ifconfig - to show only the information about "enabled" interfaces.
+ifconfig -a - to display a list of all network interfaces and the associated IP address , both "enabled/disabled"
+ifconfig InterfaceName - to display only the information about specific interface.
+
+The list(each section of interface) starts with interface names, predictable by linux.
+Interface name starting with "en" means Ethernet.
+Interface name starting with "wl" means Wireless LAN.
+Interface name lo means loopback address.
+If Interface name contains "s"(slot number) , "p"(port number)
+
+ifconfig can display neither the default gateway nor the DNS server.but 'route' command does both.
+
+- - -
+ip: New alternative of ifconfig from Iproute2 package.
+
+ip a/ip address show/ip a show/ip addr show - to display a list of all network interfaces and the associated IP address.can omit the 'show' command , because it's the default.
+ip -4 address - to display only IPv4 addresses
+ip -6 address - to display only IPv6 addresses  
+ip addr show dev InterfaceName - to display only the information about specific interface.
+ip route show - displays the default gateway.
+
+- - -
+route - displays default gateway and DNS server.
+route -n - displays names in numeric format.
+
+'G' in 'Flags' column indicates that the line is displaying the default Gateway.
+
+- - -
+resolvectl status - to see the DNS servers used by the system.
+
+
+
+
+_________________________________________________________________
+-----------------------------------------------------------------
+#Configuring the Network On The Fly(ipconfig, ip, route)
+
+
+
+_________________________________________________________________
+-----------------------------------------------------------------
+#Setting Up Static IP(netplan)
+
+
+
+
+_________________________________________________________________
+-----------------------------------------------------------------
+#Testing and Troubleshooting Network Connectivity
