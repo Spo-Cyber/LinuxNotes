@@ -131,13 +131,13 @@ _________________________________________________________________
 #Testing and Troubleshooting Network Connectivity
 
 Ping works by sending ICMP echo request packets to the specified destination IP address and waits for a reply.When the destination receives an echo request packet, it will respond back with ICMP echo reply.Ping is also available on Mac and Windows , but with other options.
-The domain name in ping can be different than the name that we have pinged, because an IP address can be set to multiple different domain names and ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with one domain, which is differs from our input name.
+The domain name in ping can be different than the name that we pinged, because an IP address can be set to multiple different domain names` ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our input name.
 
 
 ping [options] <destinationIP/domain name>
 ping -n - To prevent ping from doing reverse DNS lookup.
 ping -c N - To set the count of ICMP packets to be sent N times.
-ping -i T - to set interval between each packet sending.by default it is 1s.Only superuser can send lower than 0.2s.
+ping -i T - to set interval between each packet sending.by default it is 1s.Only superuser can send lower than 0.002s.
 ping -q - display the summary only.
 
 time=T ms(response time) -> time<30 means excellent, 50>time>30 means average, 100>time>50 means somehow slow and time>100 means slow response.
@@ -150,7 +150,38 @@ ping PublicIPAddress(e.g. DNS server) -> If not working, then maybe router is no
 
 *Step 3
 ping stableIPAddress(e.g. google.com) -> if not working, then you have a DNS issue.Check that you are using the correct DNS server and there's nothing that's filtering the packets and so on.Probably there's a configuration error related to DNS on you site or maybe the DNS server is down.
-
 _________________________________________________________________
 -----------------------------------------------------------------
+		#SSH
+- - - - - -
 #Using SSH
+
+The most useful network protocol used for the remote management of servers, routers, switches or other networking devices.
+SSH involves client and server.The SSH client creates a secure connection to the SSH server on a remote machine, and then the connection will be used to execute commands on the server.
+
+!It is better to check the network connection between the ssh client and the server using ping.
+-
+If not installed run "sudo apt install openssh-server openssh-clients"
+systemctl status ssh - to check if started or stopped.
+systemctl is-enabled ssh - display enabled/disable (for boot)
+systemctl start/stop ssh - to enable or disable.
+-
+ssh remoteLoginName@remoteIP - to connect to ssh server.
+ssh -l remoteLoginName remoteIP - longer variant.
+ssh -p N - to set another port number than the default (22).
+-
+
+When connecting to ssh server of remote machine, the first thing is displayed is RSA key fingerprint is SHA256:ASDFE9d/rrJB84rk something like this.Because it uses a client uses a cryptographic fingerprint to identify the server and prevent possible MITM attacks in the future.
+The "ASDFE9d/rrJB84r" hostkey is randomly generated when the ssh server is set up and is used to identify the server you are connecting to.It will be saved on the client in a file "~/.ssh/known_hosts".
+To quit ssh connection run "exit or ctrl+d".
+The SSH client has its own configuration file "/etc/ssh/ssh_config"
+
+- - INFO
+To connect to metasploitable - ssh -o HostKeyAlgorithms=+ssh-rsa  msfadmin@IP. because it used old ssh service.To run ssh on metasploitable run "sudo /etc/init.d/ssh start".and can check it by "pgrep".
+
+To run ssh server on windows , download PuTTY program from web.
+- -
+
+- - - - - -
+#Troubleshooting SSH
+
