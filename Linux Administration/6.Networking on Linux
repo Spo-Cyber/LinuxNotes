@@ -126,6 +126,7 @@ network:
 After changes run "netplan apply".
 
 renderer: while written 'networkd' , netplan applies it as systemd-networkd automatically.
+
 _________________________________________________________________
 -----------------------------------------------------------------
 #Testing and Troubleshooting Network Connectivity
@@ -150,9 +151,11 @@ ping PublicIPAddress(e.g. DNS server) -> If not working, then maybe router is no
 
 *Step 3
 ping stableIPAddress(e.g. google.com) -> if not working, then you have a DNS issue.Check that you are using the correct DNS server and there's nothing that's filtering the packets and so on.Probably there's a configuration error related to DNS on you site or maybe the DNS server is down.
+
 _________________________________________________________________
 -----------------------------------------------------------------
-		#SSH
+#SSH
+
 - - - - - -
 #Using SSH
 
@@ -185,3 +188,45 @@ To run ssh server on windows , download PuTTY program from web.
 - - - - - -
 #Troubleshooting SSH
 
+- - 
+* Problem 1
+If you cannot connect to SSH server, the first thing you should do is to check that the SSH deamon (sshd) is running on the server machine.
+systemctl status ssh - to see sshd status.
+systemctl start ssh - to start sshd.
+systemctl restart ssh - to restart sshd.
+systemctl stop ssh - to stop sshd.
+- -
+* Problem 2
+If you receive an error like "WARNING: REMOTE HOST  IDENTIFICATION HAS CHANGED!, IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!", then you should check that you are connecting to the right server.
+This message can be displayed if, for example, the IP or MAC address of the server have changed.
+If it's the right server, then you can prevent the message by removing the server key from the "~/.ssh/known_hosts" file.After this while connecting to ssh server of remote host, it can again prompt about key fingerprint "yes/no/[fingerprint]".
+- -
+* Problem 3
+If problem still exists , check if the Port 22 , on which the server listens , is open with "telnet or nmap".If telnet is not installed , run "sudo apt install telnet".
+telnet IPaddress 22 - if runs , means that port 22 is open.
+nmap IPaddress -p 22 - same with nmap tool.If shows down , then -> namp IPaddress -p 22 -Pn
+- -
+* Problem 4
+If the port is closed, but the ssh deamon is running on the server, then you should check if there isn't a firewall on the server, that's dropping the packets.
+The Linux firewall is called "iptables" which is a command-line tool used to manage Netfilter(the actual firewall framework inside the Linux kernel) rules.
+iptables -vnL - to check if there are any firewall rules.Check if the policy set to ACCEPT, and there are not any firewall rules about that.
+-
+The 'ufw' is uncomplicated user-friendly front-end program for iptables, used for managing netfilter firewall. 
+An example that proofs that it's easier - "ufw allow ssh" equal to "iptables -A INPUT -p tcp -dport 22 -j ACCEPT".
+
+sudo ufw status verbose - to check if it is.
+sudo ufw enable/disable - to enable/disable it on system startup.
+sudo ufw app list - to list all application profiles available on your server.
+sudo ufw allow ssh - to configure ufw firewall to allow incoming ssh connections.
+- -
+* Problem 5
+If there isn't a firewall problem but you still cannot connect , then you can run the ssh client is verbose mode.
+ssh -v login@IP - runs in verbose mode by , causing ssh to print debugging messages about its progress.
+ssh -vv login@IP - more verbose.
+- -
+* Problem 6
+If the problem still exists , check the server logs.
+sudo tail -f /var/log/auth.log , and run ssh connection and watch the logs/problems in real time.
+
+- - - - - -
+#Securing SSH
