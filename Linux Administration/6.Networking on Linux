@@ -1,11 +1,11 @@
 		#Networking on Linux
 _________________________________________________________________
------------------------------------------------------------------
-#Getting Information about the Network Interfaces(ip, ipconfig)
+-------------------------------------------------------------------
+#Getting Information about the Network Interfaces(ip, ifconfig)
 
 *If there are not net tools , run "sudo apt install net-tools".
 
-- - -
+- - - ifconfig - - - 
 *ifconfig: Part of net-tools package has been there for a long time and is still used to configure display and control network interfaces by many Linux administrators.
 ifconfig - to show only the information about "enabled" interfaces.
 ifconfig -a - to display a list of all network interfaces and the associated IP address , both "enabled/disabled"
@@ -19,7 +19,7 @@ If Interface name contains "s"(slot number) , "p"(port number)
 ifconfig displays neither the default gateway nor the DNS server.but 'route' command displays both.
 __
 
-- - -
+- - - ip - - -
 *ip: New alternative of ifconfig from Iproute2 package.
 
 ip a/ip address show/ip a show/ip addr show - to display a list of all network interfaces and the associated IP address.can omit the 'show' command , because it's the default.
@@ -28,13 +28,12 @@ ip -6 address - to display only IPv6 addresses
 ip addr show dev InterfaceName - to display only the information about specific interface.
 ip route show - displays the default gateway.
 
-- - -
+- - - route - - -
 route - displays default gateway and DNS server.
 route -n - displays names in numeric format.
-__
 'G' in 'Flags' column indicates that the line is displaying the default Gateway.
 
-- - -
+- - - resolvectl - - -
 resolvectl status - to see the DNS servers used by the system.
 
 _________________________________________________________________
@@ -43,11 +42,11 @@ _________________________________________________________________
 
 *To configure the network interfaces with (ifconfig/ip), we need to execute the commands as ROOT.
 
-*!Do NOT run the following commands on a remote system to which are connected using ssh, since you are going to disable and enable interfaces, change IP addresses and so on, and you ssh connection will drop around.
+*!Do NOT run the following commands on a remote system to which are connected using ssh, since you are going to disable and enable interfaces, change IP addresses and so on, and your ssh connection will drop around.
 
-*After restarting the system, the changes in network configurations won't be saved.To permanently save the configurations , we need to use a "netplan" for static configuration of network.
+*After restarting the system, the changes in network configurations won't be saved.To permanently save the configurations , we need to use a "netplan" for static network configuration.
 
-- - -
+- - - ifconfig - - -
 *'Turn on/off the network interface'
 ifconfig IntfName up - to enable the IntfName interface.
 ifconfig IntfName down - to disable the IntfName interface.
@@ -58,14 +57,14 @@ __
 *'Change the MAC address'
 ifconfig Intface down -> ifconfig IntfName hw ether NewMAC -> ifconfig Intface up - to change the MAC address.so need to disable and then enable the interface.
 
-- - -
+- - - ip - - -
 *'Turn on/off the network interface'
 ip link set IntfName up - to enable the IntfName interface.
 ip link set IntfName down - to disable the IntfName interface.
 __
 *'Change the IP address'
 ip address del IPaddress dev IntfName - to delete the new IP address.
-ip address add IPaddress dev IntfName - to add the new IP address.If there is an IP, the 'add' adds the new IP as secondary IP.So to set it as primary we need to 'del'ete the primary to have only one, which also will be displayed in 'ifconfig'.
+ip address add IPaddress dev IntfName - to add the new IP address.If there is an IP, the 'add' adds the new IP as secondary IP.So to set it as primary we need to delete the primary to have only one, which also will be displayed in 'ifconfig'.
 __
 *'Add/delete the default gateway'
 ip route add default via IPaddress - to add a new default gateway.
@@ -75,7 +74,7 @@ __
 *'Change the MAC address'
 ip link set dev IntfName address NewMAC - to change the MAC address.
 
-- - -
+- - - route - - -
 *'Add/delete the default gateway'
 route add default gw IPaddress - to add new default gateway
 route del default gw IP address - to delete default gateway
@@ -83,20 +82,18 @@ route del default gw IP address - to delete default gateway
 _________________________________________________________________
 -----------------------------------------------------------------
 #Setting Up Static IP(netplan)
-
-*Netplan is the default configuration tool to manage networks.It uses yaml files that are located in /etc/netplan.
-
-Netplan supports 2 renderers or backend services to control network interfaces.They are NetworkManager and Systemd-networkd.
-The NetworkManager is mostly used on desktop machines while systemd-networkd is used on servers without a GUI.
-
-The network interface can be managed either by network manager or by networkd, but not by both of them at the same time.
-
-- - - - - - - - - - - - - - - - - - - - - - - - 
+- - - INFO NetworkManager - - -
 'NetworkManager' is a service that manages network interfaces on a Linux system.
 systemctl stop NetworkManager - stop network manager.
 systemctl disable NetworkManager - disables network manager, even after restarting the system.
 systemctl is-enabled NetworkManager - to check if is enabled.
+The NetworkManager is mostly used on desktop machines while systemd-networkd is used on servers without a GUI.
+- - -
+The network interface can be managed either by network manager or by networkd, but not by both of them at the same time.
 
+*Netplan is the default configuration tool to manage networks.It uses yaml files that are located in /etc/netplan.
+Netplan supports 2 renderers or backend services to control network interfaces.They are NetworkManager and Systemd-networkd.
+- - - - - - - - - - - - - - - - - - - - - - - - 
 After stopping the NetworkManager, create a 'yaml' file in /etc/netplan (e.g. /01-netconfig.yaml).The text content in that file is:
 
 'For manual IP and DNS addresses'
@@ -124,16 +121,20 @@ network:
 
 
 After changes run "netplan apply".
-
 renderer: while written 'networkd' , netplan applies it as systemd-networkd automatically.
-
+- - -
+OR
+- - -
+With NetworkManager file -> sudo nano /etc/NetworkManager/system-connections/CONNECTION_NAME.nmconnection, type this.
+[ipv4]
+dns=8.8.8.8;1.1.1.1;
+ignore-auto-dns=true
 _________________________________________________________________
 -----------------------------------------------------------------
 #Testing and Troubleshooting Network Connectivity
 
 Ping works by sending ICMP echo request packets to the specified destination IP address and waits for a reply.When the destination receives an echo request packet, it will respond back with ICMP echo reply.Ping is also available on Mac and Windows , but with other options.
-The domain name in ping can be different than the name that we pinged, because an IP address can be set to multiple different domain names` ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our input name.
-
+The domain name in ping can differ from the name ping, because an IP address can be set to multiple different domain names, because ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our inputted domain name.
 
 ping [options] <destinationIP/domain name>
 ping -n - To prevent ping from doing reverse DNS lookup.
@@ -147,13 +148,13 @@ time=T ms(response time) -> time<30 means excellent, 50>time>30 means average, 1
 ping DefaultGatewayIP -> If not working, then maybe not connected to AP.If working go to step 2
 
 *Step 2
-ping PublicIPAddress(e.g. DNS server) -> If not working, then maybe router is not properly connected or any issue with router.If working go to step 3
+ping DNS server-> If not working, then maybe router is not properly connected or any issue with router.If working go to step 3
 
 *Step 3
 ping stableIPAddress(e.g. google.com) -> if not working, then you have a DNS issue.Check that you are using the correct DNS server and there's nothing that's filtering the packets and so on.Probably there's a configuration error related to DNS on you site or maybe the DNS server is down.
 
 _________________________________________________________________
------------------------------------------------------------------
+--------------------------------------------------------------------
 #SSH
 
 - - - - - -
@@ -174,13 +175,13 @@ ssh -l remoteLoginName remoteIP - longer variant.
 ssh -p N - to set another port number than the default (22).
 -
 
-When connecting to ssh server of remote machine, the first thing is displayed is RSA key fingerprint is SHA256:ASDFE9d/rrJB84rk something like this.Because it uses a client uses a cryptographic fingerprint to identify the server and prevent possible MITM attacks in the future.
-The "ASDFE9d/rrJB84r" hostkey is randomly generated when the ssh server is set up and is used to identify the server you are connecting to.It will be saved on the client in a file "~/.ssh/known_hosts".
+When at the first time connecting to ssh server of remote machine, the first thing is displayed is RSA key fingerprint is SHA256:afsd2l234lkjl2kj23lASDFE9d/rrJB84rk something like this.Because the client uses a cryptographic fingerprint to identify the server and prevent possible MITM attacks in the future.
+The "ASDFE9d/afsd2l234lkjl2kj23lASDFE9d" hostkey is randomly generated when the ssh server is set up and is used to identify the server you are connecting to.It will be saved on the client in a file "~/.ssh/known_hosts".
 To quit ssh connection run "exit or ctrl+d".
 The SSH client has its own configuration file "/etc/ssh/ssh_config"
 
 - - INFO
-To connect to metasploitable - ssh -o HostKeyAlgorithms=+ssh-rsa  msfadmin@IP. because it used old ssh service.To run ssh on metasploitable run "sudo /etc/init.d/ssh start".and can check it by "pgrep".
+To connect to metasploitable run  "ssh -o HostKeyAlgorithms=+ssh-rsa  msfadmin@IP". because it used old ssh service.To run ssh on metasploitable run "sudo /etc/init.d/ssh start".and can check it by "pgrep".
 
 To run ssh server on windows , download PuTTY program from web.
 - -
@@ -199,12 +200,12 @@ systemctl stop ssh - to stop sshd.
 * Problem 2
 If you receive an error like "WARNING: REMOTE HOST  IDENTIFICATION HAS CHANGED!, IT IS POSSIBLE THAT SOMEONE IS DOING SOMETHING NASTY!", then you should check that you are connecting to the right server.
 This message can be displayed if, for example, the IP or MAC address of the server have changed.
-If it's the right server, then you can prevent the message by removing the server key from the "~/.ssh/known_hosts" file.After this while connecting to ssh server of remote host, it can again prompt about key fingerprint "yes/no/[fingerprint]".
+If it's the right server, then you can prevent the message by removing the server key from the "~/.ssh/known_hosts" file.After this while connecting to ssh server of remote host, it will prompt again about RSA key fingerprint "yes/no/[fingerprint]".
 - -
 * Problem 3
 If problem still exists , check if the Port 22 , on which the server listens , is open with "telnet or nmap".If telnet is not installed , run "sudo apt install telnet".
 telnet IPaddress 22 - if runs , means that port 22 is open.
-nmap IPaddress -p 22 - same with nmap tool.If shows down , then -> namp IPaddress -p 22 -Pn
+nmap IPaddress -p 22 - same with nmap tool.If shows down , then -> nmap IPaddress -p 22 -Pn
 - -
 * Problem 4
 If the port is closed, but the ssh deamon is running on the server, then you should check if there isn't a firewall on the server, that's dropping the packets.
@@ -220,7 +221,7 @@ sudo ufw app list - to list all application profiles available on your server.
 sudo ufw allow ssh - to configure ufw firewall to allow incoming ssh connections.
 - -
 * Problem 5
-If there isn't a firewall problem but you still cannot connect , then you can run the ssh client is verbose mode.
+If there isn't a firewall problem but you still cannot connect , then you can run the ssh client in verbose mode.
 ssh -v login@IP - runs in verbose mode by , causing ssh to print debugging messages about its progress.
 ssh -vv login@IP - more verbose.
 - -
@@ -230,3 +231,50 @@ sudo tail -f /var/log/auth.log , and run ssh connection and watch the logs/probl
 
 - - - - - -
 #Securing SSH
+
+The server configuration file of the ssh client is /etc/ssh/ssh_config (contains settings for how the client connects to SSH servers).
+The server configuration file of the ssh daemon is /etc/ssh/sshd_config (determines how the SSH server handles incoming connections).
+After doing changes in configuration file of ssh server you should restart the server to apply new changes.
+It is safer for beginners to make a backup of configuration file, before changing it.
+- - -
+/etc/ssh/sshd_config
+In this file the keywords are case-insensitive and arguments that contain spaces are to be enclosed in double quotes (").To override the default option, you have to uncomment that line and change the option.Not all available options of the ssh daemon are present in this file.
+If you want to read more about what a specific option does, run "man sshd_config".
+
+* STEP 1
+Use non-standard port for the server to avoid being seen by attackers by casual scans, but not by targeted attacks.
+
+* STEP 2
+ One of the most dangerous security holes can be in your system is to allow direct login as root through SSH.No matter how strong the root password is , there's always the possibility that the hacker can find the password using a brute-force attack.
+ "PermitRootLogin prohibit-password" key is disabled by default, but you should check it anyway.prohibit-password means, that the root can login directly using another authentication method, not the password.Change it to 'no'. -> PermitRootLogin no.
+ 
+ * STEP 3
+ Disable password authentication entirely, if possible and enable public key authentication.
+ If it's not possible to disable password on the server , then use strong password(random password with a length of at least 10 characters consisting of letters, digits, and special characters!).
+ Do not use dictionary words or combinations of such words, no matter the language.
+ 
+ * STEP 4
+ Limit users' ssh access.By default all system users can log in via SSH using their password or public key even if there are only a few administrator users that really need to access the system remotely.
+ AllowUser username1 username2 username3 - to permit only specific users by their usernames.
+ 
+ * STEP 5
+ Filter SSH access at the firewall level.If there are only a few admins that use SSH for remote management , then accept connection to the SSH port only from a limited list of source IP addresses(whitelist).These will be the source IP addresses from where the admin will connect, stay home and work.Permit an entire network , if the source IP changes or is dynamic.
+ iptables -A INPUT -p tcp --dport yourSSHport -s permittingIPaddress1 -j ACCEPT
+ iptables -A INPUT -p tcp --dport yourSSHport -s permittingIPaddress2 -j ACCEPT
+ iptables -A INPUT -p tcp --dport yourSSHport -j DROP
+ Now , only the SSH connections coming from these two IP addresses will be permitted.If you want to allow an entire network, use the network address instead of the IP address!
+ 
+ * STEP 6
+ Set the ClientAliveInterval value to N seconds and ClientAliveCountMax to 0, to automatically close the SSH connection if a client won't send any packet in N timeout interval.
+ 
+ * STEP 7
+ MaxAuthTries N - to specify the maximum number of authentication attempts permitted per connection.
+ 
+ * STEP 8
+ LoginGraceTime N - The server disconnects after this time if the user has not successfully logged in.
+ 
+ * STEP 9 
+MaxStartups N - controls the number of unauthenticated concurrent SSH connections allowed before sshd starts dropping connection attempts.This prevents DoS attacks caused by excessive SSH connection attempts.
+
+ * STEP 10
+ Use the latest version of OpenSSH
