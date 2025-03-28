@@ -188,7 +188,6 @@ To run ssh server on windows , download PuTTY program from web.
 
 - - - - - -
 #Troubleshooting SSH
-
 - - 
 * Problem 1
 If you cannot connect to SSH server, the first thing you should do is to check that the SSH deamon (sshd) is running on the server machine.
@@ -221,7 +220,7 @@ sudo ufw app list - to list all application profiles available on your server.
 sudo ufw allow ssh - to configure ufw firewall to allow incoming ssh connections.
 - -
 * Problem 5
-If there isn't a firewall problem but you still cannot connect , then you can run the ssh client in verbose mode.
+If there is not a firewall problem but you still cannot connect , then you can run the ssh client in verbose mode.
 ssh -v login@IP - runs in verbose mode by , causing ssh to print debugging messages about its progress.
 ssh -vv login@IP - more verbose.
 - -
@@ -255,7 +254,7 @@ Use non-standard port for the server to avoid being seen by attackers by casual 
  
  * STEP 4
  Limit users' ssh access.By default all system users can log in via SSH using their password or public key even if there are only a few administrator users that really need to access the system remotely.
- AllowUser username1 username2 username3 - to permit only specific users by their usernames.
+ AllowUsers username1 username2 username3 - to permit only specific users by their usernames.
  
  * STEP 5
  Filter SSH access at the firewall level.If there are only a few admins that use SSH for remote management , then accept connection to the SSH port only from a limited list of source IP addresses(whitelist).These will be the source IP addresses from where the admin will connect, stay home and work.Permit an entire network , if the source IP changes or is dynamic.
