@@ -2,7 +2,7 @@ FILE SYSTEM
 
 !!! Everything in Linux is a file
 - - - -
-The Filesystem Hierarchy Standard
+The File System Hierarchy Standard
 
 /bin (contains binaries or user executable files which are available to all users)
 /sbin (contains applications that only the superuser will need)
@@ -33,7 +33,7 @@ ls /path1 /path2 /path3 ... ~/path4 (to display n different paths at once),ls -R
 ls /path -dl (only the /path directory and not it's content), ls -l (displays the content in long list format)
 ls -S (sorts the files by size)
 ls --hide=[OPTION] e.g. ls --hide=*.conf (to display all content besides all .conf file)
-ls -a (displays all files and directores includeing hidden ones), ls -1 (listing on a single column)
+ls -a (displays all files and directories including hidden ones), ls -1 (listing on a single column)
 ls -R (displays recursively contents in each directory)
 ls -r (displays in reversed order, or --reverse)
 ______________ ______________ ______________ ______________ ______________
@@ -196,7 +196,7 @@ ______________ ______________ ______________ ______________ ______________
 #Comparing Files
 
 cmp file1 file2 (comparing by bytes, and lines)
-sha256sum file1 file2 (comparing files by cryptographic identification, when even 1bit will be different the results will be different)
+sha256sum file1 file2 (comparing files by cryptographic identification, when even 1 bit will be different the results will be different)
 
 diff file1 file2 (comparing and showing the differences in text files)
 diff -B (ignore blank lines)

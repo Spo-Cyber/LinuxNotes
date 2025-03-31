@@ -23,7 +23,6 @@ Process properties:
 	-Group
 	-Priority/Nice
 If an executable file that represents the command does not have the SUID bit set, then the process has the permission of the user who executes it.
-
 - - - 
 Type of Processes:
 	-1.Parent
@@ -52,7 +51,7 @@ _____________________________________________________________________________
 -----------------------------------------------------------------------------
 #Listing Processes
 
-There are a few commands, that by usingthem, we can get information about processes.
+There are a few commands, that by using them, we can get information about processes.
 "ps,pgrep,pstree and top" being the most commonly used ones.
 
 = = = =

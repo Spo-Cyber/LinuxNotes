@@ -57,8 +57,7 @@ useradd -G groupname,groupnamesoptional... - to assign to a secondary group (is 
 useradd -e 2002-04-23 username - to set expiring time for that user which will be temporary
 useradd -alloptions username - to create user by username
 
-(adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.)
-
+adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.
 - - - - - - - -
 #Password of user
 
@@ -81,7 +80,6 @@ sudo usermod etc...
 sudo userdel username "to delete the user account without it's related files"
 sudo userdel -r username "to delete it's related files also"
 (deluser - userdel works at the backend and it is more user-friendly like adduser and useradd)
-
 - - - - - - - -
 #To give administrative rights to user
 

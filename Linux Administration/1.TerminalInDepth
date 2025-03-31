@@ -7,7 +7,6 @@ type 'x' = checking if a command is shell built-in or executable file
 !n('n'th code from history), !-n(the 'n'th code of the history)
 ctrl+r + text = dynamically search from shell history
 !! (rerun the last code)
-route -n (for printing the gateway ip address)
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
 #HISTORY OPTIONS
@@ -25,10 +24,8 @@ ______________ ______________ ______________ ______________ ______________
 #ROOT ACCESS
 
 sudo su = switch to root user
-id = to show the logged in user
 sudo -v (to cache root credentials, to not require root password in each root required commands)
 sudo -k (to invalidate root credentials, to ask the next time for root required commands)
-sudo passwd 'username' (to create or change the password of username)
 exit (to exit from root mode or ctrl+d)
 lshw (to list all the hardware on device)
 ______________ ______________ ______________ ______________ ______________

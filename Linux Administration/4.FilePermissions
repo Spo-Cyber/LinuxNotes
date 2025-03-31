@@ -48,7 +48,7 @@ IF EXECUTE PERMISSION is not set , the write permission DOES NOTHING.But if ther
 --Execute--
 Execute permission means access to that directory's contacts.We can move into the directory('cd' command), and freely execute commands which are in write permissions functioning.
 
-The directory's permissions are more important than it's files'.
+The directory's permissions are more important than it's files.
 - - - - - - - - - - - - - - - - - - - -
 #Changing File Ownership(chown, chgrp)
 
@@ -121,7 +121,7 @@ drwxrws--t 2 mrhacker programmers 4096 Jul 14 10:38 /programming/
 - - - - - - - - - - - - - - - - - - - - -
 #Umask
 
-When creating a new file or directory, the system  sets on them the default permissions <<0666 for files, 0777 for directories>>.But their default permissions are set by umask which subtracts from that values the mask and sets as default permissions of file or directory.For Example while running "umask" command it displays 0002, so "for files it will be 0666-0002=0664" and "for directories it will be 0777-0002=0775" as default permission values.
+When creating a new file or directory, the system  sets on them the default permissions (0666 for files, 0777 for directories).But their default permissions are set by umask which subtracts from that values the mask and sets as default permissions of file or directory.For Example while running "umask" command it displays 0002, so "for files it will be 0666-0002=0664" and "for directories it will be 0777-0002=0775" as default permission values.
 
 So to change the default values of permissions we need to change umask => for example to set 0442 for files by default when creating them we need to calculate as "0666 - umask = 0442 => umask=224" => SO THE COMMAND IS "umask 224" for setting that value
 
