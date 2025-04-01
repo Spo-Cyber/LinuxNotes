@@ -35,7 +35,6 @@ route -n - displays names in numeric format.
 
 - - - resolvectl - - -
 resolvectl status - to see the DNS servers used by the system.
-
 _________________________________________________________________
 -----------------------------------------------------------------
 #Configuring the Network On The Fly(ipconfig, ip, route)
@@ -134,7 +133,7 @@ _________________________________________________________________
 #Testing and Troubleshooting Network Connectivity
 
 Ping works by sending ICMP echo request packets to the specified destination IP address and waits for a reply.When the destination receives an echo request packet, it will respond back with ICMP echo reply.Ping is also available on Mac and Windows , but with other options.
-The domain name in ping can differ from the name ping, because an IP address can be set to multiple different domain names, because ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our inputted domain name.
+The domain name in ping execution can differ from the name we ping, because an IP address can be set to multiple different domain names, because ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our inputted domain name.
 
 ping [options] <destinationIP/domain name>
 ping -n - To prevent ping from doing reverse DNS lookup.
@@ -144,6 +143,8 @@ ping -q - display the summary only.
 
 time=T ms(response time) -> time<30 means excellent, 50>time>30 means average, 100>time>50 means somehow slow and time>100 means slow response.
 - - -
+#Troubleshooting network connectivity with ping
+
 *Step 1 
 ping DefaultGatewayIP -> If not working, then maybe not connected to AP.If working go to step 2
 
@@ -151,8 +152,7 @@ ping DefaultGatewayIP -> If not working, then maybe not connected to AP.If worki
 ping DNS server-> If not working, then maybe router is not properly connected or any issue with router.If working go to step 3
 
 *Step 3
-ping stableIPAddress(e.g. google.com) -> if not working, then you have a DNS issue.Check that you are using the correct DNS server and there's nothing that's filtering the packets and so on.Probably there's a configuration error related to DNS on you site or maybe the DNS server is down.
-
+ping stableIPAddress(e.g. google.com) -> if not working, then you have a DNS issue.Check that you are using the correct DNS server and there's nothing that's filtering the packets and so on.Probably there's a configuration error related to DNS on your site or maybe the DNS server is down.
 _________________________________________________________________
 --------------------------------------------------------------------
 #SSH
@@ -175,8 +175,8 @@ ssh -l remoteLoginName remoteIP - longer variant.
 ssh -p N - to set another port number than the default (22).
 -
 
-When at the first time connecting to ssh server of remote machine, the first thing is displayed is RSA key fingerprint is SHA256:afsd2l234lkjl2kj23lASDFE9d/rrJB84rk something like this.Because the client uses a cryptographic fingerprint to identify the server and prevent possible MITM attacks in the future.
-The "ASDFE9d/afsd2l234lkjl2kj23lASDFE9d" hostkey is randomly generated when the ssh server is set up and is used to identify the server you are connecting to.It will be saved on the client in a file "~/.ssh/known_hosts".
+When at first time connecting to ssh server of remote machine, the first thing displayed is RSA key fingerprint is SHA256:afsd2l234lkjl2kj23lASDFE9d/rrJB84rk something like this.Because the client uses a cryptographic fingerprint to identify the server and prevent possible MITM attacks in the future.
+The "afsd2l234lkjl2kj23lASDFE9d/rrJB84rk" hostkey is randomly generated when the ssh server is set up and is used to identify the server you are connecting to.It will be saved on the client in a file "~/.ssh/known_hosts".
 To quit ssh connection run "exit or ctrl+d".
 The SSH client has its own configuration file "/etc/ssh/ssh_config"
 
@@ -207,7 +207,7 @@ telnet IPaddress 22 - if runs , means that port 22 is open.
 nmap IPaddress -p 22 - same with nmap tool.If shows down , then -> nmap IPaddress -p 22 -Pn
 - -
 * Problem 4
-If the port is closed, but the ssh deamon is running on the server, then you should check if there isn't a firewall on the server, that's dropping the packets.
+If the port is closed, but the ssh daemon is running on the server, then you should check if there isn't a firewall on the server, that's dropping the packets.
 The Linux firewall is called "iptables" which is a command-line tool used to manage Netfilter(the actual firewall framework inside the Linux kernel) rules.
 iptables -vnL - to check if there are any firewall rules.Check if the policy set to ACCEPT, and there are not any firewall rules about that.
 -
@@ -244,7 +244,7 @@ If you want to read more about what a specific option does, run "man sshd_config
 Use non-standard port for the server to avoid being seen by attackers by casual scans, but not by targeted attacks.
 
 * STEP 2
- One of the most dangerous security holes can be in your system is to allow direct login as root through SSH.No matter how strong the root password is , there's always the possibility that the hacker can find the password using a brute-force attack.
+ One of the most dangerous security holes that can be in your system is to allow direct login as root through SSH.No matter how strong the root password is , there's always the possibility that the hacker can find the password using a brute-force attack.
  "PermitRootLogin prohibit-password" key is disabled by default, but you should check it anyway.prohibit-password means, that the root can login directly using another authentication method, not the password.Change it to 'no'. -> PermitRootLogin no.
  
  * STEP 3

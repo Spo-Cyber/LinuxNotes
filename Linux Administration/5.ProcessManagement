@@ -177,7 +177,7 @@ Example:
 15)SIGTERM: When sending the TERM signal to a process, a few different things can happen.1)The process may stop immediately.2)The process may stop after a short delay, after cleaning up resources.3)The process may keep running indefinitely(so simply ignores the signal).
 The process can determine what it wants to do once the TERM signal is received.While most applications will clean up their resources and stop, some may not.That's why the TERM signal is also called a "soft kill".
 
-9)SIGKILL: For some processes that ignore the TERM signal, it may be necessary to then the kill signal, which is number 9 instead (SIGKILL) this is also known a "hard kill".If you want to stop an application that simply ignores the TERM signal, then you could try to send the KILL signal to it.
+9)SIGKILL: For some processes that ignore the TERM signal, it may be necessary to kill the signal, which is number 9 instead (SIGKILL) this is also known a "hard kill".If you want to stop an application that simply ignores the TERM signal, then you could try to send the KILL signal to it.
 
 *killall - to kill all the processes with a particular name.Maybe an application is running several times and you want to kill all instances of that application.For Example: if we run "sleep 123&" and "sleep 311&" it is running a sleep command in the background.when we run "pgrep -l sleep" we find that there are 2 processes.To simply kill those 2 at the same time (not manually, each with "kill command") , we run "killall -15 sleep" OR "killall -TERM sleep" and the processes were terminated.It is not allowing partial names.For partial names use "pkill".
 
@@ -205,7 +205,7 @@ ctrl + z - To suspend/stop a foreground running process.And to resume it in the 
 
 If you run a process in the foreground and close the terminal, the process will be finished immediately.
 
-But when we will close the terminal, while running a background process, the process may/may not still will be running depending on command.When you close the terminal , logout or disconnect, the HUP(hang up) signal is sent to the process, and the process will get killed.
+But when we close the terminal, while running a background process, the process may/may not still will be running depending on command.When you close the terminal , logout or disconnect, the HUP(hang up) signal is sent to the process, and the process will get killed.
 This becomes problematic because if you run a command over ssh and your connection drops or you log out, the session is terminated and all the processes executed from the terminal will receive the hangup signal and stop.
 
 nohup command (& 'optional') - (NO Hangup)to prevent a process from being terminated when the terminal is closed.if '&' is set then it will do background process with nohup , and if '&' is not set , then it will run in the foreground and after closing terminal will continue running.It also redirects the command output to a file called "nohup.out".Other alternative variants like nohup are "tmux" and "screen".
