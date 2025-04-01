@@ -277,3 +277,32 @@ MaxStartups N - controls the number of unauthenticated concurrent SSH connection
 
  * STEP 10
  Use the latest version of OpenSSH
+ - - - - - -
+ Copying files over the network (scp)
+ 
+ scp - is part of the openssh client package.The scp command can be used in three different ways:
+ 1) To copy from your computer to a remote server
+ 2) To copy from a remote server to your computer
+ 3) To copy from a remote server to another remote server
+!Before the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
+ -
+*To be able to copy files, the user that runs the scp command must have the read permission on the source file and the user that authenticates.Scp command overwrites files without any warning.
+1)Your computer -> remote server
+scp -P 22 ip.txt mrhacker@192.168.1.6:~/path => P(specifies the port on which the server is listening), ip.txt (file which should be copied), last part(indicates the destination, by username IP and destination location of file)
+scp -r -P 22 mydir/ mrhacker@192.168.1.6:~ => to send directory
+scp -p ... - to save the access and modification times.
+ -
+ 2)Remote server -> your computer
+ scp remoteLogin@remoteIP:/fileLocation /home/destinationForFile - for file
+ scp -r remoteLogin@remoteIP:/fileLocation /home/destinationForFile - for directory
+ -
+ 3)Remote server -> remote server
+ *You need to have access to both systems from the machine on which you execute the scp command. 
+ scp user1@IP1:/path_to_sourcefile user2@IP2:/path_to_destination
+ - - -
+ FileZilla - cross-platform software GUI for SFTP protocol which runs over ssh.
+_________________________________________________________________
+--------------------------------------------------------------------
+Synchronizing Files and Directories using rsync
+
+rsync - a fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.
