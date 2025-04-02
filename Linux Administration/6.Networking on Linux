@@ -305,4 +305,39 @@ _________________________________________________________________
 --------------------------------------------------------------------
 Synchronizing Files and Directories using rsync
 
-rsync - a fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.
+rsync: A fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.Has tons of options.
+The user that runs the rsync command must have read permissions on the source location and write permissions on the destination(directory) location.
+-
+rsync -av /sourcelocation  /destinationlocation - this transfers directory with its files in archive mode, which ensures that symbolic links, devices, attributes, permissions, ownerships, etc. are preserved in the transfer. v(verbose mode), a(archive mode).If the destination directory doesn't exist , it will create it.
+*Rsync doesn't work like cp command , because it finds files that need to be transferred using a quick check algorithm that look for files that have changed in size or in last modified time or if there are added files but not deleted(it doesn't remove the files that was deleted from source location after the last transfer).Since no file was changed, rsync does nothing.This is more efficient than cp command, which would copy each file again.
+*Rsync gives different treatment to the sources directories with a trailing slash"/" (e.g. /etc is not equal to /etc/).If you add a '/' to the source directory name, it will copy only the contents of that directory to the destination directory.But if not to add '/', it will copy the source directory itself inside the destination directory with its contents.
+-
+rsync -aq - q(quiet) instead of v(verbose)
+-
+rsync --delete - to delete the additional files which were deleted after the last transfer from source location.which doesn't do common rsync command.This is useful for mirroring , when we want to have two directories only with same content always.
+ -
+ To exclude some files and directories while using rsync , at first make a txt file and within the file type on each line the name of files or directories which should be excluded (e.g. movie.mkv then dir1/ then *.png).
+ rsync -av --exclude-from='excludingfilepath' /sourcelocation/  /destination - this will take the excludingfilepath content(which we wrote for excluding that type of files) as pattern and will exclude all the files and directories that match with the pattern of excludingfilepath.
+ -
+ rsync --exclude='patternorfilename' - quickly does the same as the command below , by typing the pattern immediately within the quotes.For example (rsync -av --exclude='*.png' /source /destination).
+And to specify multiple patterns , you should specify multiple --exclude options.For example (rsync -av --exclude='*.png' --exclude='dir1/' /source /destination).
+
+- - - - - -
+#Using Rsync Over The Network
+
+Rsync is also used to synchronize local directories to a remote system(if you have SSH access to that system).This is the best and first option , if you want to mirror the backup from a remote system.
+The user that runs the rsync command should have read access to each file on the source location , and the user that connects to the remote server should have write access on the destination.
+The options are the same as without ssh option.
+rsync -av -e ssh /sourcelocation/ remotelogin@remoteIP:destination/ - transfer from your machine to remote system(the syntax is similar to scp command).This uses the default ssh options, but to specify some options e.g. port number , then type it after -e within quotes => rsync -av -e 'ssh -p 2505 ..'.
+And to transfer from remote system to my machine => change the source and destination places below(like in scp).
+_________________________________________________________________
+--------------------------------------------------------------------
+#Using wget
+
+wget - is a GNU command line utility for downloading files from HTTP, HTTPS and FTP servers.
+It provides a number of options, allowing you to download multiple files, resume downloads, limit the bandwidth, mirror a website, etc..
+wget URL - to download the content of that URL link into the current directory.
+wget -P /destination URL  - to download the content into the specified directory.if the destination directory doesn't exist , it creates that automatically.
+wget --limit-rate=Nk - to set the bandwidth of download rate to N (kilobytes) per second.if the N exceeds the maximum bandwidth of your network download speed, then it will use the maximum of your network download speed.
+wget -c URL - to continue the download that was interrupted(stopped).
+wget -i URL1 URL2
