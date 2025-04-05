@@ -383,7 +383,7 @@ SCANNING OPEN PORTS ON REMOTE SYSTEM
 
 To scan open ports on remote machine, you can use 'telnet' or a professional port scanner like 'nmap'.
 -
-telnet remoteIP pornNumber - For example (telnet google.com 443)
+telnet remoteIP portNumber - For example (telnet google.com 443)
 -
 sudo nmap remoteIP - To scan all open ports on remote system.
 sudo nmap -p N remoteIP  - to scan a specific port on remote system.
