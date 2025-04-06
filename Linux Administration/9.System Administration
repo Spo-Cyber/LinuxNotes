@@ -1,0 +1,104 @@
+		#System Administration
+		
+#Task Automation and Scheduling Using Cron (crontab)
+
+Cron is one of the most useful utilities when it comes to Linux Administration.It allows you to schedule commands or tasks(cron jobs) , at a specific time.
+Cron runs as a daemon and is used to automate repetitive tasks like backups, monitoring disk space usage, updating the system with the latest application versions, sending e-mails, rotating logs , etc..
+The word crontab has three different meanings: crontab command (used to manage cron jobs), crontab file (that contains the list of cron jobs) and cron tab entry format(refers to the syntax or structure used in crotab files).
+- -
+Crontab file:
+The text file that contains the user's cron jobs is called the user's crontab.There is such a file for each user on Debian.The files are located in /var/spool/cron/crontabs.There is also a configuration file for the system wide cron jobs called crontab , located in /etc/.
+There are two types of cronjobs: system-wide and individual user cron jobs.
+Each user has a crontab file, which is short for cron table , where all sceduled cron jobs of that user  are specified.These files are located in a subdirectory of /var/spool/cron.
+As being text files, you can edit the crontab files by hand, using a text editor, even though they are not intended to be edited directly.It's recommended to use the crontab command instead.This will open the file using your preferred or default text editor and validate the file's structure on exit.
+
+ crontab -l - to display the contents of the crontab file of the current user.
+ crontab -e - to edit the current user's crontab file.choose the text editor and go forward.
+ crontab -r - to remove your crontab file.
+# m h  dom mon dow   command - this is the pattern of commands.m(minute), h(hours), dom(day of month), mon(month), dow(day of week).
+Example: 0 6 * * * /root/backup.sh - means 0(minute) 6(hour ) *(empty dom) *(empty mon) *(empty dow ) /root/backup.sh(path to a bash script).Hour(is given in 24 hour time format, between 0 and 23), dow(day of week can be from 0  to 7 , where 0=7=sunday).
+*(askterisk means empty) - Example: * * * * * /root/scrpit.sh - means every minute run the script.
+,(comma) - Example: * 4,6,10 * * * /root/repeat.sh - means at 4, 6, 10 AMs run this script.
+-(hyphen) - Example: * 9-17 * * 1-5 /root/jobs.sh - means from monday to friday at 9 till 17 AM run script.
+/(slash) - Example: 10 4,21 */3 * * /root/task.sh - means every 3rd day of month, at 4:10 and 21:10 run script.
+
+@(at case) Examples:
+@yearly /root/task.sh - every first day of every year ,at midnight(00:00), once  run the script. 
+@monthly /root/task.sh -  every first day of every month , at midnight , once run the script.
+@weekly /root/task.sh - every first day of every week, at night, once run the script.
+@dayly /root/task.sh - every day , at midnight, once run the script.
+@hourly /root/task.sh - every hour, at the beginning of the hour , once run the script.
+@reboot /root/reboot.sh
+*/2 * * * * date >> /tmp/date_and_time.txt - to run this command , every second minute.tail -f /var/log/syslog to see the logs of command execution.
+/var/log/syslog is the cron log file on Debian.
+
+Root can edit, list, remove other users' crontab using -u option and the username.So (sudo su -> crontab -e/-l /-r -u mrhacker)
+Cron sets and uses its own environmental variables.!Use an absolute path for that command or the script to execute.
+Root can also set some restrictions in regards to which users have access to their own crontab files.
+*You can test cron jobs with "crontab-generator.org"  and "crotab.guru" by setting specific times and seeing their results for crontab file.
+- -
+*System-wide cron jobs
+
+Besides the user's cron jobs , there are some system cron jobs that will be run as root.You just simply move your scripts into some directories: /etc/ cron.d , cron.hourly, cron.weekly, cron.monthly, cron.yearly all in /etc directory.So all the scripts which are in those directories will be executed by their state of dirname 'e.g. yearly.d'.
+less /etc/crontab - specifies when exactly will these cron jobs be run.For example, all scripts inside the cron.weekly directory, will be run on Sunday at 6:47 as mentioned in that file. 
+Cron jobs are intended for servers or machines that are running continuously.If the system is down, when the cron job is scheduled to run, the task is lost.It will not be run when the machine starts.
+
+-  -  -  -  -  -  -  -  -  -  -  -
+#Scheduling Tasks Using anacron
+
+Anacron is similar to cron, just that it's usually used on systems that are not up all the time, such as desktops or laptops.
+Anacron does not expect the system to be running 24/7 like a server.When you want a background job to be executed automatically on a machine that is not always up, you should use anacron instead of cron.For example, if you have a backup script scheduled to run every day at 10PM  as regular cron job , and if your laptop is not up at 10pm , your backup job will not be executed when the system starts.It is skipped until the next schedule.
+However if you have the same job scheduled using ANACRON, you can be sure that it will be executed, once your laptop starts.If cron runs as a daemon, anacron is just a command that has to be run in order to execute the scheduled tasks.Anacron is run automatically each time the system starts.Anacron is run by root, so the tasks will have root privileges and the frequency of the job execution is expressed in days, not in minutes, like in the case of cron.
+- -
+Anacrontab
+
+The file which specifies the anacron jobs is /etc/anacrontab.
+run-parts which is the command in /etc/anacrontab file, runs all the executable files found in a directory.
+For example` 7  10  cron.weekly  run-parts  --report  /etc/cron.weekly - means that all executable files or scripts found in /etc/cron.weekly will be executed with a frequency of seven days.
+There are 4 fields in anacrons jobs.In this example:
+1st field) 7 - period in days after every job execution. 
+2nd field) 10 - delay in minutes after system boot or manual job execution.specifies how long anacron will wait before executing the job.The delay feature is intended to keep the system from being overloaded with lots of jobs, if anacron determines it needs to run several commands when it starts up.It won't run them simultaneously but with a delay.
+3rd field) cron.weekly - job identifier(name).It should be unique for each job, and is the name of a file that will be created under /var/spool/anacron directory.This is called the job timestamp file and will contain a single line that indicates the last time when this job was executed.This identifier has also the purpose to identify the job, in the messages or the log files.
+4th field) run-parts  --report  /etc/cron.weekly -  this is the command that will be executed.
+
+Open the /etc/anacrontab by root in text editor.At the end we can add a new line, which is in fact a new job.Type:
+2(which is for every second day)  1(which is for delay after boot or manual job execution)  backup(name of the job)   /root/backup.sh (script path of the job)
+anacron -T - to test for syntax errors of anacron jobs before running it.
+sudo anacron -d - manually runs anacron jobs.
+The jobs of anacron are located in /var/spool/anacron directory.When we run 'cat jobname' it prints out the timestamp when that job was last time executed.So via this information it knows when to execute the next job.
+__________________________________________________________________________
+-----------------------------------------------------------------------------
+#Mounting and Unmounting File Systems (df, mount, unmount, fdisk, gparted)
+
+If you want to access a file system that's on another partition or disk, you need to mount it or logically attach it to an existing directory of the unique file system.That directory is called mount point.
+To mount or to attach a file system in the directory tree , use the 'mount' command.
+mount - will display , all currently attached file systems.The output is really large because it includes virtual file systems such as sysfs, tmpf, proc and so on.
+mount -l -t filesystem  - to display only the specific filesystems.-l(for list), -t(for type) e.g. mount -l -t ext4 or e.g. mount -l -t vfat (in linux called vfat for fat32 type)
+- -
+Insert a usb flash.It will automatically be inserted in /media with username of the user who's logged in, and another directory with the name of the USB stick.It also will be shown by running 'mount'.
+In Linux, a storage device is logically represented as a special char device file in /dev.The file name can be found with 'mount command and with sudo fdisk -l.There are shown the file name of the new storage device.
+sudo fdisk -l - shows the partitions and all storage devices as well.
+dmesg - displays the kernel ring buffer, where also shown the logs of USB insertion.
+lsblk - (stands for list block devices) which is another alternative for showing partitions list.
+- -
+Having the name of the device file we can mount it in any directory that already exists.
+1.Lets create a new directory on the desktop mkdir /home/mrhacker/Desktop/usb
+2. sudo mount /dev/sda1  /home/mrhacker/Desktop/usb - so we have mounted the USB file to Desktop/usb directory.(ONLY ROOT CAN MOUNT)
+!!You can mount the same physical device in different places.
+!!Mount gives you live access to the contents of a device through the filesystem.But cp physically copies the data from one location to another.
+now after mounting to another directory, we can run 'mount -t vfat -l' and it will show the two different locations of that device file.
+The mount command will auto-detect the filesystem type.However some filesystems are not automatically recognized and the need to be explicitly specified.So use the -t option to specify the filesystem type.
+
+sudo mount -o ro /dev/sda1 mountPoint - mounts as read only(ro).If there is mounted anywhere this filesystem , unmount from there and mount again as read only.so you can't modify that partition. 
+sudo mount -o rw,remount /dev/sda1 mountPoint - If you realized that by mistake you have mounted it read only , you can remount it with other options as here rw(read write). 
+- -
+sudo umout mountPoint(here /home/mrhacker/Desktop/usb) - to unmount the device from destination directory.You are allowed to unmount partitions only if they are not used.So close any open files and then unmount.
+Alternatively you could try a lazy unmount using the -l/--lazy option, so it will unmount a busy file system as soon as it's not busy anymore.
+- -
+Many downloadable OSes , including Windows and various Linux distributions , are distributed as ISO images.To mount such an image , start by creating the mount point at any location you want (e.g. mkdir ~/iso).
+Then mount the image using the mount command and -o loop option.(sudo mount /pathtoISO /mountPoint -o loop)
+- -
+Gparted is a free partitioning editor , graphically managing your disk partitions.
+__________________________________________________________________________
+-----------------------------------------------------------------------------
+
