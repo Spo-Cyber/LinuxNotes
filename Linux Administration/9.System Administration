@@ -26,7 +26,7 @@ Example: 0 6 * * * /root/backup.sh - means 0(minute) 6(hour ) *(empty dom) *(emp
 @yearly /root/task.sh - every first day of every year ,at midnight(00:00), once  run the script. 
 @monthly /root/task.sh -  every first day of every month , at midnight , once run the script.
 @weekly /root/task.sh - every first day of every week, at night, once run the script.
-@dayly /root/task.sh - every day , at midnight, once run the script.
+@daily /root/task.sh - every day , at midnight, once run the script.
 @hourly /root/task.sh - every hour, at the beginning of the hour , once run the script.
 @reboot /root/reboot.sh
 */2 * * * * date >> /tmp/date_and_time.txt - to run this command , every second minute.tail -f /var/log/syslog to see the logs of command execution.
@@ -39,9 +39,9 @@ Root can also set some restrictions in regards to which users have access to the
 - -
 *System-wide cron jobs
 
-Besides the user's cron jobs , there are some system cron jobs that will be run as root.You just simply move your scripts into some directories: /etc/ cron.d , cron.hourly, cron.weekly, cron.monthly, cron.yearly all in /etc directory.So all the scripts which are in those directories will be executed by their state of dirname 'e.g. yearly.d'.
+Besides the user's cron jobs , there are some system cron jobs that will be run as root.You just simply move your scripts into some directories: /etc/cron.d , cron.hourly, cron.weekly, cron.monthly, cron.yearly all in /etc directory.So all the scripts which are in those directories will be executed by their state of dirname 'e.g. yearly.d'.
 less /etc/crontab - specifies when exactly will these cron jobs be run.For example, all scripts inside the cron.weekly directory, will be run on Sunday at 6:47 as mentioned in that file. 
-Cron jobs are intended for servers or machines that are running continuously.If the system is down, when the cron job is scheduled to run, the task is lost.It will not be run when the machine starts.
+Cron jobs are intended for servers or machines that are running continuously.If the system is down and the cron job is scheduled to run at that time, the task is lost.It will not be run when the machine starts.
 
 -  -  -  -  -  -  -  -  -  -  -  -
 #Scheduling Tasks Using anacron
@@ -101,4 +101,30 @@ Then mount the image using the mount command and -o loop option.(sudo mount /pat
 Gparted is a free partitioning editor , graphically managing your disk partitions.
 __________________________________________________________________________
 -----------------------------------------------------------------------------
+#Working With Device Files (dd)
 
+dd - a command line utility which purpose is to convert and copy files.Compared to the 'cp' command, which is used to copy regular files and directories, the 'dd' command can be used to read and write from special device files.
+!!Remember that hard disks are represented in Linux as special device files.
+For example , in my case , the partition where the root directory is mounted is called nvme0n1p6, and is represented as a special file named nvme0n1p6 in the /dev directory.
+So dd can work directly with these files and is used for tasks such as backing up the boot sector of a hard disk , cloning a disk or a partition to another one or creating a bootable usb stick.
+
+*Note that sometimes dd humorously is called "Disk Distroyer", due to it's drive-erasing capabilities.
+ So recommended to make backups of your data before using this tool.
+ 
+ dd [option]=[value] - dd pattern.
+ - - backup
+ Lets backup or clone an entire partition to a file on another partition.RUN WITH SUDO
+ dd if=/dev/usbdir of=/home/mrhacker/backup-usb.img status=progress - if(input file), of(output file)
+ As even the usb stick can be empty , however dd command will copy everything both empy and occupied space.So if you have a partition of 10 Gigabytes and the 9 are free, the dd command will copy 10 Gigabytes to the destination.This is one of the main differences from the 'cp' command.
+
+- - recover 
+And when you want to restore the disc using the image file, you just use the image file as the input and the disk or partition as the destination. dd if=/home/mrhacker/backup-usb.img of=/dev/usbdir status=progress
+-
+dd if=/home/mrhacker/backup-usb.img of=/dev/usbdir status=progress conv=sync - to copy everything using synchronized input-output.
+
+- - cloning entire partition into usb stick
+With dd command you can clone the entire hard disk or just a partition.The destination partition should be at least the same size as the source partition for this to work.
+dd if=/dev/nvme0n1p6 of=/dev/usbstick status=progress
+
+
+MBR(Master Boot Record) is a special type of boot sector at the very beginning of the disk.The MBR holds the information on how the logical partition , containing file systems, are organized on that medium.It also contains executable code, which is usually referred to as a boot loader.So the MBR represents the first sector of the disk with the size of 512bytes.
