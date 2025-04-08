@@ -113,7 +113,7 @@ So dd can work directly with these files and is used for tasks such as backing u
  
  dd [option]=[value] - dd pattern.
  - - backup
- Lets backup or clone an entire partition to a file on another partition.RUN WITH SUDO
+ Lets backup or clone an entire partition to a file on another partition.RUN By ROOT
  dd if=/dev/usbdir of=/home/mrhacker/backup-usb.img status=progress - if(input file), of(output file)
  As even the usb stick can be empty , however dd command will copy everything both empy and occupied space.So if you have a partition of 10 Gigabytes and the 9 are free, the dd command will copy 10 Gigabytes to the destination.This is one of the main differences from the 'cp' command.
 
@@ -123,8 +123,103 @@ And when you want to restore the disc using the image file, you just use the ima
 dd if=/home/mrhacker/backup-usb.img of=/dev/usbdir status=progress conv=sync - to copy everything using synchronized input-output.
 
 - - cloning entire partition into usb stick
-With dd command you can clone the entire hard disk or just a partition.The destination partition should be at least the same size as the source partition for this to work.
+With dd command you can clone the entire hard disk or just a partition.Of course the destination partition should be at least the same size as the source partition for this to work.
 dd if=/dev/nvme0n1p6 of=/dev/usbstick status=progress
 
+- - MBR backup and recovery using dd
+MBR(Master Boot Record) is a special type of boot sector at the very beginning of the disk.It contains two main things: 1. Bootloader - code to start the operation system. 2.Partition Table - info about how the disk is divided into partitions.So the MBR represents the first sector of the disk with the size of 512bytes.
+By default , the dd command reads one block of input processes it and writes it to an output file.You can specify the block size using the bs option.
 
-MBR(Master Boot Record) is a special type of boot sector at the very beginning of the disk.The MBR holds the information on how the logical partition , containing file systems, are organized on that medium.It also contains executable code, which is usually referred to as a boot loader.So the MBR represents the first sector of the disk with the size of 512bytes.
+dd if=/dev/sda of=/root/mbr.dat bs=512 count=1 (/dev/sda is disk not partition, bs is block size by bytes , count specifies the count of blocks to be copied)
+This command will copy the first 512bytes of /dev/sda(your disk, not partition) and save it to a file called mbr.dat in the /root/ directory for BACKUP purpose.
+
+MBR backup importance:
+1.If the MBR is corrupted or lost, the system might fail to boot because it can't find the bootloader or the partition table to know where the OS is installed.
+2.Without the partition table, the system won't know how to find or organize your partitions.
+3.If you don't have a backup of the MBR and the partition table is lost, it can be very hard to recover the data.
+The operating system might not be able to recognize the partition structure, and tools to recover the data might be more complicated or require advanced methods.
+
+ dd if=/root/mbr.dat of=/dev/sda bs=512 count=1 (recover mbr from /root/mbr.dat if MBR will be corrupted).
+ 
+ - - make USB drive bootable
+ At first the usb stick should be formatted with a file system.On most Linux distributions the USB flash drives are automatically mounted when inserted.
+1.sudo umount /media/mrhacker/XBOOT - unmount the disk if it's mounted.
+2.sudo mkfs.filesystem(e.g mkfs.vfat) /dev/pathtodevicefile(/dev/sda1) - formatting the drive to specified filesystem.
+3.dd if=/home/mrhacker/isoimagepath of=/dev/sda1 bs=4M status=progress - will make usb stick as bootable.4Megabytes is used to get balanced speed and memory usage while processing. 
+__________________________________________________________________________
+-----------------------------------------------------------------------------
+#Getting System Hardware Information (lwhw, lscpu, lspci, dmidecode, hdparm)
+
+The reasons we need to get information about system hardware:
+*If you want to upgrade your system hardware or want to find out why some applications don't run as smoothly as we expect.In VMs, hardware-checking commands show virtual hardware seen by the guest OS, not the host's real hardware.
+!Run these commands as ROOT
+
+*lshw - list hardware.extracts information on the hardware configuration of the machine.It can report the exact memory configuration , the firmware version, mainboard configuration, CPU version and speed, case configuration, BUS speed and many more.Run with piping to 'less' or redirect the output to a file , because it has a lot of data.lshw -json/-html (to display in json or html format).lshw -short - to display in short tabular format.
+JSON is a data exchange format used to exchange data between different applications and programming languages.
+lshw -C classname(e.g. cpu) - to display only specific information.
+*inxi -Fx -  displays information about all harder elements.
+
+--CPU info
+lscpu - displays information about the central processor unit and the architecture.-J option to display in json format.
+
+--RAM info
+dmidecode -t memory - get only information about the RAM memory.this command lists information about the RAM memory installed on the system.It's not displaying information about the amount of free or used memory of the running system.But you can always run top or free -m to see the amount of memory used or free.
+
+--PCI info
+lspci - to list all the pci buses and detauls about the devices connected to them like the vga adapter, the graphic card, network adapter, usb ports, sata controllers and so on.
+
+--USB info
+lsusb - to list the USB controllers and details about the devices connected to them.-v (verbose) to display detailed information about each USB port.
+
+--DISK info
+lshw -C disk - to display only the disk section with lshw command as shown below.-short better.
+lsblk - also displays information about disks and partitions.
+To get MORE information , including size, filesystem type, the number of sectors and so on , run fdisk -l diskname(optional).
+hdparm -i drivename - to get or set SATA drive parameters, e.g. to get details about the specific SATA drive.Use capital -I instead of -i ,to display more information.hdparm can also be used to benchmark or check the performance of hard disks in Linux.For example
+hdparm -t --direct /dev/diskname - to do timing test.
+
+--WIRELESS info
+iw list - to list and manipulate wireless devices and their configurations.
+
+--BATTERY info
+acpi - This is useful if you are connected with ssh to a remote laptop and want to check if it works on battery or is connected to the AC power source.By default it is not installed on Ubuntu or Kali , so you need to install it 'sudo apt install acpi'.
+acpi -bi - to display battery health as well.
+acpi -V - do display everything that can be shown about battery.
+
+- - -
+Most of the commands that we used so far , get the information from the files inside /proc directory , which is a virtual file system.To get specific information about e.g. cpu -> cat /proc/cpuinfo, e.g. memory -> cat /proc/meminfo, or e.g. kernel version -> cat /proc/version which gets displayed with 'uname' command as well.
+- - -
+__________________________________________________________________________
+-----------------------------------------------------------------------------
+#Systemd
+
+Most modern Linux distributions are using systemd as the default init system and service manager.
+Systemd has replaced the old SysVInit script system.However its backward compatible with the old SysVInit.
+Systemd (System Management Daemon) is a Linux initialization system and service manager with many components such as on demand service management, logging, boot manager and many more.
+An init system is the first process that starts when Linux boots up (after the kernel is loaded).
+It is Linux initialization system doing it's boot and startup process.
+The Linux boot process has the following phases:
+System powers up, then the bootloader which is GRUB loads the kernel, then the kernel loads an initial RAM disk that loads the system drives and looks for the root file system.Once the kernel is set up, it begins the systemd initialization with PID 1 as the first process, then takes over and continues to mount the hosts file systems and starts services. 
+
+Compared to the old init, which started the services sequentially, systemd starts the services in parallel.
+systemctl --version - to display the version of systemd.
+systemd-analyze - to show how long the boot process took.
+systemd-analyze blame - to list all running units ordered by the time they took to initialize.
+
+Systemd introduces the concepts of System units and there are several types, such as a service unit, mount unit, socket unit , and slice unit.Units are defined in unit configuration files, which include information about the unit type and it's behavior.
+For service management tasks , the unit file contains instructions about how to start, stop or restart the service.The unit has the suffix ".service".
+
+- - - Service Management
+systemctl - To control the systemd system and service manager. RUN all BY ROOT.
+For example install nginx server
+systemctl status nginx.service - to display the service state and the first few log lines.Systemd is smart enough to know that you probably want to operate on a service and you can leave off that .service suffix, so run 'systemctl status nginx' without .service.
+systemctl start/stop/restart servicename - to start , stop and restart a service.You need restart option for applying changes , made in service configuration files.
+systemctl reload servicename - to reload service.Some applications are able to reload configuration files without restarting whole service.
+systemctl reload-or-restart servicename - if you are unsure that application can reload or need restart for applying configuration run this command which will choose for you.
+systemctl enable/disable servicename - to enable/disable the service for starting at boot time.
+systemctl is-enabled servicename - to check if enabled or disabled.
+systemctl mask servicename- to prevent the service from being started automatically or manually.Now when you will see the state of service (systemctl status servicename) , in Loaded section it shows "masked".
+systemctl unmask servicename - to allow again the service to be modified.
+systemctl list-units - to list all the active units the systemd knows about.
+systemctl list-units --all - to list all the active and inactive units the system knows about.
+---------------------------------------------------------------------------------------------------------------
