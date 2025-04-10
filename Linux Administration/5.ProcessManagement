@@ -151,7 +151,7 @@ kill - sends a signal to a process or a group of processes, causing them to act 
 kill -l - to get a list of all available signals.Each signal is identified by number and a name.
 
 Example:
-	If a process gets the SIGTERM signal, then that's an invitation for the process to enter into the terminated state."Invitation" means that the process can decide to ignore some of the signals.
+If a process gets the SIGTERM signal, then that's an invitation for the process to enter into the terminated state."Invitation" means that the process can decide to ignore some of the signals.
 1)SIGHUP/HUP - reloads the system configuration process (e.g. ssh).
 2)SIGINT/INT - means INTerrupt the process.
 9)SIGKILL - forces to kill the process.HARD KILL.

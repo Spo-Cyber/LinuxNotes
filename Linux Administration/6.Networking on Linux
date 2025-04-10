@@ -227,6 +227,7 @@ ssh -vv login@IP - more verbose.
 * Problem 6
 If the problem still exists , check the server logs.
 sudo tail -f /var/log/auth.log , and run ssh connection and watch the logs/problems in real time.
+or newer alternative "journalctl" command.
 
 - - - - - -
 #Securing SSH
@@ -391,5 +392,5 @@ sudo nmap -sV remoteIP -  to see also its version.
 sudo nmap -sS remoteIP - SYN scan.it doesn't complete the full TCP  three-way handshake and instead sends a SYN packet and waits for a response.If a port is open , the target responds with SYN/ACK, and nmap then immediately sends an RST(reset) packet to tear down the connection before it completes. 
 sudo nmap -sT remoteIP - connect scan.nmap sends a SYN packet to the target port, and if the port is open , it reponsds with SYN/ACK .Then nmap sends an ACK to establish the connection.nmap then closes the connection with an RST packet.
 sudo nmap -p- remoteIP - to scan all ports.
-sudo nmap -p 80 iL hosts.txt - to scan the IPs/domainnames which are separated by new lines or a whitespaces within hosts.txt file.
+sudo nmap -p 80 -iL hosts.txt - to scan the IPs/domainnames which are separated by new lines or a whitespaces within hosts.txt file.
 - - - - - - - - - - -
