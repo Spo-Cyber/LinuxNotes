@@ -1,0 +1,75 @@
+		#Bash Shell Scripting
+_______________________________________________________________________
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+#Bash Aliases
+
+A bash Alias is a shortcut to a command.Every Linux distribution has at least a few aliases available.
+alias - To list all aliases.
+alias command - Example: alias ll='ls -alF' - runs in fast (ls -alF).So we have set ll command as shortcut to this ls command.
+\command - to run the original command and not the alias.(e.g. \ls)
+unalias command - to remove the alias for the current session.e.g. unalias now
+
+!!! If you close the terminal session, the alias won't be saved.To make aliases permanent , declare them in the ~/.bash_profile or ~/.bashrc files in the user's home directory.
+.bashrc is read when the shell starts. Example: This command displays the current time.alias now="date +%F\ %T".After writing this in terminal, we have to close or open another terminal , to get the .bashrc change in that.
+
+We can use alias for ssh connection quickly - example: alias server1="ssh -p 2234 user1@12.123.12.13"
+
+- - - - - - - - - -
+SHELL SCRIPTING
+
+A shell is a program that takes commands from the user through the keyboard , and gives them to the operating system's kernel to get executed.It's also called the command interpreter because it accepts commands from the user and then checks or interprets them to see if they are syntactically correct.And if they are , the shell will send them to the kernel for execution.The Shell gets started, when the user logs in or starts the terminal.
+echo $0 - to see what shell has started.
+cat /etc/passwd - to see the default shell in the last column of each user.
+
+- - -
+#Benefits of using Shell Scripts
+A shell script is basically an executable text file, that contains Shell commands and other specific structures and components like variable, functions, loops and so on that are executed sequentially.Whenever you find yourself doing the same task over and over again, you should use shell scripting.This is known as repetitive task automation.
+Using shell scripting , you can create your own power tools, customize administrative tasks, or create simple applications.
+And since the scripts you develop are well tested, the chances of errors are highly reduced. 
+Another advantage of using Shell scripts is that the one that runs them doesn't have to know all the details of Linux and programming.
+
+Some practical examples of common tasks, where Shell scripts used are:
+Monitoring the system
+Data backup and restoring
+Creating an email-based alert system, when something happens
+User administration
+Security
+Auditing and many more..
+
+- - Create a shell script
+mkdir ~/Desktop/scripts
+nano first_script.sh (it's common'not necessary' for Shell scripts to have the 'sh' extension)
+
+~/Desktop/first_script.sh file's content:
+mkdir -p dir1
+echo "some text" > dir1/file.txt
+ls -l dir1
+cat dir1/file.txt
+
+- - Execute the script 
+Normally a shell script is an executable file, so we need to add the execution permission for the owner. -> chmod 700 first_script.sh
+./first_script.sh (just type the absolute or relative path of the script , and it will be executed).If you use filename without absolute or relative path it will cause an error  'command not found'.The shell is not looking for the script in the current directory.It's looking for commands and scripts only in the directories from the $PATH variable.
+
+echo $PATH - shows the directories where the shell is looking for executables.So add the directory that contains the script to the path or execute the script using absolute or relative path.
+
+- - - - - -
+#The Shebang and comments
+
+For executable scripts, the system expects in the first line a so-called shebang that indicates which program to run as interpreter with the script file as argument (or in simple words , what program will run the file 'bash/python/php or other').
+If we execute a script without such a shebang directory , like we did in the example above, it will use the default shell of the current user.The shebang consists of a sequence of two characters: #! and then the shell file (#!/usr/bin/bash).So start the script with shebang at the first line.
+So if we write e.g. a python code in script file without shebang, and execute it , it will cause a syntax error.But if we add at the first line the python3 path shebang (by knowing 'which python3'), it will execute the script.
+
+Bash ignores everything on the line, after the # symbol.So # is used for commenting.The only exception to this rule is when the first line of the script starts with #! which is the shebang.
+We can not only comment in blank line, but also after any code in any line (e.g. cat dir1/test.txt #This code read the test.txt file's content).
+Bash doesn't support multiline comments.So the simplest way to write multiline comments in Bash is to add single comments one after another. 
+- - - - - -
+#Running Scripts
+
+1. The most common way to run bash scripts, is to add the execution permission to the script file and run it using absolute or relative path followed by the script name, if the script is in the current directory.(examples: ./script.sh or /home/user/script.sh)
+
+2. Another way to run a script is to write the name of the program or interpreter that will run the script and the script name like "bash script.sh" or "python3 script.sh".In this case , it is not mandatory for file to have execution permission set.This way running the script will automatically overwrite the shebang directive.
+
+3. Last way to run a script is 'source' command , like "source script.sh".The file does not require the execution permission and the source command reads and executes commands from the file , specified as the its argument in the current shell environment.So it is for current shell and the shebang directive won't work even it is written at the top.The difference between the first method and this one, is that using first method './' the script will be executed in a new shell (subshell).And when using the source command, the script is running in the current shell , that's running in the terminal.Note that source and the name of the script is the same as ". script.sh".So instead of source we can type '. script.sh' with dot and whitespace.
+- - - - - -
+#Variables in Bash
+
