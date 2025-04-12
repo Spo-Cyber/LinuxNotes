@@ -38,7 +38,7 @@ Auditing and many more..
 
 - - Create a shell script
 mkdir ~/Desktop/scripts
-nano first_script.sh (it's common'not necessary' for Shell scripts to have the 'sh' extension)
+nano first_script.sh (it's common 'not necessary' for Shell scripts to have the 'sh' extension)
 
 ~/Desktop/first_script.sh file's content:
 mkdir -p dir1
@@ -69,7 +69,64 @@ Bash doesn't support multiline comments.So the simplest way to write multiline c
 
 2. Another way to run a script is to write the name of the program or interpreter that will run the script and the script name like "bash script.sh" or "python3 script.sh".In this case , it is not mandatory for file to have execution permission set.This way running the script will automatically overwrite the shebang directive.
 
-3. Last way to run a script is 'source' command , like "source script.sh".The file does not require the execution permission and the source command reads and executes commands from the file , specified as the its argument in the current shell environment.So it is for current shell and the shebang directive won't work even it is written at the top.The difference between the first method and this one, is that using first method './' the script will be executed in a new shell (subshell).And when using the source command, the script is running in the current shell , that's running in the terminal.Note that source and the name of the script is the same as ". script.sh".So instead of source we can type '. script.sh' with dot and whitespace.
+3. Last way to run a script is with 'source' command , like "source script.sh".The file does not require the execution permission and the source command reads and executes commands from the file , specified as the its argument in the current shell environment.So it is for current shell and the shebang directive won't work even if it is written at the top.The difference between the first method and this one, is that using first method './', the script will be executed in a new shell (subshell).And when using the source command, the script is running in the current shell , that's running in the terminal.Note that source and the name of the script is the same as ". script.sh".So instead of 'source script.sh' we can type '. script.sh' with dot and whitespace.
 - - - - - -
 #Variables in Bash
 
+Variable is a name for a memory location where a value, which be manipulated is stored.You can create the variable in a script file or directly in the shell that's running in the terminal.
+os=Linux - the name of the variable is os and it's value is "Linux".Its not applied to use whitespace before and after the equal sign.
+os="Linux is OS" - use double quotes"" if the value needs to have whitespace.
+Bash is weakly typed programming language that does not require you to define any date type at the time of variable declaration.So when any numeric value is assigned to a variable, then it will work as an integer.And when any text value is assigned to a variable, then it is a string.
+In bash there are no any floating point numbers , only integers.  age=30
+The variable names should be descriptive and remind you of the value they hold.A variable name cannot start with a number nor can it contain spaces or other special characters like .,;!? and so on.
+You can use Capital characters and underline for variable names.
+
+echo $age | echo $os | echo $user_name  - To access the value of a variable , precede the name of the variable with a dollar sign.
+echo "I'm learning $os operating system" - You can also reference the value of a variable inside the string by enclosing everything in double quotes.
+(echo '$os') - This won't display the value of the variable.Instead it will display '$os' like a string, because we need to use double quotes with variables.
+echo "The value of \$os is $os" - in this example, the backslash\ symbol is canceling the special meaning of the dollar sign and its printing "The value of $os is Linux".
+$distro=Kali -> my_distro="I use $distro $os" -> echo my_distro ->  I use Kali Linux.So we can use variable within the variable's value.
+
+set - To get a list of all shell variables and functions run the "set" command.So we can use "grep" to find a specific variable or function.
+unset variablename - To undefine or remove a variable use the unset command -> unset os (without the $ sign, because we are not referencing the value of the variable).
+
+Shell variables that are introduced by the operating system, shell startup scripts, or by the shell itself, are usually all in capitals.Examples: $PATH, $USER, $HOME.
+
+declare -r logdir="logdir is a constant" - Sometimes you want to make sure that the content of a variable does not change, it's read-only.To declare such a constant use the declare built-in command with the -R option.So we can use the variable as commonly.If you try to change the value of constant/readonly variable, you'll get an error.And you can't unset/remove read-only variable (e.g. unset logdir).
+
+Example` Print number of lines, first 5 lines, and last 7 lines of /etc/passwd which should be as a variable's value.Let's type this task in a shell script file:
+#!/usr/bin/bash
+filename=/etc/passwd
+echo "---------------------"
+echo "Number of lines in $filename"
+wc -l $filename
+echo "---------------------"
+echo "First 5 lines"
+head -n 5 $filename
+echo "---------------------"
+echo "Last 7 lines"
+tail -n 7 $filename
+echo "---------------------"
+
+- - - - - - 
+#Environment Variables
+
+Each time we launch a terminal window in the shell inside it ,a collection of predefined variables are set with some dynamic values and are used to customize the way the system works and behaves.There are two classes of such variables: environment variables and shell variables.
+
+Environment Variables are defined for the current shell and are inherited by any child shells or processes.They are used to pass information to processes that are spawned from the current shell.
+
+Shell Variables are contained exclusively within the shell in which they are defined or set.
+
+$PATH is such an environment variable that holds a list of directories, separated by columns where the shell will search for the commands you run.example: echo $PATH -> home/mrhacker/.local/bin:/usr/local/sbin.When assigning multiple values to such a variable, it's common to separate them by a colon.Most of times , you don't use environment variables directly.They are referenced by individual applications and services as needed.For example, your home directory is set as an environment variable called $HOME when you log in.The system knows you home directory by reading the value of this variable.Other environment variables will store information about the default browser or text editor, the keyboard layout settings and many more.
+env - to view all environment variables set on your system.
+printenv - another useful command that lists the environment variables, but also the value of a specific variable.Running it without any argument will print out all environmental variables.And giving a variable as argument will print out the value of that variable (e.g. printenv HOME PATH USER optionally).
+env and printenv will print out all environment variables.
+
+set - To display all available variables,environment, shell and those created by the user.The set command is displaying shell functions as well.And the output of information is overwhelming.To cleanup the output, we specify that set should operate in posix mode , so it won't print the shell functions.
+set -o posix -> set - to run set in posix mode.So it displays only the environment and shell variables.
+
+Environment variables can be used when you want to change the default settings of your system.For example, you want to add a directory to the path, so that you can run the scripts in that directory by typing their name.So type in ~/.bashrc:
+export PATH=$PATH:~/Desktop/scripts/
+After typing this , save the file and load it in the current shell source (source ~/.bashrc).So now the PATH variable contains the scripts directory , and any script or command found in that directory can be run by name as any other command , without writing ./ before its name.
+
+To create a new environment variable, you have to export it using the "export" command before the variable name.So in a startup configuration file like .bashrc , we can add e.g. (export MYVAR=342).This is a user specific environment variable , and if you want to create a system-wide variable(available for all users), declare the variable in /etc/profile or /etc/bash.bashrc .Of course , only root can edit those files.There is also a file /etc/environment, which specifies the system-wide environment variables to be set.The file must consist of simple name=value pairs on separate lines.
