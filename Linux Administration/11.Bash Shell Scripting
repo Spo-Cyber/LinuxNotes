@@ -79,7 +79,7 @@ os="Linux is OS" - use double quotes"" if the value needs to have whitespace.
 Bash is weakly typed programming language that does not require you to define any date type at the time of variable declaration.So when any numeric value is assigned to a variable, then it will work as an integer.And when any text value is assigned to a variable, then it is a string.
 In bash there are no any floating point numbers , only integers.  age=30
 The variable names should be descriptive and remind you of the value they hold.A variable name cannot start with a number nor can it contain spaces or other special characters like .,;!? and so on.
-You can use Capital characters and underline for variable names.
+You can use Capital letters and underscore for variable names.
 
 echo $age | echo $os | echo $user_name  - To access the value of a variable , precede the name of the variable with a dollar sign.
 echo "I'm learning $os operating system" - You can also reference the value of a variable inside the string by enclosing everything in double quotes.
@@ -117,7 +117,7 @@ Environment Variables are defined for the current shell and are inherited by any
 
 Shell Variables are contained exclusively within the shell in which they are defined or set.
 
-$PATH is such an environment variable that holds a list of directories, separated by columns where the shell will search for the commands you run.example: echo $PATH -> home/mrhacker/.local/bin:/usr/local/sbin.When assigning multiple values to such a variable, it's common to separate them by a colon.Most of times , you don't use environment variables directly.They are referenced by individual applications and services as needed.For example, your home directory is set as an environment variable called $HOME when you log in.The system knows you home directory by reading the value of this variable.Other environment variables will store information about the default browser or text editor, the keyboard layout settings and many more.
+$PATH is such an environment variable that holds a list of directories, separated by columns where the shell will search for the commands you run.example: echo $PATH -> home/mrhacker/.local/bin:/usr/local/sbin.When assigning multiple values to such a variable, it's common to separate them by a colon.Most of times , you don't use environment variables directly.They are referenced by individual applications and services as needed.For example, your home directory is set as an environment variable called $HOME when you log in.The system knows your home directory by reading the value of this variable.Other environment variables will store information about the default browser or text editor, the keyboard layout settings and many more.
 env - to view all environment variables set on your system.
 printenv - another useful command that lists the environment variables, but also the value of a specific variable.Running it without any argument will print out all environmental variables.And giving a variable as argument will print out the value of that variable (e.g. printenv HOME PATH USER optionally).
 env and printenv will print out all environment variables.
@@ -130,3 +130,33 @@ export PATH=$PATH:~/Desktop/scripts/
 After typing this , save the file and load it in the current shell source (source ~/.bashrc).So now the PATH variable contains the scripts directory , and any script or command found in that directory can be run by name as any other command , without writing ./ before its name.
 
 To create a new environment variable, you have to export it using the "export" command before the variable name.So in a startup configuration file like .bashrc , we can add e.g. (export MYVAR=342).This is a user specific environment variable , and if you want to create a system-wide variable(available for all users), declare the variable in /etc/profile or /etc/bash.bashrc .Of course , only root can edit those files.There is also a file /etc/environment, which specifies the system-wide environment variables to be set.The file must consist of simple name=value pairs on separate lines.
+
+- - - - - -
+#Getting User Input
+
+read - to get user input."read" will make the program flow stop until the user has given an input and has indeed the input with the return or enter key.
+
+read variablename - The execution stopped and its waiting for the user to enter a string and hit enter.A new variable called name was created and the value stored is the string (your input).
+read -p "Your text before input" variablename -  This will display a text to hint something about the input , and will store the input value into new variablename variable.
+
+Example:
+read -p "What is the IP to block? " ip
+iptables -I INPUT -s $ip -j DROP
+Here we will drop all packets from a specific IP address that is given by the user (we will use iptables for now).
+We can type this in script file , for prompting for IP address , to block it's incoming traffic, and run the script as root.
+
+read -s -p "your password" my_password - If you want to enter a password echoing it in the terminal, which will not show the input you type.
+- - - - - -
+#Special Variables and Positional Arguments
+
+Bash scripts require argument values to provide input to the script.The arguments are the values provided after the script name when running it.For example. if you are running apt install nginx (apt is the script or the command name, install is the first argument of the script, and nginx is the second argument of the script).The name of the script and the arguments are separated by the spaces which in this case is known as the default internal field separator.There are some predefined variables for this purpose, also known as positional arguments.
+
+Example: ./script.sh filename1 dir1 10.0.0.1
+$0 is the name of the script itself (script.sh).$0 is not a positional argument , but is useful when you want to run the script again while giving it another input values.
+$1 is the first positional argument (filename1)
+$2 is the second positional argument (dir1)
+$3 is the last positional argument (10.0.0.1).The $9 will be 9th argument, and after 9th argument , we must use arguments within ${} e.g. ${11} the eleventh.
+$# is the number of the positional arguments.
+$* is a string representation of all positional arguments: $1, $2, $3 ...
+$? is the most recent foreground command exit status.
+All of these predefined variables are available and can be used inside the scripts.

@@ -3,9 +3,9 @@
 vimtutor (open vim tutorial file)
 
 VIM modes:
-		-command
-		-insert
-		-last line
+	-command
+	-insert
+	-last line
 
 ARROW KEYS - H(Left), J(Down), K(Up), L(Right)
 
@@ -16,23 +16,31 @@ vimdiff file1 file2 (alternative of vim -d)
 If the vim was accidently closed or by ctrl+Z which stops the program, after that it automatically saves a new file called '.filename.swp', and when opening the file again it tells about problem which occured by the accident , and recommends to recover or edit file anyway.and after those actions, we can just remove that '.filename.swp' swap file from that directory.
 
 - - - - - - - - - - Command Mode - - - - - - - - - - -
-When opening VIM, it is by in command mode
+When opening VIM, it is run in command mode
 esc - to switch to cmd mode
 
-x (deleting after cursor one char'like delete button')
+x (deleting after cursor one char 'similar to delete button')
 r (press r and any xchar , and it will replace the char on which the cursor is , by the xchar)
 gg - go to the beginning of the page
 G - go to the end of the page
-$ (go to the end of the file)
+
+0 - go to the start of the line
+$ - go to the end of the line
 
 * - while cursor is on the word , which we want to find next
 
 i (switch to insert mode, before cursor)
 a (switch to insert mode, after cursor)
+
+w (until the start of the next word)
+e (to the end of the current word)
+
 O (switch to insert mode, from new line, above the current line)
 o (switch to insert mode, from new line, below the current line)
-I (switch to insert mode, from the beggining of the line)
+
+I (switch to insert mode, from the beginning of the line)
 A (switch to insert mode, from the end of the line)
+
 u (undo previous actions)
 ctrl + r (to redo to newer actions)
 
@@ -68,6 +76,5 @@ The set nu/nonu, and syntax on/off options are temporary for just that session.B
 :23 (go to the line 23)
 
 We can open multiple text files simultaneously by "vim file1 file2 file3", but at we will see only the first at the beginning.And when we want to switch to next file -> :n or :next , and to previous file -> :N or :prev 
-
 --------------------------------------------------------------------------
 ______________ ______________ ______________ ______________ ______________
