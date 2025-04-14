@@ -95,6 +95,7 @@ Shell variables that are introduced by the operating system, shell startup scrip
 declare -r logdir="logdir is a constant" - Sometimes you want to make sure that the content of a variable does not change, it's read-only.To declare such a constant use the declare built-in command with the -R option.So we can use the variable as commonly.If you try to change the value of constant/readonly variable, you'll get an error.And you can't unset/remove read-only variable (e.g. unset logdir).
 
 Example` Print number of lines, first 5 lines, and last 7 lines of /etc/passwd which should be as a variable's value.Let's type this task in a shell script file:
+############################################
 #!/usr/bin/bash
 filename=/etc/passwd
 echo "---------------------"
@@ -107,7 +108,7 @@ echo "---------------------"
 echo "Last 7 lines"
 tail -n 7 $filename
 echo "---------------------"
-
+############################################
 - - - - - - 
 #Environment Variables
 
@@ -160,3 +161,110 @@ $# is the number of the positional arguments.
 $* is a string representation of all positional arguments: $1, $2, $3 ...
 $? is the most recent foreground command exit status.
 All of these predefined variables are available and can be used inside the scripts.
+
+- - - - - -
+# If, Elif and Else Statements
+
+If, elif, else are Bash shell keywords, and some condition is usually some sort of comparison operation, like say for example testing if the value of a variable is greater than a specific number, or an argument of the script is either a file or a directory.
+
+Pattern of if,elif,else statements operations:
+############################################
+	if [ some condition is true ]     #mandatory to have whitespaces between text and [ ]
+	then 
+	    //execute this command
+	elif [ some other condition is true ]
+	then
+	    //execute this code
+	else
+	    //execute this code
+	fi    # closes the if (elif,else) statement entirely
+############################################
+-
+*INFO*  man test - displays all testing conditions that can be used in if statements.
+- 
+Example: If we type in script cat $1 , and give the first argument as directory or non-existing file , then it will cause an error.So lets add statements to ensure the $1 is file , and then "cat" it's contents.
+############################################
+#!/usr/bin/bash
+if [ -f "$1" ]  #check if the given argument is file type
+then
+	echo "The argument is a file, displaying it's contents ..."
+	cat $1
+elif [ -d $1 ]
+then
+	echo "$1 is a directory man!"
+else 
+	echo "$1 is neither a file nor a directory."
+fi
+############################################
+It's recommended to use "" outside of $1 in if statement.This is recommended when working with strings and in this case, the first argument of the script ($1) is a file or a directory name, so a string.
+
+The example bellow uses the single square brackets"[]" for testing conditions.This is the old classical and portable type of testing.
+There is a new updated version of testing, that used double square brackets"[[]]", which is considered safer.Basically , double square brackets prevent word splitting or string variables that contain spaces,and you don't need to double quote string variables, even though that is good practice. Double square brackets also have some other nice features , like regular expression matching.
+
+- - -
+#Testing conditions for numbers
+
+INT1 -eq INT2 => INT1 == INT2
+INT1 -gt INT2 => INT1 > INT2
+INT1 -ge INT2 => INT1 >= INT2
+INT1 -lt INT2 => INT1 < INT2
+INT1 -le INT2 => INT1 <= INT2
+INT1 -ne INT2 => INT1 != INT2
+
+Example: 
+############################################
+#!/usr/bin/bash
+read -p "How old are you? " age
+
+if [[ $age -lt 18 ]]
+then
+	echo "Not allowed"
+elif [[ $age -ge 18 ]]
+	then
+	if [[ $age -lt 90 ]]
+	then
+		echo "You are allowed"
+	else
+		echo "You are not allowed granny!"
+	fi
+fi
+############################################
+- - -
+#Multiple conditions and nested IF statements
+
+The logical OR and AND operators allow you to use multiple conditions in the if statements.
+if [[ $age -gt 18 ]] && [[ $age -lt 100 ]] - This is AND statement in BASH
+if [[ $age -gt 18 ]] || [[ $age -lt 100 ]] - This is OR statement in BASH
+
+Pattern of Nested If statements:
+############################################
+if [[ -e $1 ]]
+then
+	if [[ -f $1 ]] || [[ -d $1 ]]
+	then
+		if [[ -f $1 ]]
+		then
+			echo "$1 exists and it is a file!"
+		else
+			echo "$1 exists and it is a directory!"
+		fi
+	fi
+fi
+############################################
+- - - - - -
+#Command Substitution
+
+Command substitution means to run a shell command and store its output into a variable for later use.There are two identical ways to perform command substitution.
+
+`command` - The first one is to write the command between backticks/backquotes.This is a special character below the ESC key on the keyboard.
+Example: now=`date` => here the result of date command is redirected to now variable.And now we can see this new value of now variable -> echo $now.
+
+#(command) - The second way to perform command substitution is to write a dollar symbol and the command between parentheses.
+Example: now=$(date) => the same result in the example above.
+
+Example: output=$(ps -ef | grep bash) OR output=`ps -ef | grep bash` => echo "$output".
+If we did "echo $output" without double quotes , then it would print the same into a single line and not as like with double quotes in it's original tabular form.
+
+Example: tar -czvf backupdir.`date +%F_%H:%M` ~/pathdir - here we add the current date to the new archive file with using command substitution.
+
+

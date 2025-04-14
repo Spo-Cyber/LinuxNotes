@@ -52,7 +52,7 @@ p (to paste in the new line, after the cursor)
 P (to paste in the new line, before the cursor)
 
 ZZ (save and quit)
-
+Shift+. (to push a paragraph ahead like Tab key)
 - - - - - - - - - - Last Line Mode - - - - - - - - - - -
 
 : -> (to switch to last line mode, where can do all actions about quitting, saving, forcing to quit...)
