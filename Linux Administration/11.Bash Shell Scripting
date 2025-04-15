@@ -178,6 +178,8 @@ Pattern of if,elif,else statements operations:
 	else
 	    //execute this code
 	fi    # closes the if (elif,else) statement entirely
+	
+We can use then without moving to new line use ; like break line -> if [condition]; then //command; else //command; fi
 ############################################
 -
 *INFO*  man test - displays all testing conditions that can be used in if statements.
@@ -266,5 +268,16 @@ Example: output=$(ps -ef | grep bash) OR output=`ps -ef | grep bash` => echo "$o
 If we did "echo $output" without double quotes , then it would print the same into a single line and not as like with double quotes in it's original tabular form.
 
 Example: tar -czvf backupdir.`date +%F_%H:%M` ~/pathdir - here we add the current date to the new archive file with using command substitution.
+- - - - - -
+#Comparing Strings in If Statements
 
+Two strings are equal when they have the same length and contain the same sequence of characters in the same order.The comparison operator is the single equal sign if you use the if statement with single square brackets or the double equals sign if you use the if statement with double square brackets.
+Example: if [ "$str1" = "$str2" ] or if [[ "$str1" == "$str2" ]]. str1 and str2 are 'operands' and = is 'operator'. 
+Don't forget the quotes outside of variables in if testing conditions to avoid the word splitting or other globbing issues.
 
+!operator - !(not) -> != (not equal) .!True = False , !False = True
+
+Checking for Substring
+Example: if [[ "$str1" == *"Linux"* ]]; then echo "The substring Linux is there.";fi
+
+-n (return True, if the string length is non-zero) and the -z (return, True if the string length is zero" 
