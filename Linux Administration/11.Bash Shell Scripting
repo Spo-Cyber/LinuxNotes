@@ -272,6 +272,7 @@ Example: tar -czvf backupdir.`date +%F_%H:%M` ~/pathdir - here we add the curren
 #Comparing Strings in If Statements
 
 Two strings are equal when they have the same length and contain the same sequence of characters in the same order.The comparison operator is the single equal sign if you use the if statement with single square brackets or the double equals sign if you use the if statement with double square brackets.
+
 Example: if [ "$str1" = "$str2" ] or if [[ "$str1" == "$str2" ]]. str1 and str2 are 'operands' and = is 'operator'. 
 Don't forget the quotes outside of variables in if testing conditions to avoid the word splitting or other globbing issues.
 
@@ -280,4 +281,60 @@ Don't forget the quotes outside of variables in if testing conditions to avoid t
 Checking for Substring
 Example: if [[ "$str1" == *"Linux"* ]]; then echo "The substring Linux is there.";fi
 
--n (return True, if the string length is non-zero) and the -z (return, True if the string length is zero" 
+-n (return True, if the string length is non-zero) and the -z (return, True if the string length is zero"
+Example: if [[ -n "$str1" ]]; then echo "non zero";elif [[ -z "$str1" ]];then echo "zero"; fi
+- - -
+Example: Testing Network Connections
+
+#/usr/bin/bash
+output="$(ping -c 3 $1)"
+if [[ "$output" == *"100% packet loss"* ]];then echo "The network connection to $1 is not working.";else "The network connection to $1 is working.";fi
+now execute it -> ./connection 192.168.1.59/otherIP and see the results
+- - - - - -
+#For Loops
+
+A For statement is used to execute a block of code repeatedly.The standard Bash For Loop is similar to the Python one, but is different from the For loop used in For loop used in C++ or Java.
+ The bash For loop takes this form:
+for item in LIST     (item is a temporary variable that is created and takes a value from the LIST sequentially at each operation.)
+do
+	COMMANDS
+done
+
+- - -
+Example:
+for os in Ubuntu CentOS Slackware Kali "MX Linux"   #By default, the list is series of strings separated by spaces
+do
+	echo "os is $os"
+done
+- - -
+Sequence expression - defines the start and the end point of the range like this:
+for num in {3..7}
+do
+	echo "number is $num"
+done
+
+Starting with Bash version 4, it's also possible to specify and increment for the range.
+Example:
+for num in {10..100..5}  (this will iterate over the range of number from 10 to 100 in increments of 5).
+- - -
+Example:
+for item in ./*     (item is each file in the current directory)
+do
+	echo "Displaying the contents of the $item"
+	sleep 1
+	cat "$item"
+	echo "############################"
+done
+- - -
+Example:
+for file in *.txt
+do
+	mv $file renamed_$file
+done
+- - -
+Example:C/Java-styled for loop in Bash
+for ((i=0;i<=50;i++))
+do
+	echo "i = $i"
+done
+- - -
