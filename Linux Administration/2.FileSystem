@@ -19,7 +19,7 @@ changes).E.g. to see info about cpu -> cat /proc/cpuinfo, or for memory -> cat /
 /sys (contains information about devices, drivers and some Kernel features)
 /srv (contains data for servers)
 /run (is new,different distribution use this directory in different ways.It's a temporary filesystem which runs in RAM so its contents will vanish when the system reboots.This directory is used only by processes)
-/usr (contains many essential files and directores needed for the system to function properly in a multi-user environment)
+/usr (contains many essential files and directories needed for the system to function properly in a multi-user environment)
 /var (typically contains variable-length files such as logs which are files that register events that happen on the system)
 - - - -
 df (for file system space usage), df -h (for easier displaying like not in kilobytes but in Gb)
@@ -172,6 +172,7 @@ ______________ ______________ ______________ ______________ ______________
 #Grep (Searching for String Patterns in Text Files)
 
 grep 'pattern text' /file (to find the text from /file if exists)
+grep --color (to highlight the grepped text)
 grep -i (to ignore case)
 grep -n (to print out the line number as well)
 grep -v (to select non-matching lines)
@@ -202,7 +203,7 @@ diff file1 file2 (comparing and showing the differences in text files)
 diff -B (ignore blank lines)
 diff -w (ignore white spaces)
 diff -i (ignore case)
-diff -c (for more detailed comparison, by showing both files'link in github')
+diff -c (for more detailed comparison, by showing both files' change time as well)
 diff -y (display both file content in two columns 'side-by-side')
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
