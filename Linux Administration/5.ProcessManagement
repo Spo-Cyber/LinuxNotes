@@ -67,7 +67,7 @@ ps -ef (very common command , to display all processes with detailed information
 1.UID - User ID who runs the process.
 2.PID - Process ID
 3.PPID - Parent Process ID
-4.C - time the CPU was used by process.it is not second... it is just for comparing with other processes.
+4.C - time the CPU was used by process.it is not in seconds... it is just for comparing with other processes.
 5.STIME - Starting TIME, which is the time when the process was started.
 6.TTY - Refers to terminal session.if "?" sign is set, it means that the process has not terminal on which to be attached(it is probably a system service or a daemon).
 = = = =
@@ -157,18 +157,18 @@ If a process gets the SIGTERM signal, then that's an invitation for the process 
 9)SIGKILL - forces to kill the process.HARD KILL.
 15)SIGTERM - terminates the process.SOFT KILL.
 
-1.The first way to deliver the signal to a process is to use the number that identifies the signal and Process Name,e.g. 2 (for 2)SIGINT signal).So "kill -2 PID".
-
 =========================
 pidof ProcessName - To quickly find the PID of a process.For example "pid firefox-esr",and it displays all the PIDs related with "firefox-esr".
 =========================
+
+1.The first way to deliver the signal to a process is to use the number that identifies the signal and Process Name,e.g. 2 (for 2)SIGINT signal).So "kill -2 PID".
 
 2.The second way to deliver the signal to a process is to use the "number of signal"/"name of signal in CAPS" and the PID(s).Example "kill -INT 1723 2821 2892".
 
 3.The third/last way to deliver the signal to a process is to use SIG prefix and the signal name in bash scripting component "$()".Example "kill -SIGINT $(pidof gnome-text-editor)"
 
 ===========
-Non-privileged users can send signals only to their own process, while the root user can send signals to other user's processes.
+Non-privileged users can send signals only to their own processes, while the root user can send signals to other user's processes.
 ===========
 
 Example:

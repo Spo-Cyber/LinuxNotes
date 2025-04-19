@@ -3,7 +3,7 @@ _________________________________________________________________
 -------------------------------------------------------------------
 #Getting Information about the Network Interfaces(ip, ifconfig)
 
-*If there are not net tools , run "sudo apt install net-tools".
+*If there is no net tools , run "sudo apt install net-tools".
 
 - - - ifconfig - - - 
 *ifconfig: Part of net-tools package has been there for a long time and is still used to configure display and control network interfaces by many Linux administrators.
@@ -11,7 +11,7 @@ ifconfig - to show only the information about "enabled" interfaces.
 ifconfig -a - to display a list of all network interfaces and the associated IP address , both "enabled/disabled"
 ifconfig InterfaceName - to display only the information about specific interface.
 __
-*The list(each section of interface) starts with interface names, predictable by linux.
+*The list(each section of interface) starts with interface names, predictable by Linux.
 Interface name starting with "en" means Ethernet.
 Interface name starting with "wl" means Wireless LAN.
 Interface name "lo" means loopback address.
@@ -37,7 +37,7 @@ route -n - displays names in numeric format.
 resolvectl status - to see the DNS servers used by the system.
 _________________________________________________________________
 -----------------------------------------------------------------
-#Configuring the Network On The Fly(ipconfig, ip, route)
+#Configuring the Network On The Fly(ifconfig, ip, route)
 
 *To configure the network interfaces with (ifconfig/ip), we need to execute the commands as ROOT.
 
@@ -227,7 +227,7 @@ ssh -vv login@IP - more verbose.
 * Problem 6
 If the problem still exists , check the server logs.
 sudo tail -f /var/log/auth.log , and run ssh connection and watch the logs/problems in real time.
-or newer alternative "journalctl" command.
+or newer alternative "journalctl -u ssh" command.
 
 - - - - - -
 #Securing SSH
@@ -285,11 +285,11 @@ MaxStartups N - controls the number of unauthenticated concurrent SSH connection
  1) To copy from your computer to a remote server
  2) To copy from a remote server to your computer
  3) To copy from a remote server to another remote server
-!Before the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
+!Before the running the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
  -
 *To be able to copy files, the user that runs the scp command must have the read permission on the source file and the user that authenticates.Scp command overwrites files without any warning.
 1)Your computer -> remote server
-scp -P 22 ip.txt mrhacker@192.168.1.6:~/path => P(specifies the port on which the server is listening), ip.txt (file which should be copied), last part(indicates the destination, by username IP and destination location of file)
+scp -P 22 ip.txt remoteLogin@192.168.1.6:~/path => P(specifies the port on which the server is listening), ip.txt (file which should be copied), last part(indicates the destination, by username IP and destination location of file)
 scp -r -P 22 mydir/ mrhacker@192.168.1.6:~ => to send directory
 scp -p ... - to save the access and modification times.
  -
@@ -328,7 +328,7 @@ And to specify multiple patterns , you should specify multiple --exclude options
 
 Rsync is also used to synchronize local directories to a remote system(if you have SSH access to that system).This is the best and first option , if you want to mirror the backup from a remote system.
 The user that runs the rsync command should have read access to each file on the source location , and the user that connects to the remote server should have write access on the destination.
-The options are the same as without ssh option.
+
 rsync -av -e ssh /sourcelocation/ remotelogin@remoteIP:destination/ - transfer from your machine to remote system(the syntax is similar to scp command).This uses the default ssh options, but to specify some options e.g. port number , then type it after -e within quotes => rsync -av -e 'ssh -p 2505 ..'.
 And to transfer from remote system to my machine => change the source and destination places below(like in scp).
 _________________________________________________________________
@@ -347,7 +347,7 @@ wget -b URL - to download in the background.it writes the process of download in
 wget --mirror --convert-links --adjust-extension --page-requisites --no-parent http://example.org
 --mirror (makes the download recursively)
 --convert-links (converts all the links 'including CSS stylesheets' to relative paths, so they will be suitable for offline viewing)
---adjust-extensions (will add suitable extensions to the file names, such as html or css depending on their content type)
+--adjust-extension (will add suitable extensions to the file names, such as html or css depending on their content type)
 --page-requisites (will also download things like CSS style-sheets and images to properly display the page offline.
 --no-parent (not to ascend parent directory as well.It's useful to restrict the download to only a part of the site)
 
@@ -358,7 +358,7 @@ Checking for Listening Ports (netstat, ss, lsof, telnet, nmap)
 SCANNING OPEN PORTS ON LOCAL HOST
 
 When troubleshooting network connectivity issues, one of the first things you should do is to check if the server application is listening on a specific port on the machine.
-netstat, ss ans lsof are used to display open ports on the current system(localhost).
+netstat, ss and lsof are used to display open ports on the current system(localhost).
 
 - - - netstat
 netstat -tupan = -t(shows tcp ports), -u(shows udp ports), -p(shows PID and the name of the program which is listening), -a(shows all ports both listening and not listening), n(shows numerical addresses instead of trying to determine symbolic host and port names).
