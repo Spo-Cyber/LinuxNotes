@@ -11,7 +11,7 @@ Deb is the installation package format used by all Debian based distributions.Th
 Package management operations can be performed with different tools available, from the lowest level command dpkg to apt or graphical front-ends like Synaptic.
 Dpkg provides a low-level infrastructure for package management.The dpkg database contains the list of the installed software on the current system.
 It can work with local .deb package files and does not know about repositories and does not solve dependencies like 'apt' does.
-Note that other advances tools like apt will call dpkg behind the scenes.So in fact , they are based on dpkg.
+Note that other advanced tools like apt will call dpkg behind the scenes.So in fact , they are based on dpkg.
 If you have a downloaded deb file , you can install it with dpkg.
 
 dpkg --info fileName - to show info about deb file.
@@ -32,7 +32,7 @@ However dpkg is a low-level tool that neither works with repositories nor solves
 #APT (Advanced package tool)
 
 In the newest versions of debian based distros the apt-get and apt-cache tools were merged into a single command simply called apt.
-Unlike dpkg, apt does not understand .deb files,.It works with packages that are downloaded from repositories and calls dpkg directly after downloading the .deb archives.
+Unlike dpkg, apt does not understand .deb files.It works with packages that are downloaded from repositories and calls dpkg directly after downloading the .deb archives.
 An APT repository is a web server which contains a collection of packages with metadata that is readable by the apt tool.Having an APT repository, allows to perform package install, removal, upgrade, and other operations on individual packages or groups of packages.Repositories are essential for storing, managing and delivering software on Debian systems.
 APT uses an index or a local database that holds records of available packages from the repositories enabled in the system.
 
@@ -44,7 +44,7 @@ apt full-upgrade - to upgrade all available packages.Add -y to answer yes to all
 apt remove packageName's' - to remove package.
 apt purge packageName's' - to remove configuration files as well.
 apt autoremove - to remove the no longer deeded dependencies .When a package is installed , it also installs it's dependencies.When the package is removed , using apt remove or purge, the dependencies will not be removed as well.You can always freely remove these dependency packages since they are no longer used!.
-apt clean - to clear out the local repository of retrieved package files.By default, system keeps every package that has been downloaded  and installed in a cache directory on the disk./var/cache/apt/archives is the cache directory , which contains all installed and upgraded packages.after apt clean , it only keeps the log files.
+apt clean - to clear out the local repository of retrieved package files.By default, system keeps every package that has been downloaded  and installed in a cache directory on the disk. /var/cache/apt/archives is the cache directory , which contains all installed and upgraded packages.after apt clean , it only keeps the log files.
 apt list - to get information about the available and installed packaged.Add --installed to get the installed packages.
 apt search 'phrase' - to find packages whose description contains a word or a phrase.
 apt show packageName - to view the information about a specific package. 
@@ -54,7 +54,7 @@ There are GUI applications such as aptitude or synaptic , which have user-friend
 
 Advantages of compiling Source Code
 1.You can compile applications with certain options which may be missing or disabled in the standard distribution package.For example if you want to install an FTP server and the IPv6 support is disabled in the binary package, you can download source code and compile the server with IPv6 enabled or vice versa.
-2.Access to the latest version of an application.Image that a security bug was just discovered and the development team, has just released the source code of new version with the vulnerability patched.There may be some time between this moment and the time the distributor launches a binary package such as a Deb file.And in the meantime, you are not protected.If you want to have access to the latest release version, you have to compile the patched source code.This is at least temporary until the binary package is released!
+2.Access to the latest version of an application.Imagine that a security bug was just discovered and the development team, has just released the source code of new version with the vulnerability patched.There may be some time between this moment and the time the distributor launches a binary package such as a Deb file.And in the meantime, you are not protected.If you want to have access to the latest release version, you have to compile the patched source code.This is at least temporary until the binary package is released!
 3.It's possible to have multiple versions of the same program installed.
 
 Disadvantages of compiling Source Code

@@ -9,7 +9,7 @@ The word crontab has three different meanings: crontab command (used to manage c
 Crontab file:
 The text file that contains the user's cron jobs is called the user's crontab.There is such a file for each user on Debian.The files are located in /var/spool/cron/crontabs.There is also a configuration file for the system wide cron jobs called crontab , located in /etc/.
 There are two types of cronjobs: system-wide and individual user cron jobs.
-Each user has a crontab file, which is short for cron table , where all sceduled cron jobs of that user  are specified.These files are located in a subdirectory of /var/spool/cron.
+Each user has a crontab file, which is short for cron table , where all scheduled cron jobs of that user  are specified.These files are located in a subdirectory of /var/spool/cron.
 As being text files, you can edit the crontab files by hand, using a text editor, even though they are not intended to be edited directly.It's recommended to use the crontab command instead.This will open the file using your preferred or default text editor and validate the file's structure on exit.
 
  crontab -l - to display the contents of the crontab file of the current user.
@@ -47,7 +47,7 @@ Cron jobs are intended for servers or machines that are running continuously.If 
 #Scheduling Tasks Using anacron
 
 Anacron is similar to cron, just that it's usually used on systems that are not up all the time, such as desktops or laptops.
-Anacron does not expect the system to be running 24/7 like a server.When you want a background job to be executed automatically on a machine that is not always up, you should use anacron instead of cron.For example, if you have a backup script scheduled to run every day at 10PM  as regular cron job , and if your laptop is not up at 10pm , your backup job will not be executed when the system starts.It is skipped until the next schedule.
+Anacron does not expect the system to be running 24/7 like a server.When you want a background job to be executed automatically on a machine that is not always up, you should use anacron instead of cron.For example, if you have a backup script scheduled to run every day at 10PM  AS REGULAR CRON JOB , and if your laptop is not up at 10pm , your backup job will not be executed when the system starts.It is skipped until the next schedule.
 However if you have the same job scheduled using ANACRON, you can be sure that it will be executed, once your laptop starts.If cron runs as a daemon, anacron is just a command that has to be run in order to execute the scheduled tasks.Anacron is run automatically each time the system starts.Anacron is run by root, so the tasks will have root privileges and the frequency of the job execution is expressed in days, not in minutes, like in the case of cron.
 - -
 Anacrontab
@@ -55,7 +55,7 @@ Anacrontab
 The file which specifies the anacron jobs is /etc/anacrontab.
 run-parts which is the command in /etc/anacrontab file, runs all the executable files found in a directory.
 For example` 7  10  cron.weekly  run-parts  --report  /etc/cron.weekly - means that all executable files or scripts found in /etc/cron.weekly will be executed with a frequency of seven days.
-There are 4 fields in anacrons jobs.In this example:
+There are 4 fields in anacron's jobs.In this example:
 1st field) 7 - period in days after every job execution. 
 2nd field) 10 - delay in minutes after system boot or manual job execution.specifies how long anacron will wait before executing the job.The delay feature is intended to keep the system from being overloaded with lots of jobs, if anacron determines it needs to run several commands when it starts up.It won't run them simultaneously but with a delay.
 3rd field) cron.weekly - job identifier(name).It should be unique for each job, and is the name of a file that will be created under /var/spool/anacron directory.This is called the job timestamp file and will contain a single line that indicates the last time when this job was executed.This identifier has also the purpose to identify the job, in the messages or the log files.
@@ -148,7 +148,7 @@ The operating system might not be able to recognize the partition structure, and
 3.dd if=/home/mrhacker/isoimagepath of=/dev/sda1 bs=4M status=progress - will make usb stick as bootable.4Megabytes is used to get balanced speed and memory usage while processing. 
 __________________________________________________________________________
 -----------------------------------------------------------------------------
-#Getting System Hardware Information (lwhw, lscpu, lspci, dmidecode, hdparm)
+#Getting System Hardware Information (lshw, lscpu, lspci, dmidecode, hdparm)
 
 The reasons we need to get information about system hardware:
 *If you want to upgrade your system hardware or want to find out why some applications don't run as smoothly as we expect.In VMs, hardware-checking commands show virtual hardware seen by the guest OS, not the host's real hardware.
@@ -166,7 +166,7 @@ lscpu - displays information about the central processor unit and the architectu
 dmidecode -t memory - get only information about the RAM memory.this command lists information about the RAM memory installed on the system.It's not displaying information about the amount of free or used memory of the running system.But you can always run top or free -m to see the amount of memory used or free.
 
 --PCI info
-lspci - to list all the pci buses and detauls about the devices connected to them like the vga adapter, the graphic card, network adapter, usb ports, sata controllers and so on.
+lspci - to list all the pci buses and details about the devices connected to them like the vga adapter, the graphic card, network adapter, usb ports, sata controllers and so on.
 
 --USB info
 lsusb - to list the USB controllers and details about the devices connected to them.-v (verbose) to display detailed information about each USB port.
@@ -199,7 +199,7 @@ Systemd (System Management Daemon) is a Linux initialization system and service 
 An init system is the first process that starts when Linux boots up (after the kernel is loaded).
 It is Linux initialization system doing it's boot and startup process.
 The Linux boot process has the following phases:
-System powers up, then the bootloader which is GRUB loads the kernel, then the kernel loads an initial RAM disk that loads the system drives and looks for the root file system.Once the kernel is set up, it begins the systemd initialization with PID 1 as the first process, then takes over and continues to mount the hosts file systems and starts services. 
+System powers up, then the bootloader which is GRUB loads the kernel, then the kernel loads an initial RAM disk that loads the system drives and looks for the root file system.Once the kernel is set up, it begins the systemd initialization with PID 1 as the first process, then takes over and continues to mount the host file systems and starts services. 
 
 Compared to the old init, which started the services sequentially, systemd starts the services in parallel.
 systemctl --version - to display the version of systemd.
@@ -215,7 +215,7 @@ For example install nginx server
 systemctl status nginx.service - to display the service state and the first few log lines.Systemd is smart enough to know that you probably want to operate on a service and you can leave off that .service suffix, so run 'systemctl status nginx' without .service.
 systemctl start/stop/restart servicename - to start , stop and restart a service.You need restart option for applying changes , made in service configuration files.
 systemctl reload servicename - to reload service.Some applications are able to reload configuration files without restarting whole service.
-systemctl reload-or-restart servicename - if you are unsure that application can reload or need restart for applying configuration run this command which will choose for you.
+systemctl reload-or-restart servicename - if you are unsure that application can reload or need restart for applying configuration run this command which will choose choose reload if it is available or restart, if not.
 systemctl enable/disable servicename - to enable/disable the service for starting at boot time.
 systemctl is-enabled servicename - to check if enabled or disabled.
 systemctl mask servicename- to prevent the service from being started automatically or manually.Now when you will see the state of service (systemctl status servicename) , in Loaded section it shows "masked".
