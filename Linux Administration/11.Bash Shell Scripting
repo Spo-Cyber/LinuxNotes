@@ -51,7 +51,6 @@ Normally a shell script is an executable file, so we need to add the execution p
 ./first_script.sh (just type the absolute or relative path of the script , and it will be executed).If you use filename without absolute or relative path it will cause an error  'command not found'.The shell is not looking for the script in the current directory.It's looking for commands and scripts only in the directories from the $PATH variable.
 
 echo $PATH - shows the directories where the shell is looking for executables.So add the directory that contains the script to the path or execute the script using absolute or relative path.
-
 - - - - - -
 #The Shebang and comments
 
@@ -60,7 +59,7 @@ If we execute a script without such a shebang directory , like we did in the exa
 So if we write e.g. a python code in script file without shebang, and execute it , it will cause a syntax error.But if we add at the first line the python3 path shebang (by knowing 'which python3'), it will execute the script.
 
 Bash ignores everything on the line, after the # symbol.So # is used for commenting.The only exception to this rule is when the first line of the script starts with #! which is the shebang.
-We can not only comment in blank line, but also after any code in any line (e.g. cat dir1/test.txt #This code read the test.txt file's content).
+We can not only comment in blank line, but also after any code in any line (e.g. cat dir1/test.txt #This code is for reading the test.txt file's content).
 Bash doesn't support multiline comments.So the simplest way to write multiline comments in Bash is to add single comments one after another. 
 - - - - - -
 #Running Scripts
@@ -69,7 +68,7 @@ Bash doesn't support multiline comments.So the simplest way to write multiline c
 
 2. Another way to run a script is to write the name of the program or interpreter that will run the script and the script name like "bash script.sh" or "python3 script.sh".In this case , it is not mandatory for file to have execution permission set.This way running the script will automatically overwrite the shebang directive.
 
-3. Last way to run a script is with 'source' command , like "source script.sh".The file does not require the execution permission and the source command reads and executes commands from the file , specified as the its argument in the current shell environment.So it is for current shell and the shebang directive won't work even if it is written at the top.The difference between the first method and this one, is that using first method './', the script will be executed in a new shell (subshell).And when using the source command, the script is running in the current shell , that's running in the terminal.Note that source and the name of the script is the same as ". script.sh".So instead of 'source script.sh' we can type '. script.sh' with dot and whitespace.
+3. Last way to run a script is with 'source' command , like "source script.sh".The file does not require the execution permission and the source command reads and executes commands from the file , specified as its argument in the current shell environment.So it is for current shell and the shebang directive won't work even if it is written at the top.The difference between the first method and this one, is that using first method './', the script will be executed in a new shell (subshell).And when using the source command, the script is running in the current shell , that's running in the terminal.Note that source and the name of the script is the same as ". script.sh".So instead of 'source script.sh' we can type '. script.sh' with dot and whitespace.
 - - - - - -
 #Variables in Bash
 
@@ -85,7 +84,7 @@ echo $age | echo $os | echo $user_name  - To access the value of a variable , pr
 echo "I'm learning $os operating system" - You can also reference the value of a variable inside the string by enclosing everything in double quotes.
 (echo '$os') - This won't display the value of the variable.Instead it will display '$os' like a string, because we need to use double quotes with variables.
 echo "The value of \$os is $os" - in this example, the backslash\ symbol is canceling the special meaning of the dollar sign and its printing "The value of $os is Linux".
-$distro=Kali -> my_distro="I use $distro $os" -> echo my_distro ->  I use Kali Linux.So we can use variable within the variable's value.
+$distro=Kali -> my_distro="I use $distro $os" -> echo $my_distro ->  I use Kali Linux.So we can use variable within the variable's value.
 
 set - To get a list of all shell variables and functions run the "set" command.So we can use "grep" to find a specific variable or function.
 unset variablename - To undefine or remove a variable use the unset command -> unset os (without the $ sign, because we are not referencing the value of the variable).
@@ -112,7 +111,7 @@ echo "---------------------"
 - - - - - - 
 #Environment Variables
 
-Each time we launch a terminal window in the shell inside it ,a collection of predefined variables are set with some dynamic values and are used to customize the way the system works and behaves.There are two classes of such variables: environment variables and shell variables.
+Each time we launch a terminal window in the shell, inside it, a collection of predefined variables are set with some dynamic values and are used to customize the way the system works and behaves.There are two classes of such variables: environment variables and shell variables.
 
 Environment Variables are defined for the current shell and are inherited by any child shells or processes.They are used to pass information to processes that are spawned from the current shell.
 
@@ -201,7 +200,7 @@ fi
 It's recommended to use "" outside of $1 in if statement.This is recommended when working with strings and in this case, the first argument of the script ($1) is a file or a directory name, so a string.
 
 The example bellow uses the single square brackets"[]" for testing conditions.This is the old classical and portable type of testing.
-There is a new updated version of testing, that used double square brackets"[[]]", which is considered safer.Basically , double square brackets prevent word splitting or string variables that contain spaces,and you don't need to double quote string variables, even though that is good practice. Double square brackets also have some other nice features , like regular expression matching.
+There is a new updated version of testing, that uses double square brackets"[[ ]]", which is considered safer.Basically , double square brackets prevent word splitting or string variables that contain spaces,and you don't need to double quote string variables, even though that is good practice. Double square brackets also have some other nice features , like regular expression matching.
 
 - - -
 #Testing conditions for numbers
@@ -338,3 +337,93 @@ do
 	echo "i = $i"
 done
 - - -
+Lab: Dropping List of IP addresses Using a For Loop
+
+This lab can be very useful because you'll find in the logs lots of IP addresses that send you spam, scan your network or do other things and want to block them.To drop the packets from a list of IP addresses, we'll iterate over the list with IP addresses and execute the iptables command for each IP in the list.
+#!/usr/bin/bash
+DROPPED_IPS="8.8.8.8 1.1.1.1 192.168.1.5 192.168.1.23" (separated by spaces)
+read -p "Give the IP addresses by separated spaces to block - " ips
+read -p "Inbound or Output traffic to get blocked - " traffic
+for ip in $ips;do
+	if [[ $traffic == "Inbound" ]];then
+		sudo iptables -A INPUT -s $ip -j DROP
+	elif [[ $traffic == "Outbound" ]];then
+		sudo iptables -A OUTPUT -s $ip -j DROP
+	else
+		echo "Type either 'Inbound' or 'Outbound'" && bash $0
+	fi
+done
+
+- - - - - -
+#While Loop
+
+while CONDITION
+do
+	COMMANDS
+done
+
+The set of commands are executed as long as the given condition evaluates to true.
+
+Bash has limited support for arithmetic operations.To perform arithmetic operations , use double parentheses(()).While Loop pattern:
+#!/usr/bin/bash
+i=0
+while [[ $i -lt 10 ]]; do
+	echo $i
+	((i++)) let i=i+1
+done
+Simple Example of arithmetic operation: a=4 b=2 c=$((a+b)) <==> let c=a+b
+- - -
+We need infinite loops e.g. when need to monitor any process every N second.
+while :        #another way (instead of while true) to create an infinite loop.
+do
+	output=$(pgrep -l $1)
+	if [[ -n $1 ]]; then
+		echo "$output"
+	else
+		echo "There is not such a process"
+done
+
+: colon is a bash built-in command that always returns True.You can also use the True keyword written in lowercase.
+Here If the process is running, the string variable called output will not be empty.But if it's not running the output will be a string of zero length.
+
+- - - - - -
+#Case Statement
+
+The case construct allows us to test strings and numbers and is in fact a simpler form of the bash if-elif-else statements.This is not a loop.It doesn't execute a block of code for n number of times.Instead, bash shell checks the conditions, and controls the flow of the program.
+Case Statement pattern:
+case EXPRESSION in
+	PATTERN_1)
+		STATEMENTS
+		;;
+	PATTERN_N)
+		STATEMENTS
+		;;
+	*)
+		STATEMENTS
+		;;
+esac
+
+You can have multiple patterns separated by a vertical bar like a pipe.The parentheses) operator terminates the pattern list.A pattern can contain special characters like asterisks or question marks.A pattern and it's associated commands are known as a clause and each clause must be terminated with double semicolons;;.The commands corresponding to the first pattern that matches the expression are executed.It is common practice to use the wildcard  asterisk symbol *) as a final pattern to define the default case.This pattern will always match.After the first match the case statement terminates with the exit status of the last command that was executed.  
+- - -
+Example favorite_pet.sh:
+#!/usr/bin/bash
+
+The user will enter his favorite pet , and based on this answer, the case statement will print out a specific message.
+
+echo -n "What is your favorite pet:"      #-n option is to not add a new line after the string.
+read pet
+
+case "$pet" in
+	dog)
+		echo "Your favorite pet is the dog."
+	;;
+	cat|Cat)
+		echo "Your favorite pet is the cat."
+	;;
+	fish|"African Turtle"
+		echo "Fish or turtles are great."
+	;;
+	*)
+		echo "Your favorite pet is unknown!"
+	;;
+esac
