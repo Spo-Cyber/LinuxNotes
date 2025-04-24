@@ -15,7 +15,7 @@ unalias command - to remove the alias for the current session.e.g. unalias now
 We can use alias for ssh connection quickly - example: alias server1="ssh -p 2234 user1@12.123.12.13"
 
 - - - - - - - - - -
-SHELL SCRIPTING
+#SHELL SCRIPTING
 
 A shell is a program that takes commands from the user through the keyboard , and gives them to the operating system's kernel to get executed.It's also called the command interpreter because it accepts commands from the user and then checks or interprets them to see if they are syntactically correct.And if they are , the shell will send them to the kernel for execution.The Shell gets started, when the user logs in or starts the terminal.
 echo $0 - to see what shell has started.
@@ -289,6 +289,11 @@ Example: Testing Network Connections
 output="$(ping -c 3 $1)"
 if [[ "$output" == *"100% packet loss"* ]];then echo "The network connection to $1 is not working.";else "The network connection to $1 is working.";fi
 now execute it -> ./connection 192.168.1.59/otherIP and see the results
+
+- - - 
+Curly braces {} are used in Bash to clearly define the boundaries of a variable — especially useful when appending text, combining variables, or avoiding ambiguity.
+
+Example: "${dirname}_${timestamp}" or echo "Hello, ${user}!"
 - - - - - -
 #For Loops
 
@@ -427,3 +432,193 @@ case "$pet" in
 		echo "Your favorite pet is unknown!"
 	;;
 esac
+
+- - - - - -
+#Functions in Bash
+
+Functions allow us to create blocks of code that can be easily executed many times without the need to constantly rewrite or copy-paste that block of code.
+There are 2 different formats for declaring a function.
+1) function func_Name () {
+	COMMANDS
+}
+OR
+2) func_name () {
+	COMMANDS
+}
+
+The commands within the curly braces is the body of function, and is being completed while executing the function.
+To CALL  a function , write the name of function without any parenthesis() -> func_Name
+- - -
+Arguments
+The parenthesis after function name are for decoration, and you can't put anything inside them , as in other programming languages can(parameters).So for passing an argument to a function , we need to pass the arguments while calling the function after the function name (e.g. func_name arg1 arg2) as while passing arguments to a script file.
+To use arguments within a function use $1 $N as in script file.
+Example:
+
+create_files () {
+	echo "Creating $1"
+	touch $1
+	chmod 400 $1
+	echo "Creating $2"
+	touch $2
+	chmod 400 $2
+}
+create files test1 test2
+- - -
+return value
+Most of the other programming languages have the concept of a return value of a function.However, bash functions don't allow us to return a value.When doing so using the return keyword we are setting in fact , the status of the last command executed inside the function.Remember that the variable "$?" contains the return status of the previously run command or function.Typically a return status of zero indicates that everything went successfully, and a non-zero value indicates that an error has occurred.
+Example:
+create_file() {
+	touch $1
+	return 10
+}
+create_file
+echo $?
+- - -
+If you want a real return value, like in any other programming language, then you could try a command substitution.
+For example the following function will return the number of lines in a file that contains a specific string value.The string will be the first argument of the function so $1 inside the function and the file will be the second argument of the function, so $2 inside it.
+
+function lines_in_file() {
+	grep -c "$1" "$2"
+}
+count=`lines_in_file "lorem" /home/mrhacker/Desktop/test.txt`
+echo $count
+- - - 
+Variable Scope in Functions
+Scope refers to which part of a script , a variable is visible.In bash, all variables are by default global, and that means that they are visible everywhere inside a script.
+Example:
+var1="AA"
+function func1() {
+    echo "var1=$var1 outside the function"
+    var1="BB"
+    echo "var1=$var1 changed inside the function"
+}
+func1
+echo "var1=$var1 after changing inside the function"
+
+Result:
+var1=AA outside the function
+var1=BB changed inside the function
+var1=BB after changing inside the function
+
+- - -
+local variable
+So the change made in function is also changed for the global scope.
+To declare a local variable for local scope (only inside the function), use keyword "local" before variable declaration -> local var1="BB".So if we use local keyword in function , the variable will not be changed in global scope.
+- - - - - 
+#exit command
+
+The exit command immediately stops the script and optionally returns a status code to the shell.
+- - - - - -
+#Menus in Bash: The Select Statement
+
+select ITEM in LIST
+do
+	COMMANDS
+done
+
+ITEM is a user defined variable and the LIST is a series of strings , numbers or output of commands.
+
+PS3="Choose your country "
+select COUNTRY in Germany France USA "United Kingdom"
+do
+	echo "COUNTRY is $COUNTRY"
+	echo "REPLY is $REPLY"
+done
+When the select statement is reached, each item from the list is printed out on the screen and proceeded with a number starting from one.So COUNTRY is the number we choose for a specific name from the list on the display, and the REPLY is the number which we chose.If the COUNTRY is empty as we don't type anything, it will repeat executing the script.When running the script, the default prompt is #?.You can change it by modifying the predefined variable PS3.
+
+Example with case statement:
+PS3="Select the country "
+
+select country in Germany Armenia Russia Quit
+do
+    case "$REPLY" in
+        1)
+            echo "You are German."
+            ;;
+        2)
+            echo "You are Armenian."
+            ;;
+        3)
+            echo "You are Russian."
+            ;;
+        4)
+        	   echo "Quitting ..."
+        	   sleep 1
+        	   break
+        	   ;;
+    esac
+done
+
+- - -
+Lab: System Administration Script using Menus
+
+PS3="Your choice:"
+select ITEM in "Add User" "List All Processes" "Kill Process" "Install Program" "Quit"
+do
+	if [[ $REPLY -eq 1 ]]; then
+		read -p "Enter the username: " username
+		output=`grep -w $username /etc/passwd`
+		if [[ -n "$output" ]]; then
+			echo "The user already exists"
+		else
+			sudo useradd -m "$username"
+			if [[ $? -eq 0 ]];then
+				echo "The user has been created successfully"
+			else
+				echo "There is an error while creating a user"
+			fi
+		fi
+	fi
+
+	if [[ $REPLY -eq 2 ]]; then
+		echo "Listing all processes ..."
+		sleep 1	
+		ps -ef
+	fi
+
+	if [[ $REPLY -eq 3 ]]; then
+		read -p "What is the process id to kill? " pid
+		kill $pid
+	fi
+
+	if [[ $REPLY -eq 4 ]]; then
+		read -p "What program to install? " programinstall
+		sudo apt install "$programinstall"
+		if [[ $? -ne 0 ]]; then
+			echo "Error"
+		else
+			echo "The program is being installed ..."
+		fi 
+	fi
+	
+	if [[ $REPLY -eq 5 ]]; then
+		echo "Quitting ..."
+		sleep 1
+		break	
+	fi
+done
+
+- - - - - -
+#Running a DoS Attack Without Root Access
+
+$0 && $0 &
+
+This command performs a DoS(Denial of Service) attack that makes use of the fork system call to create an infinite number of processes.So the script will execute itself recursively in the background.
+
+To prevent such a fork bomb!, use ulimit command, which modifies and controls shell resource limits.
+
+ulimit -u - to see the number of available processes.This value is very large.
+ulimit -a - to see a lot of limits available to the shell and the processes it creates.
+To prevent a fork bomb , we'll lower the number of processes the user can start.The processes cannot continuously replicate themselves.
+As root open the following file. sudo vim /etc/security/limits.conf
+
+Set a limit for a user:
+username    hard    nproc    2000
+This will limit the user processes to 2000.Don't set too low the ulimit numbers!.By doing so , you will prevent the user from working on the system.
+
+Set a limit for a group:
+@groupname    hard    nproc    2000
+
+The new limits will be available for new sessions, so we have to log out and then log in again to get changes effected.
+
+-----------------------------------------------------------------------------------------------------------------------------
