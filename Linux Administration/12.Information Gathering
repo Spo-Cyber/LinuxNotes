@@ -11,12 +11,12 @@ TCP Scans:
 
 TCP scan is the default and the most popular scan option for good reasons.It can be performed quickly, scanning thousands of ports per second on a fast network , if there are no firewalls that restrict the scanning.It never completes the TCP connections.This technique is often referred to , as half open scanning because it doesn't open a full TCP connection.Nmap sends a SYN packet , as if it is going to open a real connection and then waits for a response.A SYN-ACK indicates that the port is listening, so it's open, while RST(Reset) indicates that the port is closed.If no responses received, the port is marked as filtered.You need root privileges to perform this type of scan.If you don't have root privileges , you can still perform another type of TCP scanning called TCP Connect Scan.
 nmap - without any option, to check if it is installed(if not run "sudo apt install nmap").
-Nmap is also available for Windows and Mac.And if you want a graphical interface, install Zenmap, which is the official nmap security scanner GUI.
+Nmap is also available for Windows and Mac.And if you want a graphical interface, install zenmap, which is the official nmap security scanner GUI.
 
 nmap -sS destinationIP - TCP SYN scan.If you are root, and running nmap without any option,this is the default scanning type.It displays a lot of informationa bout destination host, how much time the scan took , the MAC address of the destination host, and the open ports.By default , nmap scans the most common one thousand ports for each protocol, TCP and UDP.If you are not root, you can't perform this scan.  
 nmap -sT destinationIP - TCP Connect Scan.If you are not root , this is the default type of scan.
 
-If nmap scans the most common one thousand ports for each protocol, then what if a service has been moved to a non-standard port like SSH is listening on port 50005❓
+If nmap scans the most common one thousand ports for each protocol, then what if a service has been moved to a non-standard port like SSH is listening on port 50005??
 Here we have to specify the non-standard port:
 nmap -sS 192.168.1.100 -p 50005 - This will scan only the specified port.
 
@@ -37,5 +37,106 @@ nmap -sn 192.168.0.0/24 - this sends ICMP packets to entire network.
 
 - - - - - -
 #ARP Scanning(arp-scan and netdiscover)
+!All these are root commands.
 
+ARP scanning is especially useful if there are hosts on the network that want to remain hidden or stealthy and they don't respond to any requests like ping,TCP or UDP scans.There are a lot of firewalls that block any incoming packets except ARP.Since ARP is not routable, this type of scanning works only on your local LAN.You can find wired or wireless hosts connected to the same LAN.
 
+arp-scan:
+The first tool is called arp-scan.All this are root commands.It has a lot of options , but one of the most useful is -l/--localnet option.It will reduce the network address of its own interface and scan the entire LAN.You don't have to worry about subnetting or getting the LAN address from the IP address and it's network mask.
+
+arp-scan -I interfaceName -l
+If you don't specify the interface,arp-scan will search the system interface for the lowest number configured up interface, excluding loopback.The output is very noisy and the admin or an intrusion detection system could find out very quickly that a scan is running.
+If you want to be stealthier , you could use another tool called Netdiscover.
+
+- -
+netdiscover:
+This is both an active and passive ARP reconnaissance tool.
+
+active mode:
+netdiscover - this is the active mode of operation where netdiscover is actively sending out ARP request packets in order to discover the other hosts on the network. 
+netdiscover -i interfaceName -r 192.168.1.0/24 - specify the interface and the (-r)range.
+
+passive mode:
+netdiscover -p - this enables the passive mode.It doesn't send anything, it only sniffs the traffic.In fact it monitors ARP requests sent by the other hosts on the network without sending anything.ARP request packets are sent to the broadcast address so each host on the LAN receives this packets.This technique is really stealthy and prevents you from being noticed by someone.It's common practice to change your own MAC address before launching a passive scan.
+
+- - - - - -
+#Hacking Google Searches(Google Dorks)
+
+Google Hacking(Google Dorking) is a computer hacking technique that uses Google search to find security holes in the configurations that websites use.This is in fact , an information gathering technique that uses advanced Google search queries.This can be used to identify security vulnerabilities in Web Applications, gather information about arbitrary or individual targets, discover error messages, disclosing sensitive information, discover files containing credentials and other sensitive data.
+
+When you search something on Google, it will try to intelligently guess what you are in fact willing to find out.
+
+Searching by exact words:
+Lets search for "web scraping with python" in google search.Google returns a lot of results, and each result has something to do with what's web scraping and python.Now if you want to search for an exact string, you should enclose the string in double quotes like "web scraping with python".And it is showing only results that contains these four words with Python in the exact order written by me.
+This is very useful sometimes to cut out the noise.
+
+Searching by time:
+If you are looking up for a technology related question, you do not want to see old or obsolete results.To be more relevant, you can narrow the search to the latest results.And one of the favorite ways to do that, is to click on tools and then choose a specific time interval.
+
+Searching by file type:
+Another thing we can do to make the search even more helpful is to add a particular file type.E.g. if we want to find out only PDF files related to "python web scraping".Here we will use the operator filetype => "web scraping with python" filetype: pdf.It only displays the pdf files.
+
+Search by exclusions:
+If we want to exclude some object related searches, then use -excludingword.
+2019 apple sales -iphone filetype:xlsx . This will search excel files which are not related with iphone.
+
+Searching by site and title name:
+site:wikipedia.org intitle:security . All the results are from wikipedia.org and intitle made google to restrict the results to web pages containing the word security in the title.
+
+Searching by logical OR operator:
+bitcoin | ethereum. You can use a pair of parentheses to group multiple terms or search operators to control how the search is executed.For example we are searching for either Bitcoin or Ethereum hash algorithm => (bitcoin | etherium) hash algorithm.
+
+An alternative to searching with such operators, we can go to "google.com/advanced_search".
+
+- - - - - -
+#Using Wireshark for Packet Sniffing and Analyzing
+
+Wireshark captures packets in real-time and displays them in human readable format.Wireshark includes filters, protocol desectors , color coding and many other features that let you dig deep into network traffic and inspect individual packets.Note that wireshark is not a hacking tool.It's used to monitor the interface of your own computer and capture analyze the traffic that passes through that interface.It is an excellent tool for learning how networks work and for troubleshooting network problems.
+To be able to sniff traffic, you should start it , as ROOT.
+To allow not root users , to capture packets, you have to follow a special procedure described in official help file. 
+To start capturing packets, double click on interfacename in Capture section.
+
+Let's visit any website, and after visiting, stop the capturing.
+You can see captured packets highlighted in a variety of different colors.
+
+Wireshark uses colors to help you identify the types of traffic at a glance.
+By default:
+Light Purple - TCP traffic
+Light Blue - UDP traffic
+Black - packets with errors
+To view exactly what the color codes mean, click view->coloring rules.You can customize coloring rules if you'd like.
+
+Let's have a look at Wireshark main window.We notice , that it consists of three main parts.
+1.The packet list pane displays a summary of each packet captured.By clicking on a packet in this pane you control what is displayed in the other two panes.
+2.The packet details pane, displays the packet selected in the packet list pane in more detail.
+3.The packet bytes pane, displays the data from the packet selected in the packet list pane and highlights the field selected in the packet details pane.
+
+Each line in the packet list corresponds to a captured packet.And if you select the a line in this pane, more details will be displayed in the packet details and packet bytes pane.
+Now if you double click on a line, a new window pops up with details about that particular packet.
+
+If you want , you can save the capture for later inspection.To save the capture to a file, you press on ctl+s or go to file->Save/Save As..
+Wireshark can save the packet data in more than one format.The most important formats are pcapng(the native file format for the latest version of Wireshark) and pcap(used by older versions of Wireshark, but also by other well-known and widely used tools like tcpdump).
+Not all information will be saved in a capture file.For example , most file formats do not record the number of dropped packets.
+At a later time, you can open the file with Wireshark or with other tools like tcpdump(which is a command line tool) like this => tcpdump -vv -r /PathToPCAPFile
+
+- - - - - -
+#Capture Traffic Using tcpdump
+
+When it comes to sniffing traffic using a command line tool, tcpdump is the tool of choice for both it's power and simplicity.It's compatible with Wireshark and that means that you can save the captured packets to a file, and later open that file in Wireshark on the same or another machine for a visual inspection.
+tcpdump is installed by default on any Linux distribution.The following commands will be executed as root.
+
+tcpdump -i interfaceName - to see what's hitting your interface
+tcpdump -i intName host IPaddress - to see only the pakets to or from an IP address
+tcpdump -i intName dst/src IP/domainName - to see only one direction or the other(destination/source) to or from IP or domain name.
+tcpdump -i intName net 192.168.1.0 to capture packets going to or from a particular network or subnet.
+tcpdump -i intName port 80 - to see packets of a specific application.
+tcpdump -i intName dst port 53 -vv -n - specify the destination port of packets, -vv (for more verbose version of details), -n (not to convert addresses to names)
+tcpdump -i intName port 80 -A -n - -A(to print each packet in human-readable text), rather than the default hexedecimal and protocol-level output.it won't be useful if the traffic is encrypted(like HTTPS), you'll just see unreadable data.
+tcpdump -i intName port 80 -X -n - displays both ASCII and hexedecimal data.
+tcpdump -i intName port 80 -w test.pcap - to save captures packets into a file.It's often useful to save because packet captures into a file for analysis in the future.These files are known as pcap files and can be opened in Wireshark or other packet analysis tools including tcpdump itself.
+tcpdump -r test.pcap - to read the packets file.note that while reading the file, all the earlier options are also available, so we can use tcpdump -vv -n -X -r test.pcap
+
+AND/OR operators
+tcpdump -i wlan0 icmp and host 8.8.8.8 - it will capture only the ICMP packets to or from this IP address.
+tcpdump -i wlan0 \( port 80 or port 443 \) - it will capture http or https traffic.
+___________________________________________________________________________________________________________________
