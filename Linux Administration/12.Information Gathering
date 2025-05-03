@@ -13,7 +13,7 @@ TCP scan is the default and the most popular scan option for good reasons.It can
 nmap - without any option, to check if it is installed(if not run "sudo apt install nmap").
 Nmap is also available for Windows and Mac.And if you want a graphical interface, install zenmap, which is the official nmap security scanner GUI.
 
-nmap -sS destinationIP - TCP SYN scan.If you are root, and running nmap without any option,this is the default scanning type.It displays a lot of informationa bout destination host, how much time the scan took , the MAC address of the destination host, and the open ports.By default , nmap scans the most common one thousand ports for each protocol, TCP and UDP.If you are not root, you can't perform this scan.  
+nmap -sS destinationIP - TCP SYN scan.If you are root, and running nmap without any option,this is the default scanning type.It displays a lot of information about destination host, how much time the scan took , the MAC address of the destination host, and the open ports.By default , nmap scans the most common one thousand ports for each protocol, TCP and UDP.If you are not root, you can't perform this scan.  
 nmap -sT destinationIP - TCP Connect Scan.If you are not root , this is the default type of scan.
 
 If nmap scans the most common one thousand ports for each protocol, then what if a service has been moved to a non-standard port like SSH is listening on port 50005??
@@ -29,7 +29,7 @@ nmap -p- - to scan all ports.If you press the Enter key while scanning, it will 
 
 - -
 UDP Scan: -sU
-UDP port scanning is generally slower and more difficult that TCP.UDP ports scanning is activated with the -sU.
+UDP port scanning is generally slower and more difficult than TCP.UDP ports scanning is activated with the -sU.
 
 - -
 ICMP Scan: -sn or -sP
@@ -42,7 +42,7 @@ nmap -sn 192.168.0.0/24 - this sends ICMP packets to entire network.
 ARP scanning is especially useful if there are hosts on the network that want to remain hidden or stealthy and they don't respond to any requests like ping,TCP or UDP scans.There are a lot of firewalls that block any incoming packets except ARP.Since ARP is not routable, this type of scanning works only on your local LAN.You can find wired or wireless hosts connected to the same LAN.
 
 arp-scan:
-The first tool is called arp-scan.All this are root commands.It has a lot of options , but one of the most useful is -l/--localnet option.It will reduce the network address of its own interface and scan the entire LAN.You don't have to worry about subnetting or getting the LAN address from the IP address and it's network mask.
+The first tool is called arp-scan.All these are root commands.It has a lot of options , but one of the most useful is -l/--localnet option.It will reduce the network address of its own interface and scan the entire LAN.You don't have to worry about subnetting or getting the LAN address from the IP address and it's network mask.
 
 arp-scan -I interfaceName -l
 If you don't specify the interface,arp-scan will search the system interface for the lowest number configured up interface, excluding loopback.The output is very noisy and the admin or an intrusion detection system could find out very quickly that a scan is running.

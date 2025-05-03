@@ -1,4 +1,4 @@
-THE LINUX TERMINAL IN DEPTH
+			#THE LINUX TERMINAL IN DEPTH
 				
 man -k 'keyword' = find keyword in all manual pages (alternative -> apropos 'keyword')
 type 'x' = checking if a command is shell built-in or executable file

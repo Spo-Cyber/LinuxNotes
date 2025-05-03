@@ -14,11 +14,10 @@ The File System Hierarchy Standard
 /media (is used for external storage will be automatically mounted)
 /mnt (is like /media but it's not very often used these days)
 /tmp (contains temporary files, usually saved there by applications that are running.Non privileged user can temporarily save files there)
-/proc (contains information about computer hardware e.g. CPU, RAM memory.The files and directories are generated , when computer starts or running and things
-changes).E.g. to see info about cpu -> cat /proc/cpuinfo, or for memory -> cat /proc/meminfo
+/proc (contains information about computer hardware e.g. CPU, RAM memory.The files and directories are generated , when computer starts or running and things changes).E.g. to see info about cpu -> cat /proc/cpuinfo, or for memory -> cat /proc/meminfo
 /sys (contains information about devices, drivers and some Kernel features)
 /srv (contains data for servers)
-/run (is new,different distribution use this directory in different ways.It's a temporary filesystem which runs in RAM so its contents will vanish when the system reboots.This directory is used only by processes)
+/run (is new,different distributions use this directory in different ways.It's a temporary filesystem which runs in RAM so its contents will vanish when the system reboots.This directory is used only by processes)
 /usr (contains many essential files and directories needed for the system to function properly in a multi-user environment)
 /var (typically contains variable-length files such as logs which are files that register events that happen on the system)
 - - - -
@@ -94,8 +93,8 @@ ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
 #Copying Files and Directories
 
-cp /filepath /destinationfilepathname (copying the file and pastes to destination path by its given filename), if exists the /destinationfilepathname it will overwrite. cp -v (by verbose prompting)
-cp -i /path1 /path2 (to not overwrite automatically the file but at first to prompt if I wanna)
+cp /filepath /destinationfilepathname (copying the file and pastes to destination path by its given filename), if exists the /destinationfilepathname, it will overwrite. cp -v (by verbose prompting)
+cp -i /path1 /path2 (to not overwrite automatically the file but at first to prompt if I want to)
 cp /file1 /file2 /file3 /path (to copy that 3 files to the path) 
 cp -r /srcdirectory /dstdirectory (to copy directory to destination recursively)
 cp -p /dir1 /dir2 (to save the owner and group permissions while copying, because by default it copies and assigns the details of another user permissions)
@@ -115,12 +114,12 @@ rm file1 (to remove file), rm -i file3 (prompt to remove or no), rm -v file2 (re
 rm dir1 -r (to remove directory)
 rm file (if the file belongs to root but is in someone's ~ , then can rm but it will prompt to remove or no, and if there are lots of files like that , for not to answering to each prompt just do "rm file1 -f" by forcing to remove)
 rm -i file (to prompt , to remove or no)
-shred -vu -n 30 file1 (overwrite the file 30time and then remove, that if anyone wanted to recover it couldn't because it was renamed'encrypted' 30times)
+shred -vu -n 30 file1 (overwrite the file 30 times and then remove, that if anyone wanted to recover it, couldn't because it was renamed(encrypted) 30 times)
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
 #Piping and Command Redirection
 
-Every Linux command or program has three data streams -> 1.STDIN(0), 2.STDOUT(1), 3.STDERR(3)
+Every Linux command or program has three data streams -> STDIN(0), STDOUT(1), STDERR(2)
 
 command1 | command2 | command3... (to connect 2 or more commands at a time, by redirecting from start to end)
 wc file1 (prints count of lines, words, characters of file), -l (for lines), -w (for words), -c (for characters)
@@ -132,7 +131,7 @@ tty (to print the name of 'terminal file', e.g. the result of any terminal windo
 2>&1 (>& means that the 2(STDERR) will behave as (1)STDOUT. e.g. head -1 /etc/passwd /etc/shadow > output.txt 2>&1 -> there will be printed the first line of /etc/passwd and the permission error of /etc/shadow in the output.txt file)
 
 cut -d"charX" -fY (to cut the text into parts by splitting of charX and taking the Yth part. e.g. there is a file called a.txt and the text is barev%aper%jan and I execute 'cut -d"%" -f1' it will print 'barev', if the same with -f2 then 'aper')
-someCmd | tee output.txt (when redirecting to this command any command, it prints the result in terminal and does 1>output.txt. e.g. "ls -la | tee output.txt" will print the list of that directory on terminal and automatically writes/overwrites in output.txt)
+tee output.txt (when any command is redirected to this command, it prints the result in terminal and does 1>output.txt. e.g. "ls -la | tee output.txt" will print the list of that directory on terminal and automatically writes/overwrites in output.txt)
 ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
 #Finding files and directories
@@ -221,19 +220,19 @@ ______________ ______________ ______________ ______________ ______________
 --------------------------------------------------------------------------
 #Hard Links, SymLinks and The Inode Structure
 
-Hard Link - An association between a file structure and a file name.It is displayed while doing ls -l (the second section which is after permissions column is the hard links section which points the count of hard links that are associated with that file structure). And stat /filename (where the Links: section shows count of hard links).
+Hard Link - An association between a file structure and a file name.It is displayed while running ls -l (the second section which is after permissions column is the hard links section which points the count of hard links that are associated with that file structure). And stat /filename (where the Links: section shows count of hard links).
 It allows multiple filenames to point to the same data on the disk, meaning that modifying the file through any of its hard links will reflect in all others.
 They share the same Inode number as the original file.Only for files and not directories.
 
 ln original_file hard_link_name (To create a Hard Link).
 - - - - - -
 
-An inode(index node) is a data structure used by the Linux filesystem to store metadata about a file or directory.Every file in a Linux filesystem is assigned a unique inode number, which acts like an identifier for that file.It stores the important metadata such as: File Type, File size , Owner & Group, Permissions, Number of Hard Links, Timestamps , Location of File Data Blocks "Excluded File Name, File Contents".
+An inode(index node) is a data structure used by the Linux filesystem to store metadata about a file or directory.Every file in a Linux filesystem is assigned a unique inode number, which acts like an identifier for that file.It stores the important metadata such as: File Type, File size , Owner & Group, Permissions, Number of Hard Links, Timestamps , Location of File Data Blocks "Excluded File Name and File Contents".
 
 find /path -inum 123 (to find files or directories by 123 inum "inode number").
 
 - - - - - -
-Symlink/Symbolic Link/Soft Link - A special filetype that points to or contains a reference to another file or directory.
+Symlink/Symbolic Link/Soft Link - A special file type that points to or contains a reference to another file or directory.
 
 ln -s original_file hard_link_name (To create a Symlink).
 ______________ ______________ ______________ ______________ ______________
