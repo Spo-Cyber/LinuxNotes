@@ -1,5 +1,5 @@
 		#Networking on Linux
-_________________________________________________________________
+___________________________________________________________________
 -------------------------------------------------------------------
 #Getting Information about the Network Interfaces(ip, ifconfig)
 
@@ -102,9 +102,14 @@ network:
 	ethernets/wifis:
 		IntfName:
 			dhcp4: false
+			access-points:
+				"YourSSID":
+				password: "yourpassword"
 			addresses:
 				- 192.168.0.20/24
-			gateway4: "192.168.1.1"
+			routes: 
+				- to: default
+				via: 192.168.1.1
 			nameservers:
 				addresses:
 					- "8.8.8.8"
@@ -126,14 +131,14 @@ OR
 - - -
 With NetworkManager file -> sudo nano /etc/NetworkManager/system-connections/CONNECTION_NAME.nmconnection, type this.
 [ipv4]
-dns=8.8.8.8;1.1.1.1;
+dns=8.8.8.8;1.1.1.1
 ignore-auto-dns=true
 _________________________________________________________________
 -----------------------------------------------------------------
 #Testing and Troubleshooting Network Connectivity
 
 Ping works by sending ICMP echo request packets to the specified destination IP address and waits for a reply.When the destination receives an echo request packet, it will respond back with ICMP echo reply.Ping is also available on Mac and Windows , but with other options.
-The domain name in ping execution can differ from the name we ping, because an IP address can be set to multiple different domain names, because ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our inputted domain name.
+The domain name in ping execution can differ from the name we ping, because an IP address can be set to multiple different domain names.So ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our specified domain name.
 
 ping [options] <destinationIP/domain name>
 ping -n - To prevent ping from doing reverse DNS lookup.
@@ -141,7 +146,7 @@ ping -c N - To set the count of ICMP packets to be sent N times.
 ping -i T - to set interval between each packet sending.by default it is 1s.Only superuser can send lower than 0.002s.
 ping -q - display the summary only.
 
-time=T ms(response time) -> time<30 means excellent, 50>time>30 means average, 100>time>50 means somehow slow and time>100 means slow response.
+time=T ms(response time) -> time<30 means excellent, time=30-50 means average, time=50-100 means somehow slow and time>100 means slow response.
 - - -
 #Troubleshooting network connectivity with ping
 
@@ -149,11 +154,11 @@ time=T ms(response time) -> time<30 means excellent, 50>time>30 means average, 1
 ping DefaultGatewayIP -> If not working, then maybe not connected to AP.If working go to step 2
 
 *Step 2
-ping DNS server-> If not working, then maybe router is not properly connected or any issue with router.If working go to step 3
+ping DNS server-> If not working, then maybe router is not properly connected or there is an issue with router.If working go to step 3
 
 *Step 3
 ping stableIPAddress(e.g. google.com) -> if not working, then you have a DNS issue.Check that you are using the correct DNS server and there's nothing that's filtering the packets and so on.Probably there's a configuration error related to DNS on your site or maybe the DNS server is down.
-_________________________________________________________________
+___________________________________________________________________
 --------------------------------------------------------------------
 #SSH
 
@@ -163,9 +168,9 @@ _________________________________________________________________
 The most useful network protocol used for the remote management of servers, routers, switches or other networking devices.
 SSH involves client and server.The SSH client creates a secure connection to the SSH server on a remote machine, and then the connection will be used to execute commands on the server.
 
-!It is better to check the network connection between the ssh client and the server using ping.
+!It is better, before connecting with ssh, to check the network connection between the ssh client and the server using ping.
 -
-If not installed run "sudo apt install openssh-server openssh-clients"
+If not installed run "sudo apt install openssh-server openssh-client"
 systemctl status ssh - to check if started or stopped.
 systemctl is-enabled ssh - display enabled/disable (for boot)
 systemctl start/stop ssh - to enable or disable.
@@ -188,6 +193,7 @@ To run ssh server on windows , download PuTTY program from web.
 
 - - - - - -
 #Troubleshooting SSH
+
 - - 
 * Problem 1
 If you cannot connect to SSH server, the first thing you should do is to check that the SSH deamon (sshd) is running on the server machine.
@@ -279,7 +285,7 @@ MaxStartups N - controls the number of unauthenticated concurrent SSH connection
  * STEP 10
  Use the latest version of OpenSSH
  - - - - - -
- Copying files over the network (scp)
+ #Copying files over the network (scp)
  
  scp - is part of the openssh client package.The scp command can be used in three different ways:
  1) To copy from your computer to a remote server
@@ -302,22 +308,22 @@ scp -p ... - to save the access and modification times.
  scp user1@IP1:/path_to_sourcefile user2@IP2:/path_to_destination
  - - -
  FileZilla - cross-platform software GUI for SFTP protocol which runs over ssh.
-_________________________________________________________________
+____________________________________________________________________
 --------------------------------------------------------------------
-Synchronizing Files and Directories using rsync
+#Synchronizing Files and Directories using rsync
 
 rsync: A fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.Has tons of options.
 The user that runs the rsync command must have read permissions on the source location and write permissions on the destination(directory) location.
 -
-rsync -av /sourcelocation  /destinationlocation - this transfers directory with its files in archive mode, which ensures that symbolic links, devices, attributes, permissions, ownerships, etc. are preserved in the transfer. v(verbose mode), a(archive mode).If the destination directory doesn't exist , it will create it.
-*Rsync doesn't work like cp command , because it finds files that need to be transferred using a quick check algorithm that look for files that have changed in size or in last modified time or if there are added files but not deleted(it doesn't remove the files that was deleted from source location after the last transfer).Since no file was changed, rsync does nothing.This is more efficient than cp command, which would copy each file again.
-*Rsync gives different treatment to the sources directories with a trailing slash"/" (e.g. /etc is not equal to /etc/).If you add a '/' to the source directory name, it will copy only the contents of that directory to the destination directory.But if not to add '/', it will copy the source directory itself inside the destination directory with its contents.
+rsync -av /sourcelocation /destinationlocation - this transfers directory with its files in archive mode, which ensures that symbolic links, devices, attributes, permissions, ownerships, etc. are preserved in the transfer. v(verbose mode), a(archive mode).If the destination directory doesn't exist , it will create it.
+*Rsync doesn't work like cp command , because it finds files that need to be transferred using a quick check algorithm which looks for files that have changed in size or in last modified time or if there are added files but not deleted(it doesn't remove the files that was deleted from source location after the last transfer).Since no file was changed, rsync does nothing.This is more efficient than cp command, which would copy each file again.
+*Rsync gives different treatment to the source directories with a trailing slash"/" (e.g. /etc is not equal to /etc/).If you add a '/' to the source directory name, it will copy only the contents of that directory to the destination directory.But if not to add '/', it will copy the source directory itself inside the destination directory with its contents.
 -
 rsync -aq - q(quiet) instead of v(verbose)
 -
 rsync --delete - to delete the additional files which were deleted after the last transfer from source location.which doesn't do common rsync command.This is useful for mirroring , when we want to have two directories only with same content always.
  -
- To exclude some files and directories while using rsync , at first make a txt file and within the file type on each line the name of files or directories which should be excluded (e.g. movie.mkv then dir1/ then *.png).
+ To exclude some files and directories while using rsync , at first make a txt file and within the file type on each line the names of files or directories which should be excluded (e.g. movie.mkv then dir1/ then *.png).
  rsync -av --exclude-from='excludingfilepath' /sourcelocation/  /destination - this will take the excludingfilepath content(which we wrote for excluding that type of files) as pattern and will exclude all the files and directories that match with the pattern of excludingfilepath.
  -
  rsync --exclude='patternorfilename' - quickly does the same as the command below , by typing the pattern immediately within the quotes.For example (rsync -av --exclude='*.png' /source /destination).
@@ -353,7 +359,7 @@ wget --mirror --convert-links --adjust-extension --page-requisites --no-parent h
 
 _________________________________________________________________
 --------------------------------------------------------------------
-Checking for Listening Ports (netstat, ss, lsof, telnet, nmap)
+#Checking for Listening Ports (netstat, ss, lsof, telnet, nmap)
 
 SCANNING OPEN PORTS ON LOCAL HOST
 
@@ -380,7 +386,7 @@ sudo lsof -iTCP:22 -sTCP:LISTEN = shows which file opened the specific(22) port.
 - -
 
 - - - - - -
-SCANNING OPEN PORTS ON REMOTE SYSTEM
+#SCANNING OPEN PORTS ON REMOTE SYSTEM
 
 To scan open ports on remote machine, you can use 'telnet' or a professional port scanner like 'nmap'.
 -
@@ -393,4 +399,4 @@ sudo nmap -sS remoteIP - SYN scan.it doesn't complete the full TCP  three-way ha
 sudo nmap -sT remoteIP - connect scan.nmap sends a SYN packet to the target port, and if the port is open , it reponsds with SYN/ACK .Then nmap sends an ACK to establish the connection.nmap then closes the connection with an RST packet.
 sudo nmap -p- remoteIP - to scan all ports.
 sudo nmap -p 80 -iL hosts.txt - to scan the IPs/domainnames which are separated by new lines or a whitespaces within hosts.txt file.
-- - - - - - - - - - -
+- - - - - - - - - - - 
