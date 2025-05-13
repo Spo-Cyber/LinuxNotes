@@ -1,6 +1,6 @@
 FILE SYSTEM
 
-!!! Everything in Linux is a file
+!!! Everything in Linux is file
 - - - -
 The File System Hierarchy Standard
 

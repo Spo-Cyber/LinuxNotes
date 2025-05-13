@@ -18,7 +18,7 @@ We can use alias for ssh connection quickly - example: alias server1="ssh -p 223
 #SHELL SCRIPTING
 
 A shell is a program that takes commands from the user through the keyboard , and gives them to the operating system's kernel to get executed.It's also called the command interpreter because it accepts commands from the user and then checks or interprets them to see if they are syntactically correct.And if they are , the shell will send them to the kernel for execution.The Shell gets started, when the user logs in or starts the terminal.
-echo $0 - to see what shell has started.
+echo $0\$SHELL - to see what shell has started.
 cat /etc/passwd - to see the default shell in the last column of each user.
 
 - - -
@@ -48,7 +48,7 @@ cat dir1/file.txt
 
 - - Execute the script 
 Normally a shell script is an executable file, so we need to add the execution permission for the owner. -> chmod 700 first_script.sh
-./first_script.sh (just type the absolute or relative path of the script , and it will be executed).If you use filename without absolute or relative path it will cause an error  'command not found'.The shell is not looking for the script in the current directory.It's looking for commands and scripts only in the directories from the $PATH variable.
+./first_script.sh (just type the absolute or relative path of the script , and it will be executed).If you use filename without absolute or relative path it will cause an error  'command not found'.So the shell is not looking for the script in the current directory.It's looking for commands and scripts only in the directories from the $PATH variable.
 
 echo $PATH - shows the directories where the shell is looking for executables.So add the directory that contains the script to the path or execute the script using absolute or relative path.
 - - - - - -
@@ -72,10 +72,10 @@ Bash doesn't support multiline comments.So the simplest way to write multiline c
 - - - - - -
 #Variables in Bash
 
-Variable is a name for a memory location where a value, which be manipulated is stored.You can create the variable in a script file or directly in the shell that's running in the terminal.
+Variable is a name for a memory location where a value, which can be manipulated is stored.You can create the variable in a script file or directly in the shell that's running in the terminal.
 os=Linux - the name of the variable is os and it's value is "Linux".Its not applied to use whitespace before and after the equal sign.
 os="Linux is OS" - use double quotes"" if the value needs to have whitespace.
-Bash is weakly typed programming language that does not require you to define any date type at the time of variable declaration.So when any numeric value is assigned to a variable, then it will work as an integer.And when any text value is assigned to a variable, then it is a string.
+Bash is weakly typed programming language that does not require you to define any data type at the time of variable declaration.So when any numeric value is assigned to a variable, then it will work as an integer.And when any text value is assigned to a variable, then it is a string.
 In bash there are no any floating point numbers , only integers.  age=30
 The variable names should be descriptive and remind you of the value they hold.A variable name cannot start with a number nor can it contain spaces or other special characters like .,;!? and so on.
 You can use Capital letters and underscore for variable names.
@@ -91,7 +91,7 @@ unset variablename - To undefine or remove a variable use the unset command -> u
 
 Shell variables that are introduced by the operating system, shell startup scripts, or by the shell itself, are usually all in capitals.Examples: $PATH, $USER, $HOME.
 
-declare -r logdir="logdir is a constant" - Sometimes you want to make sure that the content of a variable does not change, it's read-only.To declare such a constant use the declare built-in command with the -R option.So we can use the variable as commonly.If you try to change the value of constant/readonly variable, you'll get an error.And you can't unset/remove read-only variable (e.g. unset logdir).
+declare -r logdir="logdir is a constant" - Sometimes you want to make sure that the content of a variable does not change, it's read-only.To declare such a constant use the declare built-in command with the -r option.So we can use the variable as commonly.If you try to change the value of constant/readonly variable, you'll get an error.And you can't unset/remove read-only variable (e.g. unset logdir).
 
 Example` Print number of lines, first 5 lines, and last 7 lines of /etc/passwd which should be as a variable's value.Let's type this task in a shell script file:
 ############################################
@@ -178,8 +178,8 @@ Pattern of if,elif,else statements operations:
 	    //execute this code
 	fi    # closes the if (elif,else) statement entirely
 	
-We can use then without moving to new line use ; like break line -> if [condition]; then //command; else //command; fi
-############################################
+We can use 'then' without moving to a new line by using ';' -> if [ condition ]; then command1; else command1; fi
+############################################ 
 -
 *INFO*  man test - displays all testing conditions that can be used in if statements.
 - 
@@ -196,7 +196,7 @@ then
 else 
 	echo "$1 is neither a file nor a directory."
 fi
-############################################
+############################################.
 It's recommended to use "" outside of $1 in if statement.This is recommended when working with strings and in this case, the first argument of the script ($1) is a file or a directory name, so a string.
 
 The example bellow uses the single square brackets"[]" for testing conditions.This is the old classical and portable type of testing.
@@ -260,20 +260,20 @@ Command substitution means to run a shell command and store its output into a va
 `command` - The first one is to write the command between backticks/backquotes.This is a special character below the ESC key on the keyboard.
 Example: now=`date` => here the result of date command is redirected to now variable.And now we can see this new value of now variable -> echo $now.
 
-#(command) - The second way to perform command substitution is to write a dollar symbol and the command between parentheses.
+$(command) - The second way to perform command substitution is to write a dollar symbol and the command between parentheses.
 Example: now=$(date) => the same result in the example above.
 
 Example: output=$(ps -ef | grep bash) OR output=`ps -ef | grep bash` => echo "$output".
-If we did "echo $output" without double quotes , then it would print the same into a single line and not as like with double quotes in it's original tabular form.
+If we run "echo $output" without double quotes , then it would print the same into a single line and not as like with double quotes in it's original tabular form.
 
-Example: tar -czvf backupdir.`date +%F_%H:%M` ~/pathdir - here we add the current date to the new archive file with using command substitution.
+Example: tar -czvf backupdir.`date "+%F %H:%M"` ~/pathdir - here we add the current date to the new archive file with using command substitution.
 - - - - - -
 #Comparing Strings in If Statements
 
 Two strings are equal when they have the same length and contain the same sequence of characters in the same order.The comparison operator is the single equal sign if you use the if statement with single square brackets or the double equals sign if you use the if statement with double square brackets.
 
 Example: if [ "$str1" = "$str2" ] or if [[ "$str1" == "$str2" ]]. str1 and str2 are 'operands' and = is 'operator'. 
-Don't forget the quotes outside of variables in if testing conditions to avoid the word splitting or other globbing issues.
+Don't forget the double quotes outside of variables in if testing conditions to avoid the word splitting or others issues.
 
 !operator - !(not) -> != (not equal) .!True = False , !False = True
 
@@ -297,7 +297,7 @@ Example: "${dirname}_${timestamp}" or echo "Hello, ${user}!"
 - - - - - -
 #For Loops
 
-A For statement is used to execute a block of code repeatedly.The standard Bash For Loop is similar to the Python one, but is different from the For loop used in For loop used in C++ or Java.
+A For statement is used to execute a block of code repeatedly.The standard Bash For Loop is similar to the Python one, but is different from the For loop used in C++ or Java.
  The bash For loop takes this form:
 for item in LIST     (item is a temporary variable that is created and takes a value from the LIST sequentially at each operation.)
 do
@@ -408,7 +408,7 @@ case EXPRESSION in
 		;;
 esac
 
-You can have multiple patterns separated by a vertical bar like a pipe.The parentheses) operator terminates the pattern list.A pattern can contain special characters like asterisks or question marks.A pattern and it's associated commands are known as a clause and each clause must be terminated with double semicolons;;.The commands corresponding to the first pattern that matches the expression are executed.It is common practice to use the wildcard  asterisk symbol *) as a final pattern to define the default case.This pattern will always match.After the first match the case statement terminates with the exit status of the last command that was executed.  
+You can have multiple patterns separated by a vertical bar like a pipe.The parentheses) operator terminates the pattern list.A pattern can contain special characters like asterisks or question marks.A pattern and it's associated commands are known as a clause and each clause must be terminated with double semicolons;;.The commands corresponding to the first pattern that matches the expression are executed.It is common practice to use the wildcard  asterisk symbol *) as a final pattern to define the default case.This pattern will always match.After the first match the case statement terminates with the exit status of the last command that was executed.
 - - -
 Example favorite_pet.sh:
 #!/usr/bin/bash
@@ -447,10 +447,10 @@ OR
 }
 
 The commands within the curly braces is the body of function, and is being completed while executing the function.
-To CALL  a function , write the name of function without any parenthesis() -> func_Name
+To CALL a function , write the name of function without any parenthesis() -> func_Name
 - - -
 Arguments
-The parenthesis after function name are for decoration, and you can't put anything inside them , as in other programming languages can(parameters).So for passing an argument to a function , we need to pass the arguments while calling the function after the function name (e.g. func_name arg1 arg2) as while passing arguments to a script file.
+The parenthesis after function name are for decoration, and you can't put anything inside them , as other programming languages do (parameters).So for passing an argument to a function , we need to pass the arguments while calling the function after the function name (e.g. func_name arg1 arg2) as while passing arguments to a script file.
 To use arguments within a function use $1 $N as in script file.
 Example:
 
@@ -484,6 +484,7 @@ count=`lines_in_file "lorem" /home/mrhacker/Desktop/test.txt`
 echo $count
 - - - 
 Variable Scope in Functions
+
 Scope refers to which part of a script , a variable is visible.In bash, all variables are by default global, and that means that they are visible everywhere inside a script.
 Example:
 var1="AA"
