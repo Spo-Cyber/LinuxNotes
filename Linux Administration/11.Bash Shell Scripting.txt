@@ -525,11 +525,12 @@ do
 	echo "COUNTRY is $COUNTRY"
 	echo "REPLY is $REPLY"
 done
-When the select statement is reached, each item from the list is printed out on the screen and proceeded with a number starting from one.So COUNTRY is the number we choose for a specific name from the list on the display, and the REPLY is the number which we chose.If the COUNTRY is empty as we don't type anything, it will repeat executing the script.When running the script, the default prompt is #?.You can change it by modifying the predefined variable PS3.
+When the select statement is reached, each item from the list is printed out on the screen and proceeded with a number starting from one.So COUNTRY is the number we choose for a specific name from the list on the display, and the REPLY is the number which we chose.If the COUNTRY is empty as we don't type anything, it will repeat executing the script.
+When running the script, the default prompt is #?.You can change it by modifying the predefined variable PS3.
 
 Example with case statement:
-PS3="Select the country "
 
+PS3="Select the country "
 select country in Germany Armenia Russia Quit
 do
     case "$REPLY" in

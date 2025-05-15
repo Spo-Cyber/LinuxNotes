@@ -16,7 +16,7 @@ Nmap is also available for Windows and Mac.And if you want a graphical interface
 nmap -sS destinationIP - TCP SYN scan.If you are root, and running nmap without any option,this is the default scanning type.It displays a lot of information about destination host, how much time the scan took , the MAC address of the destination host, and the open ports.By default , nmap scans the most common one thousand ports for each protocol, TCP and UDP.If you are not root, you can't perform this scan.  
 nmap -sT destinationIP - TCP Connect Scan.If you are not root , this is the default type of scan.
 
-If nmap scans the most common one thousand ports for each protocol, then what if a service has been moved to a non-standard port like SSH is listening on port 50005??
+If nmap scans the most common one thousand ports for each protocol, then what if a service has been moved to a non-standard port like SSH is listening on port 50005?
 Here we have to specify the non-standard port:
 nmap -sS 192.168.1.100 -p 50005 - This will scan only the specified port.
 
@@ -111,10 +111,10 @@ Let's have a look at Wireshark main window.We notice , that it consists of three
 2.The packet details pane, displays the packet selected in the packet list pane in more detail.
 3.The packet bytes pane, displays the data from the packet selected in the packet list pane and highlights the field selected in the packet details pane.
 
-Each line in the packet list corresponds to a captured packet.And if you select the a line in this pane, more details will be displayed in the packet details and packet bytes pane.
+Each line in the packet list corresponds to a captured packet.And if you select a line in this pane, more details will be displayed in the packet details and packet bytes pane.
 Now if you double click on a line, a new window pops up with details about that particular packet.
 
-If you want , you can save the capture for later inspection.To save the capture to a file, you press on ctl+s or go to file->Save/Save As..
+If you want , you can save the capture for later inspection.To save the capture to a file, you press on ctrl+s or go to file->Save/Save As..
 Wireshark can save the packet data in more than one format.The most important formats are pcapng(the native file format for the latest version of Wireshark) and pcap(used by older versions of Wireshark, but also by other well-known and widely used tools like tcpdump).
 Not all information will be saved in a capture file.For example , most file formats do not record the number of dropped packets.
 At a later time, you can open the file with Wireshark or with other tools like tcpdump(which is a command line tool) like this => tcpdump -vv -r /PathToPCAPFile
@@ -126,14 +126,14 @@ When it comes to sniffing traffic using a command line tool, tcpdump is the tool
 tcpdump is installed by default on any Linux distribution.The following commands will be executed as root.
 
 tcpdump -i interfaceName - to see what's hitting your interface
-tcpdump -i intName host IPaddress - to see only the pakets to or from an IP address
+tcpdump -i intName host IPaddress - to see only the packets to or from an IP address
 tcpdump -i intName dst/src IP/domainName - to see only one direction or the other(destination/source) to or from IP or domain name.
 tcpdump -i intName net 192.168.1.0 to capture packets going to or from a particular network or subnet.
 tcpdump -i intName port 80 - to see packets of a specific application.
 tcpdump -i intName dst port 53 -vv -n - specify the destination port of packets, -vv (for more verbose version of details), -n (not to convert addresses to names)
 tcpdump -i intName port 80 -A -n - -A(to print each packet in human-readable text), rather than the default hexedecimal and protocol-level output.it won't be useful if the traffic is encrypted(like HTTPS), you'll just see unreadable data.
 tcpdump -i intName port 80 -X -n - displays both ASCII and hexedecimal data.
-tcpdump -i intName port 80 -w test.pcap - to save captures packets into a file.It's often useful to save because packet captures into a file for analysis in the future.These files are known as pcap files and can be opened in Wireshark or other packet analysis tools including tcpdump itself.
+tcpdump -i intName port 80 -w test.pcap - to save captured packets into a file.It's often useful to save because packet captures into a file for analysis in the future.These files are known as pcap files and can be opened in Wireshark or other packet analysis tools including tcpdump itself.
 tcpdump -r test.pcap - to read the packets file.note that while reading the file, all the earlier options are also available, so we can use tcpdump -vv -n -X -r test.pcap
 
 AND/OR operators
