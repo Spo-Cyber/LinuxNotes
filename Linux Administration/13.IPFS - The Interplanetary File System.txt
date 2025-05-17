@@ -1,0 +1,35 @@
+		The Interplanetary File System
+		
+IPFS is a protocol designed to create a permanent and decentralized method for storing and sharing files. It is based on technologies like BitTorrent and Git, and is mainly used for storing and delivering static content (such as images, videos, documents, and so on).
+If built correctly, IPFS could complement or even replace HTTP, helping to build a better web.
+A machine that runs IPFS software to store and retrieve files from the IPFS network is called an IPFS node.
+
+IPFS Properties:
+IPFS is a peer-to-peer, decentralized, and distributed file system.It is a file system, because it has directories and files that can be mounted.It is peer-to-peer , because there is no central server or single point of failure.It uses a completely decentralized architecture for worldwide peer-to-peer file transfers.
+IPFS is a CDN(Content Delivery Network).Once someone adds a file to the IPFS locally , the file will be available to the world immediately.It's caching friendly and uses the BitTorrent Bandwidth distribution.
+IPFS is also fault-tolerant with zero downtime.Once a file is added to an IPFS node and requested by IPFS clients, the file gets cached by other nodes as well, making it impossible to remove it.So even if the originating node removes the file, the file will still exist on other networks.
+IPFS is censorship-resistant.It's like a permanent web.Once a file was added and cached on the IPFS network, it cannot be deleted anymore.It was chunked in blocks and already saved on tens of peers that cannot be forced to remove the file.For example` during the block of Wikipedia in Turkey between 2017 and 2020, IPFS was used to create a mirror of Wikipedia, which allowed access to the content of Wikipedia despite the ban.Of course this comes with some legal issues as well.No authority can force the network to remove a pirated file.
+IPFS uses content address(not location addressing like HTTP).
+
+- -
+Content Addressing vs. Location Addressing
+
+Instead of referring to files by location, or which server they are stored on IPFS refers to everything by hash` meaning the content itself.It works by taking a file and hashing it cryptographically, so you end up with the unique hash of the file, which ensures that no one can create another file that has the same hash.And this hash is the address of the file.So instead of talking to a server, we are talking to a specific piece of data and no one is really interested in where the data is located.	
+
+Let's add a file to the IPFS network (This is just an example):
+sudo ipfs add ./filename => added Asdfkj234234Aasdlfjas324234 filename.txt
+It uniquely identifies the files in the first network and to access the file, all we need is this hash Asdfkj234234Aasdlfjas324234.We don't need the address of the machine that stores it.
+Behind the scenes , after we run the command, is that the file was chunked in blocks, saved locally in a folder, and will stay there until an IPFS gateway will request the file by its content identifier, which is the hash.After the file was requested, it will be saved in the gateways cache and be available to the whole world even if I shut down my machine.When someone wants to access a particular page using the browser, IPFS will ask the entire network "Does anyone have the data that corresponds to this hash?",a node on IPFS that contains the corresponding will return the data.Allowing you to access it from anywhere and potentially even offline because it was already cached locally.
+
+Using a browser on the other machine , we request the file:
+ipfs.io/ipfs/Asdfkj234234Aasdlfjas324234
+ipfs.io(main IPFS gateway)
+/ipfs/hashOfThatFile
+- -
+Pinning is the mechanism that allows you to tell IPFS to always keep a given object and never remove it.IPFS is an aggressive hashing mechanism , that will keep an object locally for a short time, after someone performs any type of operation on it.But these objects may regularly get garbage collected or removed.To prevent garbage collection, simply pin the hash you care about.
+Objects added through the IPFS command are pinned recursively by default.An IPFS file exists as long as someone keeps it.And a file from IPFS is lost when there is no peer that stores the file (so when there is no interest in the file anymore).
+
+- - -
+#Installing IPFS on Linux
+
+

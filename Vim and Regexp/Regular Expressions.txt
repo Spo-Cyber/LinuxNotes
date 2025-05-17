@@ -19,4 +19,6 @@ abc... - Letters
 \S - Any Non-whitespace character
 ^...$ - Starts and ends
 (...) - Capture Group
-
+(a(bc)) - Capture Sub-group
+(.*) - Capture all
+(abc|def) - Matches abc or def
