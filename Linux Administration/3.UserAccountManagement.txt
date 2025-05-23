@@ -7,7 +7,7 @@ Each line , is about a system or normal user
 
 mrhacker:x:1000:1000:MrHacker,,,:/home/mrhacker:/usr/bin/bash
 *In 1st octet - (mrhacker) is the user's login name
-*In 2nd octet - (x) means that password of the user is encrypted and saved in /etc/shadow file.if there is just a blank that means that user can login without password.
+*In 2nd octet - (x) means that password of the user is encrypted and saved in /etc/shadow file.If there is just a blank that means that user can login without password.
 *In 3rd octet - (1000) is the user's ID "a positive integer number assigned to the user"
 *In 4th octet - (1000) is the user's primary group ID "as third octet positive int"
 *In 5th octet - (MrHacker,,,) is a comment.sometimes it is left blank
@@ -57,13 +57,13 @@ useradd -G groupname,groupnamesoptional... - to assign to a secondary group (is 
 useradd -e 2002-04-23 username - to set expiring time for that user which will be temporary
 useradd -alloptions username - to create user by username
 
-adduser - useradd works at the backend of adduser.just adduser is more user-friendly.but the useradd is must.
+adduser - useradd works at the back-end of adduser.just adduser is more user-friendly.but the useradd is must.
 - - - - - - - -
 #Password of user
 
 passwd username - to set or change the user password
+passwd -d username - to delete the password of user
 chage username - to set account expiration date, specifying password changing information ...
-
 - - - - - - - -
 #Modifying User Accounts
 
@@ -71,7 +71,7 @@ Modifying its options we can by the same options of useradd
 sudo usermod -c "change/set a comment" username
 sudo usermod -g newprimarygroupname username
 sudo usermod -G newsecondarygroup,orgroups
-sudo usermod -aG addtopreviousgroups
+sudo usermod -aG newSecondayGroup - to add and not replace with old ones.
 sudo usermod etc...
 
 - - - - - - - -
@@ -81,10 +81,10 @@ sudo userdel username "to delete the user account without it's related files"
 sudo userdel -r username "to delete it's related files also"
 (deluser - userdel works at the backend and it is more user-friendly like adduser and useradd)
 - - - - - - - -
-#To give administrative rights to user
+#Give administrative rights to user
 
-By default a new user has not administrative rights, as it is not in sudo group, so like command by sudo won't work (sudo cat /etc/shadow won't work).
-To add the user into the group - sudo usermod -aG sudo username(from the account which has administrative rights)
+By default a new user has not administrative rights, as it is not in sudo group, so like command by sudo won't work (sudo cat /etc/shadow won't work). 
+sudo usermod -aG sudo username - To add the user into the group (run from the account which has administrative rights)
 - - - - - - - -
 #Group Management
 

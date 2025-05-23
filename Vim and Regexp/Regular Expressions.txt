@@ -1,0 +1,24 @@
+abc... - Letters
+123... - Digits
+\d - Any digit 0-9
+\D - Any non-digit character
+. - Any Character
+\. - Period (just dot character)
+[abc] - Only a, b, or c
+[^abc] - Not a, b, nor c
+[a-z] - Characters a to z
+[^a-z] - Not characters a to z
+\w - Any Alphanumeric character = [A-Za-z0-9]
+\W - Any Non-alphanumeric character = [^A-Za-z0-9]
+{m} - m Repetitions
+{m,n} - m to n Repetitions
+* - Zero or more repetitions
++ - One or more repetitions
+? - Optional character
+\s - Any whitespace
+\S - Any Non-whitespace character
+^...$ - Starts and ends
+(...) - Capture Group
+(a(bc)) - Capture Sub-group
+(.*) - Capture all
+(abc|def) - Matches abc or def

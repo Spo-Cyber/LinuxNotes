@@ -1,0 +1,126 @@
+		The Interplanetary File System
+		
+IPFS is a protocol designed to create a permanent and decentralized method for storing and sharing files. It is based on technologies like BitTorrent and Git, and is mainly used for storing and delivering static content (such as images, videos, documents, and so on).
+If built correctly, IPFS could complement or even replace HTTP, helping to build a better web.
+A machine that runs IPFS software to store and retrieve files from the IPFS network is called an IPFS node.
+
+IPFS Properties:
+IPFS is a peer-to-peer, decentralized, and distributed file system.It is a file system, because it has directories and files that can be mounted.It is peer-to-peer , because there is no central server or single point of failure.It uses a completely decentralized architecture for worldwide peer-to-peer file transfers.
+IPFS is a CDN(Content Delivery Network).Once someone adds a file to the IPFS locally , the file will be available to the world immediately.It's caching friendly and uses the BitTorrent Bandwidth distribution.
+IPFS is also fault-tolerant with zero downtime.Once a file is added to an IPFS node and requested by IPFS clients, the file gets cached by other nodes as well, making it impossible to remove it.So even if the originating node removes the file, the file will still exist on other networks.
+IPFS is censorship-resistant.It's like a permanent web.Once a file was added and cached on the IPFS network, it cannot be deleted anymore.It was chunked in blocks and already saved on tens of peers that cannot be forced to remove the file.For example` during the block of Wikipedia in Turkey between 2017 and 2020, IPFS was used to create a mirror of Wikipedia, which allowed access to the content of Wikipedia despite the ban.Of course this comes with some legal issues as well.No authority can force the network to remove a pirated file.
+IPFS uses content address(not location addressing like HTTP).
+
+- -
+Content Addressing vs. Location Addressing
+
+Instead of referring to files by location, or which server they are stored on IPFS refers to everything by hash` meaning the content itself.It works by taking a file and hashing it cryptographically, so you end up with the unique hash of the file, which ensures that no one can create another file that has the same hash.And this hash is the address of the file.So instead of talking to a server, we are talking to a specific piece of data and no one is really interested in where the data is located.	
+
+Let's add a file to the IPFS network (This is just an example):
+sudo ipfs add ./filename => added Asdfkj234234Aasdlfjas324234 filename.txt
+It uniquely identifies the files in the first network and to access the file, all we need is this hash Asdfkj234234Aasdlfjas324234.We don't need the address of the machine that stores it.
+Behind the scenes , after we run the command,the file was chunked in blocks, saved locally in a folder, and will stay there until an IPFS gateway will request the file by its content identifier, which is the hash.After the file was requested, it will be saved in the gateways cache and be available to the whole world even if I shut down my machine.When someone wants to access a particular page using the browser, IPFS will ask the entire network "Does anyone have the data that corresponds to this hash?",a node on IPFS that contains the corresponding will return the data.Allowing you to access it from anywhere and potentially even offline because it was already cached locally.
+
+Using a browser on the other machine , we request the file:
+ipfs.io/ipfs/Asdfkj234234Aasdlfjas324234
+ipfs.io(main IPFS gateway)
+/ipfs/hashOfThatFile
+- -
+Pinning is the mechanism that allows you to tell IPFS to always keep a given object and never remove it.IPFS is an aggressive hashing mechanism , that will keep an object locally for a short time, after someone performs any type of operation on it.But these objects may regularly get garbage collected or removed.To prevent garbage collection, simply pin the hash you care about.
+Objects added through the IPFS command are pinned recursively by default.An IPFS file exists as long as someone keeps it.And a file from IPFS is lost when there is no peer that stores the file (so when there is no interest in the file anymore).
+
+- - -
+#Installing IPFS on Linux
+
+There are few versions of the IPFS software availble.There is IPFS Desktop, a full-featured command line tool and the browser extension.
+IPFS Desktop is a desktop application , that offers menubar shortcuts and an easy interface for adding, pinning, and sharing files, plus a full IPFS node.
+Note that the package for the desktop application comes with a built-in automatic update mechanism.
+Installing the desktop app or the browser extension is faily simple.
+
+So let's install the IPFS command-line tool in linux:
+1)
+The first step is to download the Linux binary from dist.ipfs.io website.
+Download the go-ipfs(kubo) version there.This is the earliest and most widely used implementation of IPFS. it includes IPFS daemon server, extensive command line tooling, an HTTP RPC API for controlling the node, an HTTP Gateway for serving content to HTTP browsers.
+Copy the link address of the 64-bit Linux Binary version.
+run wget linkAddress, and it is downloaded.
+
+2)
+Extract files with "tar -xzvf filename".then go the ipfs directory and run "sudo ./install.sh"
+Check the installation by running "ipfs --version"
+
+3)
+Now as we have the IFPS node installed , the next step is to initialize the repository where it will store all it's settings and internal data.All the following commands will be run as ROOT.
+sudo ipfs init.After running this command it displays the "peer identity: someHash", and that hash is your node's ID.Other nodes on the network , use it to find and connect to you.
+
+4)
+sudo ipfs id - to get you IPFS ID hash anyime.
+After initializng the IPFS repository , let's take the node online by starting the IPFS daemon.
+sudo ipfs daemon - start the IPFS daemon.
+So I've joined my IPFS node to the public network.By default , m node will store and serve small bits of data to the network.
+
+IPFS also uses a peer discovery mechanism similar to the one used by BitTorrent.It uses something called DHT(distributed hash table).Now I'm connected to the network and I'm able to see the IP addresses of my peers that were discovered using DHT.
+sudo ipfs swarm peers - to see a list with the IDs of our peers.
+
+Now we should be able to get objects from the network.
+sudo ipfs cat /ipfs/hashAddress > ~/Desktop/spaceship.jpg
+IPFS will search the network for the file with that hash, and using a command redirection, will write the data into a file called spaceship.jpg
+Note that I didn't specify the direction of the file, but only said that I want the file.It's the IPFS job to find the file on the network's nodes.This is what Content Addressing means.
+
+
+IPFS provides us a web console on the local node as well.To access this console, go to browser URL section and run "localhost:5001/webui".
+
+- - -
+#Running an IPFS Node on Linux
+
+Let's see how to run an IPFS node on Linux from the command line , to serve content to the network or to retrieve content from the network.
+An IPFS node is an IPFS client that serves the network.
+
+Lets create a directory and files in it:
+mkdir Project
+cp /etc/passwd Project/
+cp randomImage.jpg Project/
+
+Now lets add the directory to the IPFs:
+sudo ipfs daemon (to run the ipfs daemon)
+sudo ipfs add -r Project/ (-r means add the contents recursively)
+There in the results , it displays hashes of each file.
+
+Lets view the content from the browser of the same or another machine:
+ipfs.io/ipfs/Qmac7PTj1wy9cDVAP3RyzkVttuAsfEZGxL5GcttCTJYHmR (ipfs.io is known as the main IPFS gateway).
+
+# # #
+Behind the scenes queried the distributed hash table or DHT, found our machine, which is an IPFS node, requested the file.Our Computer sent it to the gateway and the gateway sent it to the browser.
+# # #
+
+We can also request the file from our own gateway using localhost and Port 8080 => localhost:8080/ipfs/.And the local node has delivered the file.
+Note that by default, our gateway is not exposed to the world on HTTP.It only works locally , so no one can connect to it using the browser.
+The user can also request a directory, not only a file, and it will list the contents of the directory.
+sudo ipfs ls DirHash - to list the contents with their hashes of that directory.
+
+IPFS is decentralized and unstoppable` means that once a file was requested it was cached on the gateway to and it remains available , even though the originating node shuts down.So if I shut down the IPFS daemon, the file can still be requested by any IPFS client on the Internet.
+
+What will happen if someone requests the other file, which has never been requested yet , and the daemon is down?
+The file won't be delivered to the IPFS client.
+So because no one has ever reuested the file, it was not cached on any IPFS node and exists only locally.So if the local IPFS node is down, the file cannot be delivered to the clients.But once the file was requested by at least one client, the gateway of the client cached the file locally, and from that moment, the file will be available, even if the node that provides the file in the first place vanishes.
+So the more requested a file is, the more difficult it is to censor or remove the file from the network.That's because it gets cached by each IPFS node that delivers it to the client.
+
+- - -
+#Pinning Objects
+
+An IPFS file exists as long as someone keeps it.And the file from IPFS is lost, when there is no peer that stores that file.So when there is no interest in the file anymore.
+To prevent garbage collection, you pin the hash , you care about objects added with "ipfs add" are pinned by default.So pinning is the mechanism that allows you to tell IPFS to always keep a given object and never remove it.
+
+Example:
+ip address show > ip.txt
+sudo ipfs add ip.txt (adding the file to IPFS)
+sudo ipfs pin ls --type=all (display all the pinned contents of IPFS)
+sudo ipfs pin rm QmZncokf7HkBN35KXVZb3i7JybJ7sZAMzhmWJ1sRgmHcFA (remove from pinned)
+sudo ipfs cat QmZncokf7HkBN35KXVZb3i7JybJ7sZAMzhmWJ1sRgmHcFA (to verify it exists or no), BUT it's still there after unpinning it.To remove the file, we have to run the garbage collector manually.
+sudo ifps repo gc (to run garbage collector manually)
+sudo ipfs cat QmZncokf7HkBN35KXVZb3i7JybJ7sZAMzhmWJ1sRgmHcFA (to verify if it still exists), and now it is removed successfully.
+
+If you've got just one local IPFS node that's always running, local pinning may be all you need to make sure your important items are persistent and never garbage collected.However your local node isn't always online.You'd like to keep a persistent backup of you local node's file somewhere else , or you don't have all the disk space you need on your local node.To ensure that your important data is retained and not deleted during garbage collection, you may want to use a pinning service.
+These services run lots of IPFS nodes, and allow users to pin data on those nodes for a fee.
+Some examples of pinning services are "pinata.cloud, infura.io, eternum.io".
+To add and use a remote pinning service directly in IPFS , you'll first need to have an account with that service.Once you've got an account, you'll use the app for command to add the service and to pin data on the remote service.
+- - - - - - -

@@ -188,7 +188,7 @@ _____________________________________________________________________________
 
 Foreground processes are started by the user and not by the system services, and while they are running the user cannot start another process from the same terminal.By default every process that you start runs in the foreground.It gets its input from the keyboard and sends its output to the screen(to the terminal).For example run "sleep 10" the terminal waits 10 seconds in the foreground and you can't execute another process at that time in that terminal.After 10 seconds the process will be finished and you can try another process.
 
-Background processes are non-interactive and are started or executed by system services or by the users.While they are running you can start another processes within the same terminal.To start the background process you add an "&"(ampersand) at the end of the command.For example run "sleep 10 &", and now it will run in the background and we can do anything in terminal by not interacting with it, while it is running.
+Background processes are non-interactive and are started or executed by system services or by users.While they are running you can start another processes within the same terminal.To start the background process you add an "&"(ampersand) at the end of the command.For example run "sleep 10 &", and now it will run in the background and we can do anything in terminal by not interacting with it, while it is running.
 It is common to redirect the output and error of a command running it in the background "ifconfig > output.txt 2>errors.txt &".
 If you don't want to receive the output or errors of command you can redirect them to >/dev/null.
 - - - -
@@ -208,6 +208,6 @@ If you run a process in the foreground and close the terminal, the process will 
 But when we close the terminal, while running a background process, the process may/may not still will be running depending on command.When you close the terminal , logout or disconnect, the HUP(hang up) signal is sent to the process, and the process will get killed.
 This becomes problematic because if you run a command over ssh and your connection drops or you log out, the session is terminated and all the processes executed from the terminal will receive the hangup signal and stop.
 
-nohup command (& 'optional') - (NO Hangup)to prevent a process from being terminated when the terminal is closed.if '&' is set then it will do background process with nohup , and if '&' is not set , then it will run in the foreground and after closing terminal will continue running.It also redirects the command output to a file called "nohup.out".Other alternative variants like nohup are "tmux" and "screen".
+nohup command (& 'optional') - (NO Hangup)to prevent a process from being terminated when the terminal is closed.if '&' is set then it will do background process with nohup , and if '&' is not set , then it will run in the foreground and after closing the terminal, it will continue running.It also redirects the command output to a file called "nohup.out".Other alternative variants like nohup are "tmux" and "screen".
 
 ________________________________________________________________________________________
