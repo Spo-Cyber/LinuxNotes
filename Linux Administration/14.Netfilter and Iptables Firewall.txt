@@ -1,0 +1,198 @@
+				#Netfilter and Iptables Firewall
+
+A firewall is a network security system, that monitors and controls incoming and outgoing network traffic , based on predetermined security rules.A firewall typically establishes a barrier between a trusted internal network and untrusted external network such as the Internet.Firewalls are an important tool , that can be configured to protect your servers and infrastructure.The firewall solution for Linux is "Netfilter".
+
+Netfilter is a software firewall , a packet filtering framework inside the Linux kernel.It enables packet filtering, network and port address translation, port forwarding and packet alteration which is the process of intentionally altering data in IP packet headers before or after the routing process.Netfilter is professional and mostly used solution for building firewalls in Linux OS.The Netfilter framework is controlled by the Iptables command.
+
+Iptables is a tool that belongs to the user space used to configure Netfilter.It is said that Netfilter belongs to the kernel space and Iptables belongs to the user space.Most of the time, Netfilter and Iptables are often combined into a single expression Netfilter-Iptables.Every Linux distribution uses Netfilter and Iptables and there is nothing extra, no extra software that should be installed.Iptables is already there.
+Only ROOT can configure the Netfilter framework or use the Iptables command.	
+
+- - - - - -
+#Netfilter Chains
+
+Every data packet is inspected by firewall rules within the Linux kernel.Firewall rules determine what traffic your firewall allows and what is blocked.Each rule has a matching component and an action component.When packets arrive from the network, the Netfilter framework of the Linux kernel recognizes and groups packets into data streams of flows.Netfilter analyzes both packet headers and packet contents in order to track connections and to perform SPI (Stateful Packet Inspection).Each packet from the stream is processed by the firewall with some performance optimization.The Iptables firewall uses tables to organize it's rules.Within each Iptables table, rules are further organized within separate chains.Rules are placed within a specific chain of a specific table.A RULE IS CONNECTED TO A CHAIN AND TO A TABLE.Within a chain a packet starts at the top of the chain, and is matched or evaluated rule by rule.When a match is found, the target of the rule is executed.The target is the action that is triggered when a packet meets the matching criteria of a rule.
+Examples of targets are DROP or ACCEPT.If the target is a terminating one, like e.g. DROP, no other rule will evaluate the packet.If the packet reaches the end of the chain without a match, the default policy for that chain is applied.There are two policies DROP and ACCEPT , and the last one being also the default one.
+
+There are 5 built-in Chains:
+- -
+INPUT - one of the most used chains for packet filtering.This is used for filtering (dropping or accepting incoming packets).Our Linux host is the destination of the packet.Each packet that was destined to our Linux host is evaluated against the rules of INPUT chain.No packet is allowed to skip this evaluation.
+iptables -t filter -A INPUT -p icmp -j DROP (filter is the name of the table) 
+- -
+OUTPUT - to filter outgoing packets.Our Linux host is the source of the packet.
+iptables -t filter -A OUTPUT -d netfilter.org -j DROP (to drop the outgoing packets to netfilter.org)
+Netfilter uses in fact the IP address of netfilter.org , not the domain name, even though I've written the domain.Behind the scenes it makes a DNS query and requests the IP of netfilter.org and then drops all the packets destined to that IP.
+If you are using another domain, especially a big one like google.com or facebook.com, it's possible that even though you've executed the right iptables command, the connection to that site is still working.The reason for this is that behind those domains, there are tens of IP addresses, and you've blocked only one or a few of them.When you make the next DNS request, it's possible that the server will give you a new IP that was not blocked in the first place.
+As a conclusion, you can deny access to the websites this way only if that domain has one or only a few IP attached.
+- -
+FORWARD - used for filtering routed packets.In this case, our Linux machine is a router and connects at least two networks like the Internet and the LAN.
+- -
+PREROUTING - used for DNAT / Port Forwarding.
+- -
+POSTROUTING - used for SNAT (MASQUERADE)
+- -
+These 5 Chains are always available, and you cannot remove or rename them.You just use them as they are.You can also create other chains named (user defined or custom chains).
+
+- - - - - -
+#Netfilter Tables
+
+The logic for filtering IP packets is organized in a collection of tables, each with a specific purpose.Each packet is inspected by the Netfilter Firewall and matched in order top to bottom, against the rules that are placed within a specific chain of a specific table.
+
+There are 4 built-in tables available:
+- -
+filter - table is one of the most widely used tables in Iptables.It's the default table and is where all the actions typically associated with a firewall take place.There is where the decision of accepting or dropping each packet is taken.Being the default table means, that when we add or remove a firewall rule, if we don't specify the table's name, it will automatically consider the filter table.
+sudo iptables -A INPUT -p tcp --dport 22 -s 192.168.1.100 -j DROP - accepts TCP traffic to port 22 only if it comes from a specific IP address.
+sudo iptables -A INPUT -p tcp --dport 22 -j DROP
+This will read all the lines of the filter table(as we didn't specify the table, it is by default filter table) from top to bottom , will ACCEPT the traffic for a specific accepting rule, and at the end will DROP all the incoming traffic to TCP port 22.So in this example if the incoming traffic is from 192.168.1.100 only it will be ACCEPTed , and all the others will be DROPped.
+Note that the Filter Table has these 3 available Chains (INPUT, OUTPUT, FORWARD).
+- -
+nat - table is specialized in SNAT (Source Network Address Translation) and DNAT (Destination Network Address Translation).As packets enter the network stack, rules in this table will determine whether and how to modify the packets, source or destination addresses in order to impact the way the packet is further processed.
+Iptables nat table has the the following built-in Chains:
+PREROUTING for DNAT/port forwarding
+POSTROUTING for SNAT/masquerade
+OUTPUT if we want to configure NAT in a different way for locally generated packets.
+- -
+mangle - table is specialized in packet alteration.For instance, we can modify fields in the IP header like say type of service or TTL  by adding rules to the mangle table.
+The mangle table has the following bult-in Chains (PREROUTING, INPUT, FORWARD, OUTPUT, POSTROUTING).
+In fact it can be used with all Iptables built-in chains.
+- -
+raw - The Iptables Firewall is stateful,  meaning that packets are evaluated in regards to their relation to previous packets.Iptables views packets as part of an ongoing connection or session, instead of as a stream of discrete unrelated packets.The raw table is used to set a mark on packets that should not be handled by the connection tracking system, or simply said , we don't want some packets to be classified by accepting them directly.Like e.g. the traffic from our own loopback interface.This is done for performance improvement.
+
+- - - - - -
+#Chain Traversal in a Nutshell
+
+To write efficient firewall rules, you must deeply understand how a packet traverses the netfilter tables and chains.
+
+The most use scenarios:
+Incoming traffic is filtered on the INPUT CHAIN of the filter table.
+Outgoing traffic is filtered on the OUTPUT CHAIN of the filter table.
+Routed traffic is filtered on the FORWARD CHAIN of the filter table in both directions.
+SNAT/MASQUERADE Is performed on the POSTROUTING CHAIN of the nat table.
+DNAT/Port Forwarding is performed on the PREROUTING CHAIN of the nat table.
+To modify values from the packet's headers (like TTL/type of service) add rules to the mangle table.
+To skip the connection tracking add rules with NOTRACK target to the raw table.
+
+- - - - - -
+#Iptables Basic Usage
+
+Iptables is the userspace component used to configure Netfilter.The kernel framework that does the actual filtering , it's said that Iptables belongs to userspace and Netfilter belongs to kernelspace.So we can interact with Netfilter using the Iptables command.There are also some graphical frontends for Netfilter , that allow us to create rules.However they lack the flexibility of using a command line, and Linux professionals rely heavily on the Iptables command, which has many , many options.
+Iptables can be run only by ROOT.
+ 
+iptables [-t table_name] -COMMAND CHAIN_NAME matches -j TARGET
+
+-t table_name) table name indicates the Netfilter table(filter,nat,mangle,raw) on which the command operates.By default it's the default table.
+* *
+-COMMAND CHAIN_NAME) indicates the operation we perform on a chain of that table.Either long or short options are allowed.
+ -A | -I | -R | -D | -F | -L | -S | -Z | -N | -X
+* *
+matches) The matching part of a rule specifies the criteria that a packet must meet in order for the associated action or target to be executed.
+A matching is something that specifies a special condition within the packet that must be true or false.And a single rule can contain several matches and the entire rule condition is true if all the matches are true.For example, we may want to make packets that come from a specific host or network and are going to some ports on our system.If any of these matches fails, e.g. the source address isn't correct , but everything else is true, the whole rule fails and the next rule is tested on the packet.But if all matches are true, the target specified by the rule  is applied. 
+-s source_ip | -d dest_ip | -p protocol | --sport source_port | --dport dest_port
+-i incoming_int | -o outgoing_int | -m mac | -m time | -m quota | -m limit | -m recent
+* *
+-j TARGET) The target specifies, what action is taken on packets matching the criteria of the rule.
+ACCEPT | DROP | REJECT | LOG | SNAT | DNAT | MASQUERADE | LIMIT | RETURN | TEE | TOS | TTL
+
+RUN AS ROOT!
+EXAMPLES:
+iptables -L - lists the filter table, which is the default for INPUT, OUTPUT and FORWARD chains.
+iptables -vnL - to list in numeric format Verbosely.
+iptables -t nat -L - lists a specific table (nat). 
+
+iptables -t filter -A INPUT -p icmp --icmp-type echo-request -j DROP (can use without -t filter because it is the default table).
+
+iptables -t filter -A OUTPUT -d www.ubuntu.com -p tcp --dport 443 -j DROP - deny access to a specific website (www.ubuntu.com).-j means jump to the specific target or to the following action , where the packet matches against this rule.Targets are always written in uppercase letters.
+
+- - - - - -
+#Iptables Options (Flags)
+
+These options specify the desired action to perform, and only one of them can be specified on the command line unless otherwise stated.These options are written in uppercase letters.
+
+-A: append the rule to the end of the selected chain
+iptables -A INPUT -p tcp --dport 25 -j DROP - to append a rule to the OUTPUT chain that drops incoming traffic to port 25 (SMTP traffic).
+iptables -A INPUT -p tcp --dport 80 -j DROP - to block incoming traffic to HTTP port.
+* *
+-I: Insert one or more rules in the selected chain on a specific position, by default on top (position 1).
+iptables -I INPUT 2 -p tcp --dport 69 -j DROP - to insert a rule of blocking traffic on udp 69 (TFTP) on 2nd position from top, or if we didn't specify the 2 number it would append to the first position by default.
+
+If we have a result like this in iptables -vnL
+Chain INPUT (policy ACCEPT 104K packets, 241M bytes)
+ pkts bytes target     prot opt in     out     source               destination         
+   20  1200 ACCEPT    tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+    0     0     DROP    udp  --  *      *          0.0.0.0/0            0.0.0.0/0           udp dpt:69
+   56  3360 DROP       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+ HERE as we have the tcp port 22 blocking and accepting on first and last positions, the packets will be accepted, because it works in order.When at first time the packet arrived , the Netfilter will behave with the first rule (ACCEPT on first position) and will skip all the other rules.And because of that , the last DROP rule is ignored.
+* *
+-L: List all rules in the selected chain.If no chain is selected all chains are listed.
+
+iptables -L - Lists all rules in the filter table and all it's chains (INPUT, OUTPUT, FORWARD).It's common to use -L with -nv (numberic, verbose).
+* *
+-F: Flush the selected chain (all the chains in the table if none is given) , like deleting all the rules one-by-one.
+
+iptables -F - if not specified -t any table, then it will flush all the rules of the filter table as by default.
+* *
+-Z: Zero the packet and byte counters in all chains, or only the given chain.
+For example , if we has a result in INPUT chain of filter table like this:
+4   240 DROP       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+here the 4 is pckts and 240 is bytes.we can zero those values by this command:
+iptables -t filter -Z INPUT 1 - to zero the first rule's byte and packet values of the filter table.If not to specify the position number (1) , then it will zero all the rules of that table's chain.
+* *
+-N: Create a new user-defined chain by the given name.
+
+iptables -N MYCHAIN
+when we run iptables -vnL , it also displays the new MYCHAIN.
+* *
+-X: Delete the user-defined chain by the given name. 
+
+iptables -X MYCHAIN
+* *
+-P: Set the policy for the built-in chain (INPUT, OUTPUT or FORWARD).
+The default policy specifies , what happens to packets , that are not matched by any rule and can be either ACCEPT or DROP.The default policy is set to ACCEPT.
+
+iptables -P chain_name DROP
+This means , that each packet that is not accepted by a rule, will be dropped.
+* *
+-D: Delete one or more rules from the selected chain.
+
+iptables -D INPUT 2 - to delete the second rule from the top of the filter table's INPUT chain
+iptables -D INPUT -p tcp --dport 80 -j DROP - to delete a rule with specifying the matching condition.
+* *
+-R: Replace the rule with another in specified table and chain
+
+0     0 DROP       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:25
+0     0 DROP       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:443
+iptables -R INPUT 2 -p tcp --dport 443 -j ACCEPT
+
+This command will replace the DROP target with ACCEPT.
+- - - - - -
+#Where do we write Iptables rules?
+
+If we have a firewall with many, many rules, it's much easier to write all these rules in a script, make that script executable and then run it.But if we just want a simple rule that drops the traffic from a specific IP address , or allows a specific service to communicate with the outside world, we can simply right that rule at the Linux terminal.
+If I want to write an Iptables rule at the Linux terminal, I simply write the rule as root.
+iptables -A INPUT -p icmp -j DROP
+Iptables rules written at the terminal are not saved after the system is restarted.If you reboot the system, you will lose all the rules.So if you want your Iptables rules to persist after the system restarts, you write them in a shell script, make that script executable and configure the script to be run automatically at boot time.
+
+# # # # #
+Example:
+vim ./firewall1.sh and write in it
+- -
+#!/usr/bin/bash
+
+# To flush all the chains of the filter table to not append each time by executing the script
+iptables -F
+
+# Block incoming SSH traffic
+iptables -t filter -A INPUT -p tcp --dport 22 -j DROP
+
+# Block outgoing HTTP and HTTPS traffic
+iptables -t filter -A OUTPUT -p tcp --dport 80 -j DROP
+iptables -t filter -A OUTPUT -p tcp --dport 443 -j DROP
+- -
+chmod 700 ./firewall1.sh
+sudo ./firewall1.sh
+
+# # # # #
+
+- - - - - -
+# The Default Policy
+
+

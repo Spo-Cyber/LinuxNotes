@@ -1,6 +1,6 @@
 		The Interplanetary File System
 		
-IPFS is a protocol designed to create a permanent and decentralized method for storing and sharing files. It is based on technologies like BitTorrent and Git, and is mainly used for storing and delivering static content (such as images, videos, documents, and so on).
+IPFS is a protocol, designed to create a permanent and decentralized method for storing and sharing files. It is based on technologies like BitTorrent and Git, and is mainly used for storing and delivering static content (such as images, videos, documents, and so on).
 If built correctly, IPFS could complement or even replace HTTP, helping to build a better web.
 A machine that runs IPFS software to store and retrieve files from the IPFS network is called an IPFS node.
 
@@ -32,10 +32,10 @@ Objects added through the IPFS command are pinned recursively by default.An IPFS
 - - -
 #Installing IPFS on Linux
 
-There are few versions of the IPFS software availble.There is IPFS Desktop, a full-featured command line tool and the browser extension.
+There are few versions of the IPFS software available.There are IPFS Desktop, a full-featured command line tool and the browser extension.
 IPFS Desktop is a desktop application , that offers menubar shortcuts and an easy interface for adding, pinning, and sharing files, plus a full IPFS node.
 Note that the package for the desktop application comes with a built-in automatic update mechanism.
-Installing the desktop app or the browser extension is faily simple.
+Installing the desktop app or the browser extension is fairly simple.
 
 So let's install the IPFS command-line tool in linux:
 1)
@@ -50,13 +50,15 @@ Check the installation by running "ipfs --version"
 
 3)
 Now as we have the IFPS node installed , the next step is to initialize the repository where it will store all it's settings and internal data.All the following commands will be run as ROOT.
-sudo ipfs init.After running this command it displays the "peer identity: someHash", and that hash is your node's ID.Other nodes on the network , use it to find and connect to you.
+sudo ipfs init
+After running this command it displays the "peer identity: someHash", and that hash is your node's ID.Other nodes on the network , use it to find and connect to you.
 
 4)
-sudo ipfs id - to get you IPFS ID hash anyime.
+sudo ipfs id - to get you IPFS ID hash.
 After initializng the IPFS repository , let's take the node online by starting the IPFS daemon.
-sudo ipfs daemon - start the IPFS daemon.
-So I've joined my IPFS node to the public network.By default , m node will store and serve small bits of data to the network.
+sudo ipfs daemon - start the IPFS daemon.ctrl+c to shutdown.
+sudo ipfs shutdown - stop the IPFS daemon.
+So I've joined my IPFS node to the public network.By default , a node will store and serve small bits of data to the network.
 
 IPFS also uses a peer discovery mechanism similar to the one used by BitTorrent.It uses something called DHT(distributed hash table).Now I'm connected to the network and I'm able to see the IP addresses of my peers that were discovered using DHT.
 sudo ipfs swarm peers - to see a list with the IDs of our peers.
@@ -65,7 +67,6 @@ Now we should be able to get objects from the network.
 sudo ipfs cat /ipfs/hashAddress > ~/Desktop/spaceship.jpg
 IPFS will search the network for the file with that hash, and using a command redirection, will write the data into a file called spaceship.jpg
 Note that I didn't specify the direction of the file, but only said that I want the file.It's the IPFS job to find the file on the network's nodes.This is what Content Addressing means.
-
 
 IPFS provides us a web console on the local node as well.To access this console, go to browser URL section and run "localhost:5001/webui".
 
@@ -101,7 +102,7 @@ IPFS is decentralized and unstoppable` means that once a file was requested it w
 
 What will happen if someone requests the other file, which has never been requested yet , and the daemon is down?
 The file won't be delivered to the IPFS client.
-So because no one has ever reuested the file, it was not cached on any IPFS node and exists only locally.So if the local IPFS node is down, the file cannot be delivered to the clients.But once the file was requested by at least one client, the gateway of the client cached the file locally, and from that moment, the file will be available, even if the node that provides the file in the first place vanishes.
+So because no one has ever requested the file, it was not cached on any IPFS node and exists only locally.So if the local IPFS node is down, the file cannot be delivered to the clients.But once the file was requested by at least one client, the gateway of the client cached the file locally, and from that moment, the file will be available, even if the node that provides the file in the first place vanishes.
 So the more requested a file is, the more difficult it is to censor or remove the file from the network.That's because it gets cached by each IPFS node that delivers it to the client.
 
 - - -
