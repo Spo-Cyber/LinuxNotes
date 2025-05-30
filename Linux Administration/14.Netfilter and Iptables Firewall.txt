@@ -134,7 +134,7 @@ iptables -F - if not specified -t any table, then it will flush all the rules of
 For example , if we has a result in INPUT chain of filter table like this:
 4   240 DROP       tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
 here the 4 is pckts and 240 is bytes.we can zero those values by this command:
-iptables -t filter -Z INPUT 1 - to zero the first rule's byte and packet values of the filter table.If not to specify the position number (1) , then it will zero all the rules of that table's chain.
+iptables -t filter -Z INPUT 1 - to zero the first rule's byte and packet values of the filter table.If not to specify the position number (1) , then it will set zero all the rules of that table's chain.
 * *
 -N: Create a new user-defined chain by the given name.
 
@@ -193,6 +193,172 @@ sudo ./firewall1.sh
 # # # # #
 
 - - - - - -
-# The Default Policy
+# Setting The Default Policy
 
+Traffic filtering is being done in the filter table (of the INPUT chain for incoming traffic),(of the OUTPUT chain for outgoing traffic),(and of the FORWARD chain for routed traffic).Rules are added to chains and tables , and traversed in order from top to bottom by the packets.
+Each packet is then checked against each rule in term starting at the top.If it matches the rule , then an action is taken such as accepting or dropping the packet.Once a rule has been matched , and an action taken, the packet is processed according to the target of that rule and isn't processed by further rules in the chain.Now if a packet passes down through all the rules in the chain, and reaches the bottom without being matched against any rule, then the default policy for that chain is applied.
+The default action is referred to as the default policy and may be set to either accept or drop.The concept of default policies, raises two possibilities that we must consider before deciding how we are going to organize the firewall.
 
+So when organizing our firewall, we should have the following options in mind:
+1.We can set the default policy to drop all packets and then add rules to specifically allow packets, that maybe from trusted IP addresses or for certain ports on which we have services running like FTP, WEB, e-mail etc.
+2.We can set the default policy to accept all packets and then add rules , to specifically block or drop packets that may be from specific IP addresses or ranges  or for certain ports on which we have private services.
+Generally , the first option is used at least for the INPUT chain and is considered more secure.
+
+By default, policy is set to accept any package that hasn't been dropped by any rule.Policy can be changed for chains, that have the filter table , and they are INPUT, OUTPUT and FORWARD.We cannot change the policy for PREROUTING or POSTROUTING chains.
+
+Example:
+iptables -vnL -> Chain INPUT (policy ACCEPT 1117 packets, 547K bytes) 
+Here the default policy is set to ACCEPT.So if we don't specify any IP to be dropped, all the traffic will be ACCEPTed.
+iptables -t filter -P INPUT DROP - set the policy to drop on INPUT chain.All the incoming traffic will be dropped.
+Setting the DROP policy on INPUT chain without any rule that accepts traffic , it's like to logically disconnect the host from network.
+
+iptables -t filter -A INPUT -p icmp --icmp-type echo-request -j ACCEPT
+Now only the ping traffic to that device will be available.
+
+Also note, that policy is always at the end of the chain.It's not possible to add rules that match against packets after the policy.
+
+= = 
+Take care of changing default policies on remote servers.There is always a possibility to block yourself from accessing the server anymore.
+First be sure that you've added a rule that allows your own traffic and only then change the default policy.
+= =
+
+- - - - - -
+# Deleting the Firewall
+
+If you want to completely flush all Iptables rules and reset to an open firewall state, you should:
+Set ACCEPT policy on all chains.
+Flush all Netfilter tables and delete all Iptables user-defined chains, if there is any.
+This is useful to use at the beginning of any final script in order to flush everything and to build it from the ground up.
+
+# # #
+Example:
+vim delete_firewall.sh
+
+#!/usr/bin/bash
+
+# 1. Set the ACCEPT policy on all the chains of the filter table
+iptables -t filter -P INPUT ACCEPT
+iptables -t filter -P OUTPUT ACCEPT
+iptables -t filter -P FORWARD ACCEPT
+
+# 2. Flush all tables that have rules
+iptables -t filter -F
+iptables -t nat -F
+iptables -t mangle -F
+iptables -t raw -F
+
+# 3. Delete user-defined chains, if any exists.
+ iptables -X
+ # # #
+ - - - - - -
+ # Filter by IP address
+ 
+ Iptables can be constructed to make traffic by protocol type, destination or source address, destination or source network, destination or source port, input or output interface , header fields, or connection state , among other criteria.And these can be combined to create very complex rules.
+ 
+1. Match by Source IP or Network Address
+Match: -s IP, --source IP
+Example: iptables -t filter -A INPUT -s 100.0.0.0/16 -j DROP
+
+2. Match by Destination IP or Network Address
+Match: -d IP, --destination IP
+Example: iptables -A FORWARD -d 80.0.0.1 -j DROP
+			   iptables -A OUTPUT -d www.ubuntu.com -j DROP
+			   
+Examples:
+iptables -A INPUT -s 192.168.1.5 -j DROP - This will block all incoming traffic from this specific IP address.
+iptables -A OUTPUT -d 192.168.1.12 -j DROP - This will block all outgoing traffic to this specific IP address.
+
+nslookup/dig www.ubuntu.com
+and add the IP addresses of it to fully block
+iptables -A OUTPUT -d ip_of_ubuntu -j DROP - This will block all outgoing traffic to www.ubuntu.com
+OR
+iptables -A OUTPUT -d www.ubuntu.com - This blocks all ipv4 addresses, by using DNS query
+ip6tables -A OUTPUT -d www.ubuntu.com - This blocks all ipv6 addresses, by using DNS query 
+
+Example 0/0:
+iptables -A OUTPUT -p tcp --dport 443 -d 0/0 -j DROP - 0/0 means any IP address with any subnet mask.
+- - - - - -
+#Filter by Port
+
+ You can match by a single port using the match option --dport (destination port) , or --sport (source port).
+ It's mandatory to specify TCP or UDP protocol using -p match option.
+ There are ports in the packet header , only if the protocol is TCP or UDP.Other protocols like ICMP , do not use ports at all.
+ - -
+ Example:
+ iptables -A INPUT -p tcp --dport 22 -j DROP (to drop the incoming traffic on destination ssh port).
+ - -
+ If we want to match by multiple ports , we can write the iptables rules for each port OR we can use another option, which is -m multiport option with --dports/sports.
+ Example:
+ iptables -A OUTPUT -p tcp -m multiport --dports 80,443,22 -j DROP
+ - -
+ Examples:
+ iptables -A INPUT -p tcp --dport 25 -j DROP
+ Now when someone will scan out port 25 via nmap , it will show that this port is filtered.
+ 
+ = = =
+ Info
+ A FILTERED port is in fact an open port , but there is a firewall , that's dropping traffic to that open port and we are receiving no traffic back when sending a packet to that port.
+ A CLOSED port is a port on which no application is listening.If we send a packet to a closed port, we receive a packet back indicating that the port is closed.That's a TCP packet with the RESET flag set.
+ = = =
+ 
+ Examples:
+ iptables -A INPUT -p tcp --dport 80 -j DROP (To block all incoming traffic to port 80 HTTP)
+ 
+ # # #
+ vim allowssh_firewall.sh
+ #!/usr/bin/bash
+ 
+ # Flushing all iptables filter table rules 
+ iptables -F
+ 
+ # To accept only a specific IP address and block all other IP addresses while connecting to my ssh port
+ iptables -t filter -A INPUT -p tcp --dport 22 -s 192.168.1.12 -j ACCEPT
+ iptables -t filter -A INPUT -p tcp --dport 22 -j DROP (or with -s 0/0 , like for all IPs within any subnet)
+ # # #
+ 
+ - - - - - -
+ #Stateful Firewalls (Connection Tracking)
+ 
+ Netfilter has a module called conntrack that permits us to inspect and restrict network connections using a method called connection tracking.
+ Connection Tracking refers to the ability of maintaining state information about a connection in memory tables.Firewalls that do this are known as stateful and are much more secure than they are stateless or packet based counterpart.The decision to drop or to accept a packet is not taken anymore based on the values in the packet headers like source or destination IP addresses or ports , but on the relation that the packet has with other packets.
+Connection Tracking = stateful firewall
+
+For a packet , there are the following states defined:
+1.NEW - the first packet of any connection.It's in fact the packet requesting a new connection, such as a TCP packet with the SYN flag set or the first ICMP echo request packet. 
+2.ESTABLISHED - packets that are part of an existing connection.All packets of the connection starting with the second packet and until the last one , are in the established state.
+3.RELATED - packets that are requesting a new connection and are already part of an existing connection (Ex: FTP data transfer or an ICMP error).In general it's good practice to accept these packets.
+4.INVALID - packets that are not part of any existing connection.These packets cannot be identified in any state.Generally it is a good idea to drop everything in this state.
+5.UNTRACKED - packets marked within the raw table with the NOTRACK target.
+
+You can use the stateful functionality of iptables connection tracking with any network protocol , even though the protocol itself is stateless (Ex: UDP, ICMP).
+To match packets based on their state , use -m state ---state state, where state is a comma separated values of packet states written in UPPERCASE letters.
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT (Here we are accepting incoming packets if they are already part of an existing connection).
+Another rule or the policy of the INPUT chain could drop the first packet of the connection, which is in the NEW state.This means that the host can connect to any destination using any protocol, but no one is allowed to connect to services running on the host.
+
+A Great Example:
+vim stateful_firewall.sh
+# #
+#!/usr/bin/bash
+
+iptables -F
+
+# Allow incoming and outgoing traffic to and from the loopback interface.
+iptables -t filter -A INTPUT -i lo -j ACCEPT
+iptables -t filter -A OUTPUT -o lo -j ACCEPT
+
+# Allow the new incoming traffic to ssh from specific IP
+iptables -A INPUT -p tcp --dport 22 -m state --state NEW -s 192.168.1.12 -j ACCEPT
+
+# Drop INVALID packets on input and output chains.These are chains, that cannot be identified in any state.
+iptables -A INPUT -m state --state INVALID -j DROP
+iptables -A OUTPUT -m state --state INVALID -j DROP
+ 
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A OUTPUT -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+iptables -P INPUT DROP
+Iptables -P OUTPUT DROP
+# #
+
+- - - - - -
+# Filtering by MAC
