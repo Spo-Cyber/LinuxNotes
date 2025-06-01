@@ -331,7 +331,7 @@ For a packet , there are the following states defined:
 5.UNTRACKED - packets marked within the raw table with the NOTRACK target.
 
 You can use the stateful functionality of iptables connection tracking with any network protocol , even though the protocol itself is stateless (Ex: UDP, ICMP).
-To match packets based on their state , use -m state ---state state, where state is a comma separated values of packet states written in UPPERCASE letters.
+To match packets based on their state , use -m state --state state, where state is a comma separated values of packet states written in UPPERCASE letters.
 iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT (Here we are accepting incoming packets if they are already part of an existing connection).
 Another rule or the policy of the INPUT chain could drop the first packet of the connection, which is in the NEW state.This means that the host can connect to any destination using any protocol, but no one is allowed to connect to services running on the host.
 
@@ -362,3 +362,117 @@ Iptables -P OUTPUT DROP
 
 - - - - - -
 # Filtering by MAC
+
+To match packets based on source MAC address , use the -m mac --mac-source source_mac_address
+You can filter Ethernet or Wireless traffic only by source MAC address and not by destination MAC address.
+Imagine , you have a server in you local network and want to allow only a list of trusted machines to access the services that are running on the server.Or you have a router , that's running Linux and want only the corporate devices to access the Internet (you don't allow devices that are not yours or trusted in you network).
+
+Mac addresses are only valid inside the LAN.The first router towards destination will change the source MAC address of the packet with it's own MAC address (the MAC address of it's outgoing interface).
+You can not impose a strong security policy based on MAC addresses, because MAC addresses can be spoofed easily.
+Mac belongs to Layer 2 , so if you are dropping by MAC address, you are dropping all protocols like IP, ICMP, TCP , UDP etc.
+
+Example:
+iptables -A INPUT -i wlan0 -m mac --mac-source 08:00:23:41:6f:20 -j DROP
+
+Tasks:
+1. Drop packets from a specific mac address
+2. Permit only a list of trusted hosts (MACs) through the firewall (NAT Router).
+#  #
+Example 1:
+#!/usr/bin/bash
+iptables -t filter -A INPUT -m mac --mac-source  08:00:23:41:6f:20 -j DROP
+# #
+Example 2:
+iptables -t filter -F
+PERMITTED_MACS="08:00:23:41:6f:20 08:00:23:41:62:20 08:00:23:41:6f:25 08:00:2c:41:6b:20"
+
+for mac in $PERMITTED_MACS
+do
+	iptables -A FORWARD -m mac --mac-source "$mac" -j ACCEPT
+	echo "$mac is permitted"
+done
+
+- - - - - - -
+
+					#MAKE LINUX MACHINE AS ROUTER AND CONTROL ROUTING TRAFFIC
+Configure VM via host-only adapter as outside of our LAN , and set our local host as a router for packet forwarding traffic control with iptables
+
+in local host => sysctl -w net.ipv4.ip_forward=1 (to enable packet forwarding, because Linux by default, acts like a host not a router)
+in local host => iptables -t nat -A POSTROUTING -s 192.168.56.0/24 -o wlan0 -j MASQUERADE (the IP address of the outgoing traffic from this network in which is our VM, will be replaced with our Public IP of local host and will be forwarded via wlan0 interface)
+in local host => iptables -t filter -A FORWARD -i vboxnet0 -o wlan0 -j ACCEPT (Allow VM to send traffic out to Internet)
+in local host => iptables -t filter -A FORWARD -i wlan0 -o vboxnet0 -m state --state RELATED,ESTABLISHED -j ACCEPT (Only allow replies to already-initiated connections).
+in VM => echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
+
+
+- - - - - -
+# Match by Date and Time
+
+For example, a company intranet server should only be available from Monday to Friday between 8:00-18:00.
+There is the -m time match that is very flexible and has many options like date start, date stop, time start, time stop, monthdays and weekdays.
+
+-m time option
+Time match options:
+	--datestart time - Start and stop time, to be given in ISO 8601
+	--datestop time - (YYYY[-MM[-DD[Thh[:mm[:ss]]]]])
+	--timestart time - Start and stop daytime (hh:mm[:ss])
+	--timestop time - (between 00:00:00 and 23:59:59)
+	--monthdays value - List of days on which to match, separated by comma
+	[!] --weekdays value - List of weekdays on which to match , separated by comma
+	--kerneltz - Work with the kernel timezone instead of UTC
+	
+iptables -m time --help (to see more options about timing)
+
+By default, netfilter uses UTC instead of system time. 
+For example, if your time zone is +4 this means that your 10:00 is equal to 06:00 of UTC.
+date - to see the UTC time configured for the system.
+
+# #
+Example: Permit ssh between 10AM and 4PM (10:00 - 16:00)
+vim ssh_timing_firewall.sh
+#!/usr/bin/bash
+
+# Allow ssh traffic only 3:00 - 5:00 AM
+ iptables -t filter -A INPUT -p tcp --dport 22 -m time --timestart 3:00 --timestop 5:00 -j ACCEPT
+ iptables -t filter -A INPUT -p tcp --dport 22 -j DROP
+ 
+ # As a router , allow the connected machines (VM) traffic to a specific website only in certain hours.
+ iptables -t filter -A FORWARD -p tcp --dport 443 -d www.ubuntu.com -m time --timestart 4:00 --timestop 14:00 -j ACCEPT
+ iptables -t filter -A FORWARD -p tcp --dport 443 -d www.ubuntu.com -j DROP
+ # #
+ - - - - - -
+ #The ACCEPT and DROP Targets
+ 
+ Both ACCEPT and DROP are terminating targets.If a packet is matched against a rule that has the ACCEPT or DROP target, the packet is accepted or dropped , and will not traverse the chain anymore.
+ 
+  Ping is a utility command available in any operating system , and it serves two primary purposes.To check if the destination host is available and to measure the round trip time for messages sent from the originating host to a destination host , that are echoed back to the source.
+  The name ping comes from active sonar terminology , that sends a pulse of sound and listens for the echo to detect objects underwater.Ping operates by sending ICMP(Internet Control Message Protocol) echo request packets to the target host, and waiting for ICMP reply packets.So allowing ping, means in fact allowing incoming ICMP echo request packets and outgoing ICMP echo reply packets.
+iptables -p icmp --help   
+  
+ Example - Permit incoming packets only from a management station or from a single IP address:
+ iptables -t filter -A INPUT -p icmp --icmp-type echo-request -s 192.168.56.2 -j ACCEPT
+ iptables -t filter -A INPUT -p icmp --icmp-type echo-request -j DROP
+ 
+ If an icmp echo request packets will come from 192.168.56.2 host , the packets will be ACCEPTed.Being a terminating target , the packet will not be evaluated by the second rule , which of course would drop it if it evaluated.
+- - - - - -
+# The LOG Target
+
+If a packet is matched against a rule with the LOG target , the packet headers are logged , and then the packet continues to traverse the chain rules until it is accepted, dropped,rejected by a rule or by the default policy.
+The LOG target is specifically designed for logging detailed information about packet headers.It does this via the kernel logging facility. This information can then be read directly from the system logs or via logging daemon such as rsyslog or syslog-ng.
+Note as well , that it could be a really great idea to use the LOG target instead of DROP , while you are testing a rule , and you are not 100% sure about it on a production firewall.A syntax error in the rule sets , could cause severe connectivity problems for your users.
+The LOG target takes two options that could be of interest: --log-prefix and --log-level.
+--log-level - indicates the priority of severity of the logged message.
+--log-prefix - tells iptables to prefix all log messages with a specific prefix or string , which can then be combined with grep , to track specific problems and output from different rules. 
+
+Example - Log and then drop the first packet of any incoming SSH connection, the packet that establishes a new connection by initializing the TCP three way handshake of that packet (that's the SYN flag set).
+1) iptables -A INPUT -p tcp --dport 22 --syn (that's the first packet of the connection) -j LOG --log-prefix="Incoming SSH traffic" --log-level info
+LOG target is a non-terminating target , and that means that the matched packet continues to traverse the chain.So the second rule will drop the packets:
+2) iptables -A INPUT -p tcp --dport 22 -j DROP
+Now when we want to connect to ssh port , the first packet will be logged and all the packets will be dropped.Let's check it via dmesg:
+3) dmesg - to see the kernel logs.And it shows the blocking logs which start with the --log-prefix message (Incoming SSH traffic).So we can pipe with grep , to see only those messages with log-prefix => dmesg | grep "Incoming SSH traffic"
+dmesg | grep "Incoming SSH traffic" > ~/Desktop/ssh_logging.txt (we can redirect those messages for later inspection).
+
+dmesg is only displaying a buffer in the RAM memory.If you want to see the logs after the computer restarts or at a later moment, you should read from a specific log file.Based on the Linux distribution you are using, the logs are saved in a specific file on you file system or being viewed by journalctl command.
+journalctl -f - to see the kernel logs in real time.
+
+The log files don't save the packet contents.You should use a packet sniffer like tcpdump or Wireshark.
+- - - - - -
