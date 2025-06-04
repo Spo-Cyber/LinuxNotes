@@ -1,0 +1,59 @@
+- - - - - -
+Network Manager (GUI/CLI)
+Using CLI (nmcli)
+
+# DHCP Configuration
+nmcli device status                        # List devices
+nmcli con show                             # List active connections
+nmcli con add type ethernet ifname eth0    # Add a DHCP connection
+nmcli con up eth0			   # Bring connection up
+
+# Static IP + DNS Configuration
+nmcli connection modify eth0 ipv4.addresses 192.168.1.100/24
+nmcli connection modify eth0 ipv4.gateway 192.168.1.1
+nmcli conneciton modify eth0 ipv4.dns "8.8.8.8 1.1.1.1"
+nmcli connection modify eth0 ipv4.method manual
+nmcli connection down eth0
+nmcli connection up eth0
+
+- - - - - -
+Configure via /etc/network/interfaces (Debian-based)
+
+# DHCP
+auto eth0
+iface eth0 inet dhcp
+
+# Static
+auto eth0
+iface eth0 inet static
+	address 192.168.1.100
+	netmask 255.255.255.0
+	gateway 192.168.1.1
+	dns-nameservers 8.8.8.8 1.1.1.1
+
+- - - - - -
+Configure via systemd-networkd (Modern systems)
+/etc/systemd/networkd.conf
+
+[Match]
+Name=eth0
+
+[Network]
+Address 192.168.1.100/24
+Gateway 192.168.1.1
+DNS=8.8.8.8
+
+[DHCP]
+UseDNS=false
+
+--
+systemctl enable systemd-networkd
+systemctl start systemd-networkd
+
+- - - - - -
+Testing
+
+ping 8.8.8.8     # Check connectivity
+ping google.com	 # Check DNS resolution
+dig google.com   # Check detailed DNS info (install 'dnsutils')
+- - - - - -
