@@ -1,6 +1,6 @@
 		#Networking on Linux
 ___________________________________________________________________
--------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
 #Getting Information about the Network Interfaces(ip, ifconfig)
 
 *If there is no net tools , run "sudo apt install net-tools".

@@ -5,7 +5,7 @@ w-write(2)
 x-execute(1)
 '-' -no permissions(0)
 
-File permissions display when doing ls -l command, at the beginning of the line it is shown Example` drw-r-xrw- (or in stat command). The first letter d/- (directory or file), The 234th chars are permissions for owner(r,w,- so here read write but not execute), The 567th chars are permissions for group (r,-,x so here read , execute but now write), And the 8,9,10th chars are for other users like public.
+File permissions are displayed in the result of the ls -l command, at the beginning of the line.It is shown like drw-r-xrw- (or in stat command). The first letter d/- (directory or file), The 234th chars are permissions for owner(r,w,- so here read write but not execute), The 567th chars are permissions for group (r,-,x so here read , execute but now write), And the 8,9,10th chars are for other users like public.
 - - -
 Only root or file's owner can change the file's permissions
 
@@ -46,16 +46,16 @@ Run \ls , to read only the contents of directory and not its metadata, so won't 
 IF EXECUTE PERMISSION is not set , the write permission DOES NOTHING.But if there is set the execute permission, the write permission does 'creating new files/subdirectories, rename or delete existing files/subdirectories'
 
 --Execute--
-Execute permission means access to that directory's contacts.We can move into the directory('cd' command), and freely execute commands which are in write permissions functioning.
+Execute permission means access to that directory's contents.We can move into the directory(cd dirName), and freely execute commands which are in write permissions functioning.
 
 The directory's permissions are more important than it's files.
-- - - - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - - - -ch
 #Changing File Ownership(chown, chgrp)
 
 !Only root can change the file's owner.
 
 chown [ownername/UID] [file/directory] [filesoptional...]
-chown +1257(UID) filename - the "+" sign is better, because if there was a user by 1257 username, the file's owner would be set to that user whose name is 1257.but the "+" sign sets by UID only.
+chown +1257(UID) filename - the "+" sign is better, because if there was a user by username 1257, the file's owner would be set to that user whose name is 1257.but the "+" sign sets by UID only.
 
 chown username:groupname (or UID/GROUPID) filename - set owner and group at the same time
 
@@ -79,7 +79,7 @@ When an executable file with SUID is executed, then the resulting process will h
 Example.
 	-rwxr-xr-x. 1 root root 48144 Oct 23 19:36 /usr/bin/cat (here as there is not SUID "like -rwx and not -rws") the "cat" command who will use the process will be executed by permissions of executor.
 	BUT HERE
-	-rwsr-xr-x. 1 root root 114072 Feb 25 02:09 /usr/bin/passwd (because of there is set SUID("-rws"), this means that the "passwd" command whoever will execute, it will have permissions of it's owner(root) no matter who executes it).
+	-rwsr-xr-x. 1 root root 114072 Feb 25 02:09 /usr/bin/cat (because of there is set SUID("-rws"), this means that the "cat" command whoever will execute, it will have permissions of it's owner(root) no matter who executes it).
 
 chmod 4755 filename (4 means SUID).Here it will display -rwsr-xr-x.But if we set 4655(so x permission will be removed), it will be displayed with capital S (-rwSr-xr-x).
 
@@ -132,7 +132,7 @@ But this is temporary , only for current terminal session.To set it permanent we
 The attributes define the properties of the files.
 Attributes are "set" or "cleared".
 
-lsattr /path - to list attributes within directory.- means cleared and a character means set any format.
+lsattr /path - to list attributes within directory.'-' means cleared and a character means set any format.
 For example --------------e------- ./Test (only e is set , which means extent format , and it indicates that the file is using extents for mapping the blocks on disk.Extents are a way the filesystem manages disk space more efficiently than traditional block-based allocation)
 lsattr -R /path - recursively show attributes within directory
 
