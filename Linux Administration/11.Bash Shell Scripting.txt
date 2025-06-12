@@ -18,12 +18,12 @@ We can use alias for ssh connection quickly - example: alias server1="ssh -p 223
 #SHELL SCRIPTING
 
 A shell is a program that takes commands from the user through the keyboard , and gives them to the operating system's kernel to get executed.It's also called the command interpreter because it accepts commands from the user and then checks or interprets them to see if they are syntactically correct.And if they are , the shell will send them to the kernel for execution.The Shell gets started, when the user logs in or starts the terminal.
-echo $0\$SHELL - to see what shell has started.
+echo $0 - to see what shell has started.
 cat /etc/passwd - to see the default shell in the last column of each user.
 
 - - -
 #Benefits of using Shell Scripts
-A shell script is basically an executable text file, that contains Shell commands and other specific structures and components like variable, functions, loops and so on that are executed sequentially.Whenever you find yourself doing the same task over and over again, you should use shell scripting.This is known as repetitive task automation.
+A shell script is basically an executable text file, that contains Shell commands and other specific structures and components like variables, functions, loops and so on that are executed sequentially.Whenever you find yourself doing the same task over and over again, you should use shell scripting.This is known as repetitive task automation.
 Using shell scripting , you can create your own power tools, customize administrative tasks, or create simple applications.
 And since the scripts you develop are well tested, the chances of errors are highly reduced. 
 Another advantage of using Shell scripts is that the one that runs them doesn't have to know all the details of Linux and programming.
@@ -54,13 +54,13 @@ echo $PATH - shows the directories where the shell is looking for executables.So
 - - - - - -
 #The Shebang and comments
 
-For executable scripts, the system expects in the first line a so-called shebang that indicates which program to run as interpreter with the script file as argument (or in simple words , what program will run the file 'bash/python/php or other').
+For executable scripts, the system expects in the first line a so-called shebang that indicates which program to run as interpreter with the script file as argument (or in simple words , what program 'bash/python/php or other' will run the file).
 If we execute a script without such a shebang directory , like we did in the example above, it will use the default shell of the current user.The shebang consists of a sequence of two characters: #! and then the shell file (#!/usr/bin/bash).So start the script with shebang at the first line.
 So if we write e.g. a python code in script file without shebang, and execute it , it will cause a syntax error.But if we add at the first line the python3 path shebang (by knowing 'which python3'), it will execute the script.
 
 Bash ignores everything on the line, after the # symbol.So # is used for commenting.The only exception to this rule is when the first line of the script starts with #! which is the shebang.
 We can not only comment in blank line, but also after any code in any line (e.g. cat dir1/test.txt #This code is for reading the test.txt file's content).
-Bash doesn't support multiline comments.So the simplest way to write multiline comments in Bash is to add single comments one after another. 
+Bash doesn't support multiline comments.So the simplest way to write multline comments in Bash is to add single comments one after another. 
 - - - - - -
 #Running Scripts
 
@@ -86,8 +86,8 @@ echo "I'm learning $os operating system" - You can also reference the value of a
 echo "The value of \$os is $os" - in this example, the backslash\ symbol is canceling the special meaning of the dollar sign and its printing "The value of $os is Linux".
 $distro=Kali -> my_distro="I use $distro $os" -> echo $my_distro ->  I use Kali Linux.So we can use variable within the variable's value.
 
-set - To get a list of all shell variables and functions run the "set" command.So we can use "grep" to find a specific variable or function.
-unset variablename - To undefine or remove a variable use the unset command -> unset os (without the $ sign, because we are not referencing the value of the variable).
+set - To get a list of all shell variables and functions.So we can use "grep" to find a specific variable or function.
+unset variablename - To undefine or remove a variable -> unset os (without the $ sign, because we are not referencing the value of the variable).
 
 Shell variables that are introduced by the operating system, shell startup scripts, or by the shell itself, are usually all in capitals.Examples: $PATH, $USER, $HOME.
 
@@ -149,7 +149,7 @@ read -s -p "your password" my_password - If you want to enter a password echoing
 - - - - - -
 #Special Variables and Positional Arguments
 
-Bash scripts require argument values to provide input to the script.The arguments are the values provided after the script name when running it.For example. if you are running apt install nginx (apt is the script or the command name, install is the first argument of the script, and nginx is the second argument of the script).The name of the script and the arguments are separated by the spaces which in this case is known as the default internal field separator.There are some predefined variables for this purpose, also known as positional arguments.
+Bash scripts require argument values to provide input to the script.The arguments are the values provided after the script name when running it.For example, if you are running apt install nginx (apt is the script or the command name, install is the first argument of the script, and nginx is the second argument of the script).The name of the script and the arguments are separated by the spaces which in this case is known as the default internal field separator.There are some predefined variables for this purpose, also known as positional arguments.
 
 Example: ./script.sh filename1 dir1 10.0.0.1
 $0 is the name of the script itself (script.sh).$0 is not a positional argument , but is useful when you want to run the script again while giving it another input values.
@@ -197,7 +197,7 @@ else
 	echo "$1 is neither a file nor a directory."
 fi
 ############################################.
-It's recommended to use "" outside of $1 in if statement.This is recommended when working with strings and in this case, the first argument of the script ($1) is a file or a directory name, so a string.
+It's recommended to use "" outside of $1(variable) in if statement.This is recommended when working with strings and in this case, the first argument of the script ($1) is a file or a directory name, so a string.
 
 The example bellow uses the single square brackets"[]" for testing conditions.This is the old classical and portable type of testing.
 There is a new updated version of testing, that uses double square brackets"[[ ]]", which is considered safer.Basically , double square brackets prevent word splitting or string variables that contain spaces,and you don't need to double quote string variables, even though that is good practice. Double square brackets also have some other nice features , like regular expression matching.
@@ -258,7 +258,7 @@ fi
 Command substitution means to run a shell command and store its output into a variable for later use.There are two identical ways to perform command substitution.
 
 `command` - The first one is to write the command between backticks/backquotes.This is a special character below the ESC key on the keyboard.
-Example: now=`date` => here the result of date command is redirected to now variable.And now we can see this new value of now variable -> echo $now.
+Example: now=`date` => here the result of date command is redirected to now variable.And now we can see this new value of 'now' variable -> echo $now.
 
 $(command) - The second way to perform command substitution is to write a dollar symbol and the command between parentheses.
 Example: now=$(date) => the same result in the example above.
@@ -275,7 +275,7 @@ Two strings are equal when they have the same length and contain the same sequen
 Example: if [ "$str1" = "$str2" ] or if [[ "$str1" == "$str2" ]]. str1 and str2 are 'operands' and = is 'operator'. 
 Don't forget the double quotes outside of variables in if testing conditions to avoid the word splitting or others issues.
 
-!operator - !(not) -> != (not equal) .!True = False , !False = True
+!operator - !(not) -> != (not equal) , !True = False , !False = True
 
 Checking for Substring
 Example: if [[ "$str1" == *"Linux"* ]]; then echo "The substring Linux is there.";fi
@@ -298,7 +298,7 @@ Example: "${dirname}_${timestamp}" or echo "Hello, ${user}!"
 #For Loops
 
 A For statement is used to execute a block of code repeatedly.The standard Bash For Loop is similar to the Python one, but is different from the For loop used in C++ or Java.
- The bash For loop takes this form:
+The bash For loop takes this form:
 for item in LIST     (item is a temporary variable that is created and takes a value from the LIST sequentially at each operation.)
 do
 	COMMANDS
@@ -351,9 +351,9 @@ read -p "Give the IP addresses by separated spaces to block - " ips
 read -p "Inbound or Output traffic to get blocked - " traffic
 for ip in $ips;do
 	if [[ $traffic == "Inbound" ]];then
-		sudo iptables -A INPUT -s $ip -j DROP
+		 iptables -A INPUT -s $ip -j DROP
 	elif [[ $traffic == "Outbound" ]];then
-		sudo iptables -A OUTPUT -s $ip -j DROP
+		 iptables -A OUTPUT -d $ip -j DROP
 	else
 		echo "Type either 'Inbound' or 'Outbound'" && bash $0
 	fi
@@ -369,7 +369,8 @@ done
 
 The set of commands are executed as long as the given condition evaluates to true.
 
-Bash has limited support for arithmetic operations.To perform arithmetic operations , use double parentheses(()).While Loop pattern:
+Bash has limited support for arithmetic operations.To perform arithmetic operations , use double parentheses(()).
+While Loop pattern:
 #!/usr/bin/bash
 i=0
 while [[ $i -lt 10 ]]; do

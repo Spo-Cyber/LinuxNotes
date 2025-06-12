@@ -292,9 +292,9 @@ MaxStartups N - controls the number of unauthenticated concurrent SSH connection
  1) To copy from your computer to a remote server
  2) To copy from a remote server to your computer
  3) To copy from a remote server to another remote server
-!Before the running the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
+!Before running the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
  -
-*To be able to copy files, the user that runs the scp command must have the read permission on the source file and the user that authenticates.Scp command overwrites files without any warning.
+*To be able to copy files, the user that runs the scp command must have read permission on the source file and write permission on the destination directory.Scp command overwrites files without any warning.
 1)Your computer -> remote server
 scp -P 22 ip.txt remoteLogin@192.168.1.6:~/path => P(specifies the port on which the server is listening), ip.txt (file which should be copied), last part(indicates the destination, by username IP and destination location of file)
 scp -r -P 22 mydir/ mrhacker@192.168.1.6:~ => to send directory
@@ -313,7 +313,7 @@ ____________________________________________________________________
 --------------------------------------------------------------------
 #Synchronizing Files and Directories using rsync
 
-rsync: A fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.Has tons of options.
+rsync: A fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.Has tens of options.
 The user that runs the rsync command must have read permissions on the source location and write permissions on the destination(directory) location.
 -
 rsync -av /sourcelocation /destinationlocation - this transfers directory with its files in archive mode, which ensures that symbolic links, devices, attributes, permissions, ownerships, etc. are preserved in the transfer. v(verbose mode), a(archive mode).If the destination directory doesn't exist , it will create it.
@@ -382,7 +382,7 @@ lsof -u username - To get all the files opened by specific user.
 lsof -u ^username - ^(negation) so this means to get list of files not opened by specific user.
 lsof -c processname - to list all the files opened by specific process.
 
-sudo lsof -iTCP -sTCP:LISTEN = shows only the files that opened tcp ports which are in the LISTEN state.Can add -nP option to see both ports and hostnames in numeric format.
+sudo lsof -iTCP -sTCP:LISTEN = shows only the files that opened TCP ports which are in the LISTEN state.Can add -nP option to see both ports and hostnames in numeric format.
 sudo lsof -iTCP:22 -sTCP:LISTEN = shows which file opened the specific(22) port.
 - -
 
