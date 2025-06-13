@@ -40,7 +40,7 @@ Installing the desktop app or the browser extension is fairly simple.
 So let's install the IPFS command-line tool in linux:
 1)
 The first step is to download the Linux binary from dist.ipfs.io website.
-Download the go-ipfs(kubo) version there.This is the earliest and most widely used implementation of IPFS. it includes IPFS daemon server, extensive command line tooling, an HTTP RPC API for controlling the node, an HTTP Gateway for serving content to HTTP browsers.
+Download the go-ipfs(kubo) version there.This is the earliest and most widely used implementation of IPFS.It includes IPFS daemon server, extensive command line tooling, an HTTP RPC API for controlling the node, an HTTP Gateway for serving content to HTTP browsers.
 Copy the link address of the 64-bit Linux Binary version.
 run wget linkAddress, and it is downloaded.
 
@@ -90,7 +90,7 @@ Lets view the content from the browser of the same or another machine:
 ipfs.io/ipfs/Qmac7PTj1wy9cDVAP3RyzkVttuAsfEZGxL5GcttCTJYHmR (ipfs.io is known as the main IPFS gateway).
 
 # # #
-Behind the scenes queried the distributed hash table or DHT, found our machine, which is an IPFS node, requested the file.Our Computer sent it to the gateway and the gateway sent it to the browser.
+Behind the scenes queried the distributed hash table(DHT), found our machine, which is an IPFS node, requested the file.Our Computer sent it to the gateway and the gateway sent it to the browser.
 # # #
 
 We can also request the file from our own gateway using localhost and Port 8080 => localhost:8080/ipfs/.And the local node has delivered the file.
