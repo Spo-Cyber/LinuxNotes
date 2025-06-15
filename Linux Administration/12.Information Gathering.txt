@@ -128,7 +128,7 @@ tcpdump is installed by default on any Linux distribution.The following commands
 tcpdump -i interfaceName - to see what's hitting your interface
 tcpdump -i intName host IPaddress - to see only the packets to or from an IP address
 tcpdump -i intName dst/src IP/domainName - to see only one direction or the other(destination/source) to or from IP or domain name.
-tcpdump -i intName net 192.168.1.0 to capture packets going to or from a particular network or subnet.
+tcpdump -i intName net 192.168.1.0 - to capture packets going to or from a particular network or subnet.
 tcpdump -i intName port 80 - to see packets of a specific application.
 tcpdump -i intName dst port 53 -vv -n - specify the destination port of packets, -vv (for more verbose version of details), -n (not to convert addresses to names)
 tcpdump -i intName port 80 -A -n - -A(to print each packet in human-readable text), rather than the default hexedecimal and protocol-level output.it won't be useful if the traffic is encrypted(like HTTPS), you'll just see unreadable data.

@@ -1,12 +1,12 @@
 		#Networking on Linux
 ___________________________________________________________________
--------------------------------------------------------------------
+---------------------------------------------------------------------------------------------
 #Getting Information about the Network Interfaces(ip, ifconfig)
 
 *If there is no net tools , run "sudo apt install net-tools".
 
 - - - ifconfig - - - 
-*ifconfig: Part of net-tools package has been there for a long time and is still used to configure display and control network interfaces by many Linux administrators.
+*ifconfig: Part of net-tools package, and  has been there for a long time and is still used to configure, display and control network interfaces by many Linux administrators.
 ifconfig - to show only the information about "enabled" interfaces.
 ifconfig -a - to display a list of all network interfaces and the associated IP address , both "enabled/disabled"
 ifconfig InterfaceName - to display only the information about specific interface.
@@ -43,7 +43,8 @@ _________________________________________________________________
 
 *!Do NOT run the following commands on a remote system to which are connected using ssh, since you are going to disable and enable interfaces, change IP addresses and so on, and your ssh connection will drop around.
 
-*After restarting the system, the changes in network configurations won't be saved.To permanently save the configurations , we need to use a "netplan" for static network configuration.
+*After restarting the system, the changes in network configurations won't be saved.To permanently save the configurations , we need to use a "netplan" for static network configuration.apt install netplan.io (if not installed)
+
 
 - - - ifconfig - - -
 *'Turn on/off the network interface'
@@ -98,7 +99,7 @@ After stopping the NetworkManager, create a 'yaml' file in /etc/netplan (e.g. /0
 'For manual IP and DNS addresses'
 network:
 	version: 2
-	renderer: networkd 
+	renderer: networkd\NetworkManager
 	ethernets/wifis:
 		IntfName:
 			dhcp4: false
@@ -138,7 +139,7 @@ _________________________________________________________________
 #Testing and Troubleshooting Network Connectivity
 
 Ping works by sending ICMP echo request packets to the specified destination IP address and waits for a reply.When the destination receives an echo request packet, it will respond back with ICMP echo reply.Ping is also available on Mac and Windows , but with other options.
-The domain name in ping execution can differ from the name we ping, because an IP address can be set to multiple different domain names.So ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP".The DNS server responds back with the first domain that finds, which differs from our specified domain name.
+The domain name in ping execution can differ from the name we ping, because an IP address can be set to multiple different domain names.So ping performs a reverse DNS resolution , asking the DNS server configured on the system , "what is the domain of that IP?".The DNS server responds back with the first domain that finds, which differs from our specified domain name.
 
 ping [options] <destinationIP/domain name>
 ping -n - To prevent ping from doing reverse DNS lookup.
@@ -196,7 +197,7 @@ To run ssh server on windows , download PuTTY program from web.
 
 - - 
 * Problem 1
-If you cannot connect to SSH server, the first thing you should do is to check that the SSH deamon (sshd) is running on the server machine.
+If you cannot connect to SSH server, the first thing you should do is to check that the SSH daemon (sshd) is running on the server machine.
 systemctl status ssh - to see sshd status.
 systemctl start ssh - to start sshd.
 systemctl restart ssh - to restart sshd.
@@ -218,7 +219,7 @@ The Linux firewall is called "iptables" which is a command-line tool used to man
 iptables -vnL - to check if there are any firewall rules.Check if the policy set to ACCEPT, and there are not any firewall rules about that.
 -
 The 'ufw' is uncomplicated user-friendly front-end program for iptables, used for managing netfilter firewall. 
-An example that proofs that it's easier - "ufw allow ssh" equal to "iptables -A INPUT -p tcp -dport 22 -j ACCEPT".
+An example that proofs that it's easier - "ufw allow ssh" equal to "iptables -A INPUT -p tcp --dport 22 -j ACCEPT".
 
 sudo ufw status verbose - to check if it is.
 sudo ufw enable/disable - to enable/disable it on system startup.
@@ -291,9 +292,9 @@ MaxStartups N - controls the number of unauthenticated concurrent SSH connection
  1) To copy from your computer to a remote server
  2) To copy from a remote server to your computer
  3) To copy from a remote server to another remote server
-!Before the running the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
+!Before running the scp command , check that you have ssh access to the remote ssh server you'll copy the files to or from.
  -
-*To be able to copy files, the user that runs the scp command must have the read permission on the source file and the user that authenticates.Scp command overwrites files without any warning.
+*To be able to copy files, the user that runs the scp command must have read permission on the source file and write permission on the destination directory.Scp command overwrites files without any warning.
 1)Your computer -> remote server
 scp -P 22 ip.txt remoteLogin@192.168.1.6:~/path => P(specifies the port on which the server is listening), ip.txt (file which should be copied), last part(indicates the destination, by username IP and destination location of file)
 scp -r -P 22 mydir/ mrhacker@192.168.1.6:~ => to send directory
@@ -312,7 +313,7 @@ ____________________________________________________________________
 --------------------------------------------------------------------
 #Synchronizing Files and Directories using rsync
 
-rsync: A fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.Has tons of options.
+rsync: A fast and versatile utility that synchronizes files and directories between two locations that can be local or remote.Has tens of options.
 The user that runs the rsync command must have read permissions on the source location and write permissions on the destination(directory) location.
 -
 rsync -av /sourcelocation /destinationlocation - this transfers directory with its files in archive mode, which ensures that symbolic links, devices, attributes, permissions, ownerships, etc. are preserved in the transfer. v(verbose mode), a(archive mode).If the destination directory doesn't exist , it will create it.
@@ -381,7 +382,7 @@ lsof -u username - To get all the files opened by specific user.
 lsof -u ^username - ^(negation) so this means to get list of files not opened by specific user.
 lsof -c processname - to list all the files opened by specific process.
 
-sudo lsof -iTCP -sTCP:LISTEN = shows only the files that opened tcp ports which are in the LISTEN state.Can add -nP option to see both ports and hostnames in numeric format.
+sudo lsof -iTCP -sTCP:LISTEN = shows only the files that opened TCP ports which are in the LISTEN state.Can add -nP option to see both ports and hostnames in numeric format.
 sudo lsof -iTCP:22 -sTCP:LISTEN = shows which file opened the specific(22) port.
 - -
 

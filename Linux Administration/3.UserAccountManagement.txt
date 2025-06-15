@@ -3,7 +3,7 @@
 - - - - - - - #/etc/passwd and /etc/shadow files - - - - - - -
 
 /etc/passwd
-Each line , is about a system or normal user
+Each line , is about a system or a normal user
 
 mrhacker:x:1000:1000:MrHacker,,,:/home/mrhacker:/usr/bin/bash
 *In 1st octet - (mrhacker) is the user's login name
@@ -83,7 +83,7 @@ sudo userdel -r username "to delete it's related files also"
 - - - - - - - -
 #Give administrative rights to user
 
-By default a new user has not administrative rights, as it is not in sudo group, so like command by sudo won't work (sudo cat /etc/shadow won't work). 
+By default a new user has not administrative rights, as it is not in sudo group, so any command by sudo won't work (sudo cat /etc/shadow won't work). 
 sudo usermod -aG sudo username - To add the user into the group (run from the account which has administrative rights)
 - - - - - - - -
 #Group Management
