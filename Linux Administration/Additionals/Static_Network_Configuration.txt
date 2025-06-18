@@ -1,0 +1,86 @@
+		# Static IP configuration with different methods
+
+- - - - - - - - - -
+# /etc/network/interfaces (Debian, Old Ubuntu/Kali)
+auto wlan0
+iface wlan0 inet static
+	address 192.168.1.100
+	netmask 255.255.255.0
+	gateway 192.168.1.1
+	dns-nameservers 8.8.8.8 1.1.1.1
+
+#Commands to apply
+sudo ifdown wlan0 && sudo ifup wlan0 (OR) sudo systemctl restart networking
+
+- - - - - - - - - -
+# Netplan (Ubuntu 18.04+, Kali 2020+,etc.)
+
+# /etc/netplan/01-mycustomcfg.yaml
+network:
+	version: 2
+	renderer: networkd # or NetworkManager
+	wifis:
+		wlan0:
+		dhcp4: no
+		addresses:
+			- 192.168.1.100/24
+		routes:
+			- to: default
+			via: 192.168.1.1
+		nameservers:
+			addresses:
+				- '8.8.8.8'
+				- '1.1.1.1'
+		access-points:	# for wireless connection
+			"MyWiFiSSID":
+				password: "MyStrongPassword"
+#Apply Config
+sudo netplan apply
+
+- - - - - - - - - - -
+# NetworkManager (nmcli CLI method)
+
+# Set static IP using nmcli
+sudo nmcli connection add type ethernet ifname enp0s3 con-name static-eth0 autoconnect yes ip4 192.168.1.100/24 gw4 192.168.1.1 (enp0s3-interface name, static-eth0 - a prefered custom name for a con-name)
+
+# Set DNS
+sudo nmcli connection modify static-eth0 ipv4.dns "8.8.8.8 1.1.1.1"
+
+# Bring the connection up
+sudo nmcli connection up static-eth0
+
+- - - - - - - - - - -
+# systemd-networkd (Arch, Debian Minimal, Ubuntu Server)
+
+# /etc/systemd/network/20-static.network
+[Match]
+Name=eth0
+
+[Network]
+Address=192.168.1.100/24
+Gateway=192.168.1.1
+DNS=8.8.8.8
+
+# Enable services
+sudo systemctl disable NetworkManager --now # optional
+sudo systemctl enable systemd-networkd --now
+sudo systemctl enable systemd-resolved --now
+
+# Symlink resolv.conf
+sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
+- - - - - - - - - - -
+# RedHat/CentOS/Rocky(ifcfg method)
+
+# /etc/sysconfig/network-scripts/ifcfg-eth0
+
+DEVICE=eth0
+BOOTPROTO=none
+ONBOOT=yes
+IPADDR=192.168.1.100
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+DNS1=8.8.8.8
+
+# Restart network service
+sudo systemctl restart network (OR if using NetworkManager) sudo nmcli connection reload

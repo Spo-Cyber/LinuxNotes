@@ -1,0 +1,51 @@
+			# SSH Public Key Authentication (PKA)
+			
+PKA or Public Key Authentication is an authentication method that uses a key pair for authentication instead of a password which is the default method.
+
+Advantages:
+This type of authentication is considered more secure because the default password method suffers from potential security vulnerabilities, like brute force login attempts or key loggers installed on the client.
+You are able to log in to servers from within scripts or automation tools that run unattended (automated backups, updates, network automation, etc.).For example , you can set up periodic updates for your servers using rsync, or you can use a configuration management tool like ansible, and you run these automatically from a cron job, without any human intervention for entering the password.
+
+In PKA there are two types of keys generated:
+1) Private key (it stays on the SSH Client).
+2) Public key (it stays on the SSH Server)
+
+In Public key authentication, a user creates both public and a private key and then transfers a copy of the Public key to the SSH Server to which the user wants to secure access.The Private key is kept on the user's local machine and is used to verify the identity of the user when the user attempts to connect to the server.Anyone(user or device), that has the Public key , will be able to encrypt the data that can only be decrypted by the user or the device, that has the private key.This means , that you can share the Public key with anyone and they will have the ability to send you encrypted messages (messages that will be decrypted only using the Private key).
+So in a nutshell , for SSH , the Private key stays on the client and the public key stays on the server.The Private key is used to encrypt the messages, that will be decrypted by the server using the public key.However , you need to protect the privacy of the Private key.Anyone who has it , can decrypt the encrypted messages.This can be accomplished by encrypting the private key with a passphrase which is similarly to a password.
+Before the SSH Client can read the private key in order to perform the public key authentication process, you will be asked to supply the passphrase in order to decrypt the private key.
+On more secure systems, you can simplify this process either by creating an unencrypted key(a key with no passphrase) or by entering your passphrase once, and then caching the key in memory, for later use.OpenSSH contains a tool called "ssh agent" which simplifies this process.
+It's common to have an unencrypted private key, especially in cases , where SSH is used to automate different things.
+
+- - - - - - - -
+# Generating SSH Key Pair on Linux
+
+Most modern Linux distributions come with SSH package that already contains besides the ssh command , which is the SSH Client, another command called ssh-keygen that is used to generate the SSH key-pair used for authentication.
+
+ssh-keygen -b 2048 -t rsa -C "Linux user Jun 18 comment"
+-b - specifies the number of bits in the key to create.Generally 2048 is considered to be sufficient.You can use a larger key, if you want a better security.
+-t rsa - type of key to create (here rsa key pair).rsa is the most common option.
+-C - comment for uniquely identifying a key.
+
+If you enter a passphrase , the private key will be encrypted.
+As we notice, the generated files are ~/.ssh.id_rsa.pub (for the public key), and ~/.ssh/id_rsa (for the private key).
+
+- - - - - - - -
+# Configuring SSH Public Key Authentication on Linux
+
+The First step is to copy the public key from the machine , where it was generated, to the Linux machine where the SSH Server is running in a special file.
+
+1) In SSH Client -> Copy the public key from the ~/.ssh/id_rsa.pub of the ssh client where the key pair was generated, and paste it to  ~/.ssh/id_rsa.pub of the SSH Server.But now let's use scp command:
+scp -P 22 ~/.ssh/id_rsa.pub vboxuser@192.168.1.5:~
+OR
+ssh-copy-id -i ~/.ssh/id_rsa.pub vboxuser@192.168.1.5
+
+2) Now let's add the public key at the end of the file called authorized_keys in the SSH Server.You can have more keys in authorized_keys, because there could be more users that authenticate to the server and each user will have it's own key pair.Take care not to overwrite the file, but append to it's end.
+In SSH Server -> cat ~/id_rsa.pub >> ~/.ssh/authorized_keys
+
+In /etc/ssh/sshd_config:
+PasswordAuthentication no
+PubkeyAuthentication yes
+AuthorizedKeysFile .ssh/authorized_keys
+sudo systemctl restart sshd
+
+3) In SSH Client -> ssh vboxuser@192.168.1.100 -p 22
